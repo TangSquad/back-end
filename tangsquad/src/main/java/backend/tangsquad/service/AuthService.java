@@ -8,6 +8,7 @@ import backend.tangsquad.dto.request.RefreshTokenRequestDto;
 import backend.tangsquad.dto.response.JwtResponseDto;
 import backend.tangsquad.repository.RefreshTokenRepository;
 import backend.tangsquad.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,8 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
+@Transactional
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -53,10 +56,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getUsername(), user.getRole());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
 
-        RefreshToken refreshTokenEntity = new RefreshToken();
-        refreshTokenEntity.setUsername(user.getUsername());
-        refreshTokenEntity.setToken(refreshToken);
-        refreshTokenRepository.save(refreshTokenEntity);
+        refreshTokenRepository.save(user.getUsername(), refreshToken);
 
         return new JwtResponseDto(accessToken, refreshToken);
     }
@@ -73,13 +73,23 @@ public class AuthService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        Optional<RefreshToken> storedRefreshToken = refreshTokenRepository.findByToken(refreshToken);
-        if (storedRefreshToken.isEmpty() || !storedRefreshToken.get().getToken().equals(refreshToken)) {
+        Optional<RefreshToken> storedRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken);
+        if (storedRefreshToken.isEmpty() || !storedRefreshToken.get().getRefreshToken().equals(refreshToken)) {
             throw new IllegalArgumentException("Invalid refresh token");
         }
 
-        String newAccessToken = jwtTokenProvider.generateAccessToken(username, user.getRole());
+        refreshTokenRepository.deleteByRefreshToken(refreshToken);
 
-        return new JwtResponseDto(newAccessToken, refreshToken);
+        String newAccessToken = jwtTokenProvider.generateAccessToken(username, user.getRole());
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(username);
+
+        refreshTokenRepository.save(username, newRefreshToken);
+
+        return new JwtResponseDto(newAccessToken, newRefreshToken);
     }
+
+    public void logout(String refreshToken) {
+        refreshTokenRepository.deleteByRefreshToken(refreshToken);
+    }
+
 }
