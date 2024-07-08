@@ -35,9 +35,6 @@ public class User {
     // 비밀번호(해시)
     @Column private String password;
 
-    // 로그인 방법(일반, 카카오, 구글)
-    @Column(nullable = false) private String loginMethod;
-
     // 가입 날짜
     @CreatedDate
     @Column(updatable = false) private LocalDateTime createdAt;
