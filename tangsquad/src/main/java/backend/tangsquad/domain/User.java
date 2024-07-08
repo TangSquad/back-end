@@ -49,4 +49,7 @@ public class User {
     // 프로필
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private UserProfile userProfile;
+
+    // 역할
+    @Column(nullable = false) private String role;
 }
