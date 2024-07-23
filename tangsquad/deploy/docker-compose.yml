@@ -1,34 +1,30 @@
-version: "3"
+version: "3.7"
 services:
-  db:
-    container_name: h2
+  h2db:
     image: oscarfonts/h2:latest
+    container_name: h2db
     ports:
-      - 1521:1521
-      - 8081:81
+      - 9092:9092
     environment:
-      H2_OPTIONS: -ifNotExists
+      - H2_OPTIONS=-tcp -tcpAllowOthers
     volumes:
-      - ./h2/:/opt/h2-data
-    restart: always
+      - ~/Desktop/h2/data/:/opt/h2-data/
+
   redis:
-    container_name: redis-local
+    container_name: redis
     image: redis:alpine
     ports:
       - 6379:6379
     volumes:
-      - ./data/:/data
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: board_app
+      - ~/Desktop/redis/data/:/data
+
+  spring:
+    container_name: spring
+    image: yundol/syluv
     ports:
       - 8080:8080
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2:1521/demo
-      SPRING_DATASOURCE_USERNAME: sa
-      SPRING_DATASOURCE_PASSWORD: 123
+    volumes:
+      - /var/log/:/logs/
     depends_on:
-      - db
       - redis
+      - h2db
