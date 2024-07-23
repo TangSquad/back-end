@@ -4,7 +4,7 @@ services:
     image: oscarfonts/h2:latest
     container_name: h2db
     ports:
-      - 9092:9092
+      - 1521:1521
       - 8081:81
     environment:
       - H2_OPTIONS=-tcp -tcpAllowOthers -ifNotExists
@@ -27,7 +27,7 @@ services:
     ports:
       - 8080:8080
     environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2db:9092/demo
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2db:1521/demo
       SPRING_DATASOURCE_USERNAME: sa
       SPRING_DATASOURCE_PASSWORD: 123
     volumes:
