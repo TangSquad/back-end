@@ -5,10 +5,12 @@ services:
     container_name: h2db
     ports:
       - 9092:9092
+      - 8081:81
     environment:
-      - H2_OPTIONS=-tcp -tcpAllowOthers
+      - H2_OPTIONS=-tcp -tcpAllowOthers -ifNotExists
     volumes:
-      - ~/Desktop/h2/data/:/opt/h2-data/
+      - ./h2/:/opt/h2-data
+    restart: always
 
   redis:
     container_name: redis
@@ -16,13 +18,18 @@ services:
     ports:
       - 6379:6379
     volumes:
-      - ~/Desktop/redis/data/:/data
+      - ./data/:/data
+    restart: always
 
   spring:
     container_name: spring
     image: yundol/tangsquad
     ports:
       - 8080:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2:9092/demo
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: 123
     volumes:
       - /var/log/:/logs/
     depends_on:
