@@ -20,7 +20,7 @@ services:
 
   spring:
     container_name: spring
-    image: yundol/syluv
+    image: yundol/tangsquad
     ports:
       - 8080:8080
     volumes:
