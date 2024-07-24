@@ -13,16 +13,16 @@ import java.time.LocalDateTime;
 @Table(name = "logbook")
 public class Logbook {
 
+    // Log에 User 정보 필요.
+    
     // 다이빙 로그, 날짜
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column private Integer id;
     @Column private LocalDateTime date;
 
-
     // 제목
     @Column private String title;
-
     @Column private Integer squadId;
 
     // 글
@@ -54,6 +54,5 @@ public class Logbook {
     @Column private Integer diffBar;
 
     // 참여자는, 유저 엔티티가 만들어진 후에 리스트 형태로 만들어야 할 듯.
-
     // 장비도 유저 엔티티가 만들어진 후에.
 }

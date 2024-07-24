@@ -7,8 +7,8 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class PostListReadResponse {
-    private List<PostReadResponse> posts;
+public class LogListReadResponse {
+    private List<LogReadResponse> Logs;
     private int currentPage;
     private int totalItems;
     private int totalPages;
