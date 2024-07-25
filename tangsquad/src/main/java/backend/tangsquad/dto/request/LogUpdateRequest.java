@@ -1,6 +1,6 @@
-package backend.tangsquad.dto;
+package backend.tangsquad.dto.request;
 
-import jakarta.persistence.Column;
+import backend.tangsquad.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,10 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LogCreateRequest {
-    private Integer id;
-    private LocalDateTime date;
-
+public class LogUpdateRequest {
     // 제목
     private String title;
     private Integer squadId;

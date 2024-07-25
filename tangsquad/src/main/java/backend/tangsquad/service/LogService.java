@@ -1,31 +1,49 @@
 package backend.tangsquad.service;
 
-import backend.tangsquad.dto.*;
+import backend.tangsquad.domain.Logbook;
+import backend.tangsquad.domain.User;
+import backend.tangsquad.dto.request.LogCreateRequest;
+import backend.tangsquad.dto.request.LogUpdateRequest;
+import backend.tangsquad.dto.response.LogCreateResponse;
+import backend.tangsquad.repository.LogRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class LogService {
 
-    public LogListReadResponse getLogs(Integer page,
-                                       Integer size,
-                                       String sort)
+    private final LogRepository logRepository;
+
+    @Autowired
+    public LogService(LogRepository logRepository) {
+        this.logRepository = logRepository;
+    }
+    public List<Logbook> getLogs(User user)
     {
-        return null;
+        return logRepository.findAll().stream()
+                .filter(logbook -> logbook.getUser().equals(user))
+                .collect(Collectors.toList());
     }
 
-    public LogReadResponse getLog(Long id) {
-        return null;
+    public Optional<Logbook> getLog(String username, Long id) {
+        return logRepository.findById(username, id);
     }
 
     public LogCreateResponse createLog(LogCreateRequest request) {
         return null;
     }
 
-    public void updateLog(Long id, LogUpdateRequest request) {
+    // 수정 필요.
+    public Logbook updateLog(String username, Long id, LogUpdateRequest request) {
+        Logbook logbook = new Logbook();
+        return logbook;
     }
 
-    public void deleteLog(Long id) {
+    public void deleteLog(String username, Long id) {
     }
 }

@@ -49,4 +49,8 @@ public class User {
 
     // 역할
     @Column(nullable = false) private String role;
+
+    // 로그북 리스트
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Logbook> logbooks;
 }

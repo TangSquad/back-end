@@ -1,5 +1,6 @@
-package backend.tangsquad.dto;
+package backend.tangsquad.dto.response;
 
+import backend.tangsquad.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LogCreateResponse {
+    private User user;
     private Long id;
 }
