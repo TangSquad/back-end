@@ -12,7 +12,7 @@ public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Integer id;
+    private Long id;
 
     // 유저 아이디
     @OneToOne(fetch = FetchType.LAZY)
@@ -37,6 +37,26 @@ public class UserProfile {
     @OneToOne(mappedBy = "userProfile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Equipment equipment;
 
+
+    @PrePersist
+    @PreUpdate
+    private void setDefault() {
+        if(this.profileImageUrl == null || this.profileImageUrl.isEmpty()) {
+            this.profileImageUrl = "https://placehold.co/400";
+        }
+        if(this.affiliation == null || this.affiliation.isEmpty()) {
+            this.affiliation = "";
+        }
+        if(this.statusMessage == null || this.statusMessage.isEmpty()) {
+            this.statusMessage = "";
+        }
+        if(this.introduction == null || this.introduction.isEmpty()) {
+            this.introduction = "";
+        }
+        if(this.url == null || this.url.isEmpty()) {
+            this.url = "";
+        }
+    }
 
 }
 

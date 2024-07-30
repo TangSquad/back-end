@@ -11,7 +11,7 @@ public class Certification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Integer id;
+    private Long id;
 
     // 자격증 단체
     @Column private String organization;
