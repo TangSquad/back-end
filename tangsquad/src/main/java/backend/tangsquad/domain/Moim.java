@@ -16,8 +16,9 @@ public class Moim {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String moimOwner;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 //    private String[] moimMembers;
     @Column
