@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,8 +17,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -39,9 +36,6 @@ public class SecurityConfig {
                 // token을 사용하기 때문에 csrf를 disable
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 아래 코드 추가
-//                .cors(Customizer.withDefaults())
-
                 // h2-console을 사용하기 위해 설정
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
@@ -60,8 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/error").permitAll() // Allow access to /error endpoint
                         .requestMatchers("/favicon.ico").permitAll()
-                        // /error 엔드포인트 추가
-                        .anyRequest().authenticated()
+                        .anyRequest().hasRole("USER")  // ROLE_USER 권한을 가진 사용자만 접근 가능
                 )
 
                 // jwt token을 사용하기 위한 설정
@@ -69,8 +62,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
