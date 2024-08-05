@@ -4,6 +4,15 @@ import java.time.LocalDateTime;
 
 public class Moim {
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    private Long id;
     private String moimOwner;
 
     private String[] moimMembers;
@@ -25,6 +34,9 @@ public class Moim {
     private String age;
 
     private String[] mood;
+
+    public Moim() {
+    }
 
     public String getMoimOwner() {
         return moimOwner;
