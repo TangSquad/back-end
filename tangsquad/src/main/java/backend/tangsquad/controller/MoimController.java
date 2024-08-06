@@ -1,16 +1,17 @@
 package backend.tangsquad.controller;
 
 
-import backend.tangsquad.domain.Logbook;
 import backend.tangsquad.domain.Moim;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.MoimCreateRequest;
+import backend.tangsquad.dto.request.MoimUpdateRequest;
+import backend.tangsquad.dto.response.MoimReadResponse;
 import backend.tangsquad.repository.MoimRepository;
 import backend.tangsquad.repository.UserRepository;
 import backend.tangsquad.service.MoimService;
+import backend.tangsquad.swagger.global.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class MainController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("{username}/new")
+    @PostMapping("/moim/{username}/new")
     public Moim createMoim(@PathVariable("username") String username, @RequestBody MoimCreateRequest request) {
         Moim moim = new Moim();
 
@@ -58,7 +59,7 @@ public class MainController {
         return moim;
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/moim")
     public List<Moim> getMoims(@PathVariable("username") String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (!userOptional.isPresent()) {
@@ -69,4 +70,20 @@ public class MainController {
         User user = userOptional.get();
         return moimService.getMoims(user);
     }
+
+    @PutMapping("/moim/update")
+    public Moim updateMoim(@RequestParam(value = "username") String username,
+                          @RequestParam(value = "id") Long id,
+                          @RequestBody MoimUpdateRequest request) {
+        Moim moim = moimService.updateMoim(username, id, request);
+        return moim;
+    }
+
+    @DeleteMapping("/moim/{id}")
+    public CommonResponse<MoimReadResponse> deleteMoim(@RequestParam(value = "username") String username,
+                                                      @RequestParam(value = "id") Long id) {
+        moimService.deleteMoim(username,id);
+        return CommonResponse.success();
+    }
+
 }

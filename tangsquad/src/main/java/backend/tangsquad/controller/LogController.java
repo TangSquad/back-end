@@ -36,7 +36,7 @@ public class LogController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("{username}/new")
+    @PostMapping("/new")
     public Logbook createLog(@PathVariable("username") String username, @RequestBody LogCreateRequest request) {
         Logbook logbook = new Logbook();
 
