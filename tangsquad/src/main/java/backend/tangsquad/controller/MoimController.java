@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RequestMapping("/main")
+@RequestMapping("/moim")
 @RestController
-public class MainController {
+public class MoimController {
 
     private final MoimService moimService;
 
@@ -28,13 +28,13 @@ public class MainController {
     private final UserRepository userRepository;
 
     @Autowired
-    public MainController(MoimService moimService, MoimRepository moimRepository, UserRepository userRepository) {
+    public MoimController(MoimService moimService, MoimRepository moimRepository, UserRepository userRepository) {
         this.moimService = moimService;
         this.moimRepository = moimRepository;
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/moim/{username}/new")
+    @PostMapping("/{username}/new")
     public Moim createMoim(@PathVariable("username") String username, @RequestBody MoimCreateRequest request) {
         Moim moim = new Moim();
 
@@ -59,7 +59,7 @@ public class MainController {
         return moim;
     }
 
-    @GetMapping("/moim")
+    @GetMapping("")
     public List<Moim> getMoims(@PathVariable("username") String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (!userOptional.isPresent()) {
@@ -71,7 +71,7 @@ public class MainController {
         return moimService.getMoims(user);
     }
 
-    @PutMapping("/moim/update")
+    @PutMapping("/update")
     public Moim updateMoim(@RequestParam(value = "username") String username,
                           @RequestParam(value = "id") Long id,
                           @RequestBody MoimUpdateRequest request) {
@@ -79,7 +79,7 @@ public class MainController {
         return moim;
     }
 
-    @DeleteMapping("/moim/{id}")
+    @DeleteMapping("/{id}")
     public CommonResponse<MoimReadResponse> deleteMoim(@RequestParam(value = "username") String username,
                                                       @RequestParam(value = "id") Long id) {
         moimService.deleteMoim(username,id);

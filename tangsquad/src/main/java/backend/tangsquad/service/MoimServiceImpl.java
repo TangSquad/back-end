@@ -3,6 +3,8 @@ package backend.tangsquad.service;
 import backend.tangsquad.domain.Logbook;
 import backend.tangsquad.domain.Moim;
 import backend.tangsquad.domain.User;
+import backend.tangsquad.dto.request.LogUpdateRequest;
+import backend.tangsquad.dto.request.MoimUpdateRequest;
 import backend.tangsquad.repository.MemoryMoimRepository;
 import backend.tangsquad.repository.MoimRepository;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,16 @@ public class MoimServiceImpl implements MoimService {
         return moimRepository.findById(moimId);
     }
 
+    @Override
+    public void deleteMoim(String username, Long id) {
+    }
+
+    // 수정 필요
+    @Override
+    public Moim updateMoim(String username, Long id, MoimUpdateRequest request) {
+        Moim moim = new Moim();
+        return moim;
+    }
 
 //    @Override
 //    public Moim findMoimByOwner(String owner) {
