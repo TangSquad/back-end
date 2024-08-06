@@ -15,5 +15,8 @@ public class Diving {
     private Long id;
 
     // figma 작업 완료 후 개발
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 }
