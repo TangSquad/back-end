@@ -46,7 +46,7 @@ public class MoimServiceImpl implements MoimService {
     public List<Moim> getMoims(User user)
     {
         return moimRepository.findAll().stream()
-                .filter(logbook -> logbook.getUser().equals(user))
+                .filter(moim -> moim.getUser().equals(user))
                 .collect(Collectors.toList());
     }
 

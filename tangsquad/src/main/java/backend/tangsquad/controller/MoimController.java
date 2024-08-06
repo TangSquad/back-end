@@ -34,7 +34,7 @@ public class MoimController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/{username}/new")
+    @PostMapping("/new")
     public Moim createMoim(@PathVariable("username") String username, @RequestBody MoimCreateRequest request) {
         Moim moim = new Moim();
 
