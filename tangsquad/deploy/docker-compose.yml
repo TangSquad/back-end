@@ -23,4 +23,3 @@ services:
       - /var/log/:/logs/
     depends_on:
       - redis
-      - h2db
