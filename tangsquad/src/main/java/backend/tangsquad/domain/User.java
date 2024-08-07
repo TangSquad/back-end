@@ -18,7 +18,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column private Integer id;
+    @Column private Long id;
 
     // 이름
     @Column(nullable = false) private String name;
@@ -49,4 +49,8 @@ public class User {
 
     // 역할
     @Column(nullable = false) private String role;
+
+    // 로그북 리스트
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Logbook> logbooks;
 }

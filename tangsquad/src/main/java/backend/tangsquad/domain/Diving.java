@@ -7,23 +7,16 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Certification {
+@Table(name="diving")
+public class Diving {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private Long id;
 
-    // 자격증 단체
-    @Column private String organization;
-
-    // 자격증 등급
-    @Column private String grade;
-
-    // 자격증 사진
-    @Column private String imageUrl;
-
-    // 유저 아이디
-    @ManyToOne(fetch = FetchType.LAZY)
+    // figma 작업 완료 후 개발
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
 }
