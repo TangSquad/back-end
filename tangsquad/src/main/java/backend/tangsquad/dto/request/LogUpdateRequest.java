@@ -42,5 +42,4 @@ public class LogUpdateRequest {
     private Integer startBar;
     private Integer endBar;
     private Integer diffBar;
-
 }

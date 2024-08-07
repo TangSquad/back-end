@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 
 @Repository
 public class MemoryLogRepository implements LogRepository{
-    private static Map<Long, Logbook> store = new HashMap<>();
+    private static Map<Long, Logbook> logStore = new HashMap<>();
     private static long sequence = 0L;
 
     @Override
     public Logbook save(Logbook logbook) {
         logbook.setId(++sequence);
-        store.put(logbook.getId(), logbook);
+        logStore.put(logbook.getId(), logbook);
         return logbook;
     }
 
@@ -28,13 +28,13 @@ public class MemoryLogRepository implements LogRepository{
 
     @Override
     public Optional<Logbook> findById(String username, Long id) {
-        return store.values().stream()
+        return logStore.values().stream()
                 .filter(logbook -> logbook.getUser().getUsername().equals(username) && logbook.getId().equals(id))
                 .findFirst();
     }
 
     @Override
     public List<Logbook> findAll() {
-        return new ArrayList<>(store.values());
+        return new ArrayList<>(logStore.values());
     }
 }
