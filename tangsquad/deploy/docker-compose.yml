@@ -1,17 +1,5 @@
 version: "3.7"
 services:
-  h2db:
-    image: oscarfonts/h2:latest
-    container_name: h2db
-    ports:
-      - 1521:1521
-      - 8081:81
-    environment:
-      - H2_OPTIONS=-tcp -tcpAllowOthers -ifNotExists
-    volumes:
-      - ./h2/:/opt/h2-data
-    restart: always
-
   redis:
     container_name: redis
     image: redis:alpine
@@ -27,9 +15,10 @@ services:
     ports:
       - 8080:8080
     environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2db:1521/demo
-      SPRING_DATASOURCE_USERNAME: sa
-      SPRING_DATASOURCE_PASSWORD: 123
+      - JWT_SECRET=${JWT_SECRET}
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
     volumes:
       - /var/log/:/logs/
     depends_on:
