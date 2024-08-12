@@ -4,7 +4,6 @@ import backend.tangsquad.auth.jwt.JwtTokenProvider;
 import backend.tangsquad.domain.RefreshToken;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.LoginRequestDto;
-import backend.tangsquad.dto.request.RefreshTokenRequestDto;
 import backend.tangsquad.dto.response.JwtResponseDto;
 import backend.tangsquad.repository.RefreshTokenRepository;
 import backend.tangsquad.repository.UserRepository;
@@ -19,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -61,9 +59,7 @@ public class AuthService {
         return new JwtResponseDto(accessToken, refreshToken);
     }
 
-    public JwtResponseDto refreshAccessToken(RefreshTokenRequestDto refreshTokenRequestDto) {
-
-        String refreshToken = refreshTokenRequestDto.getRefreshToken();
+    public JwtResponseDto refreshAccessToken(String refreshToken) {
 
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new IllegalArgumentException("Invalid refresh token");

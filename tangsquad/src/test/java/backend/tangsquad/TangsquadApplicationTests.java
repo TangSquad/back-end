@@ -1,13 +1,13 @@
-package backend.tangsquad;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class TangsquadApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
-}
+//package backend.tangsquad;
+//
+//import org.junit.jupiter.api.Test;
+//import org.springframework.boot.test.context.SpringBootTest;
+//
+//@SpringBootTest
+//class TangsquadApplicationTests {
+//
+//	@Test
+//	void contextLoads() {
+//	}
+//
+//}

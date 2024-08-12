@@ -4,6 +4,7 @@ import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.RegisterRequestDto;
 import backend.tangsquad.service.AuthService;
 import backend.tangsquad.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
+@Tag(name = "Auth", description = "Authentication API")
 public class UserController {
 
     private final UserService userService;
@@ -26,9 +28,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
-        User savedUser = userService.registerUser(registerRequestDto);
-        return ResponseEntity.ok(savedUser);
+    public ResponseEntity<Boolean> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
+        Boolean result = userService.registerUser(registerRequestDto);
+        return ResponseEntity.ok(result);
     }
 
 }

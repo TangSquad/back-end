@@ -28,7 +28,7 @@ public class UserService {
     }
 
     @Transactional
-    public User registerUser(@Valid RegisterRequestDto registerRequestDto) {
+    public boolean registerUser(@Valid RegisterRequestDto registerRequestDto) {
         String encodedPassword = passwordEncoder.encode(registerRequestDto.getPassword());
 
         User user = new User();
@@ -63,6 +63,6 @@ public class UserService {
             });
         }
 
-        return savedUser;
+        return true;
     }
 }
