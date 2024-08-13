@@ -10,6 +10,9 @@ import backend.tangsquad.repository.UserRepository;
 import backend.tangsquad.service.DivingService;
 import backend.tangsquad.swagger.global.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,54 +37,72 @@ public class DivingController {
     }
 
     @PostMapping("")
-    public Diving createDiving(@PathVariable("username") String username, @RequestBody DivingCreateRequest request) {
-        Diving diving = new Diving();
+    public Diving createDiving(@AuthenticationPrincipal UserDetails userDetails, @RequestBody DivingCreateRequest request) {
+        // Retrieve the current authenticated user's username
+        String username = userDetails.getUsername();
 
+        // Find the user by username
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (!userOptional.isPresent()) {
-            // Handle user not found, you can throw an exception or return a specific response
             throw new UsernameNotFoundException("User not found");
         }
 
+        // Create a new Diving instance
+        Diving diving = new Diving();
 
-        // LogCreateRequest 에 있는 데이터들을 보고 모두 request에서 가지고 와 저장하여야 함.
+        // Set the user for the diving instance
         User user = userOptional.get();
         diving.setUser(user);
-//        diving.setDivingName(request.getDivingName());
-//        diving.setAge(request.getAge());
-//        diving.setDivingContents(request.getDivingContents());
-//        diving.setDivingIntro(request.getDivingIntro());
-//        diving.setDivingMembers(request.getDivingMembers());
 
+        // Set the diving details from the request
+        // diving.setDivingName(request.getDivingName());
+        // diving.setAge(request.getAge());
+        // diving.setDivingContents(request.getDivingContents());
+        // diving.setDivingIntro(request.getDivingIntro());
+        // diving.setDivingMembers(request.getDivingMembers());
+
+        // Save the diving instance
         divingRepository.save(diving);
 
         return diving;
     }
 
+
     @GetMapping("")
-    public List<Diving> getDivings(@PathVariable("username") String username) {
+    public List<Diving> getDivings(@AuthenticationPrincipal UserDetails userDetails) {
+        // Retrieve the current authenticated user's username
+        String username = userDetails.getUsername();
+
+        // Find the user by username
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (!userOptional.isPresent()) {
-            // Handle user not found, you can throw an exception or return a specific response
             throw new UsernameNotFoundException("User not found");
         }
 
+        // Get the diving list for the user
         User user = userOptional.get();
         return divingService.getDivings(user);
     }
 
     @PutMapping("/{id}")
-    public Diving updateDiving(@RequestParam(value = "username") String username,
-                           @RequestParam(value = "id") Long id,
-                           @RequestBody DivingUpdateRequest request) {
-        Diving Diving = divingService.updateDiving(username, id, request);
-        return Diving;
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isOwner(authentication, #id)")
+    public Diving updateDiving(@PathVariable("id") Long id, @RequestBody DivingUpdateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        // Retrieve the current authenticated user's username
+        String username = userDetails.getUsername();
+
+        // Update the diving details
+        return divingService.updateDiving(username, id, request);
     }
 
     @DeleteMapping("/{id}")
-    public CommonResponse<DivingReadResponse> deleteDiving(@RequestParam(value = "username") String username,
-                                                       @RequestParam(value = "id") Long id) {
-        divingService.deleteDiving(username,id);
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isOwner(authentication, #id)")
+    public CommonResponse<DivingReadResponse> deleteDiving(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        // Retrieve the current authenticated user's username
+        String username = userDetails.getUsername();
+
+        // Delete the diving instance
+        divingService.deleteDiving(username, id);
+
         return CommonResponse.success();
     }
 }
