@@ -34,7 +34,7 @@ public class MoimController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/new")
+    @PostMapping("")
     public Moim createMoim(@PathVariable("username") String username, @RequestBody MoimCreateRequest request) {
         Moim moim = new Moim();
 
@@ -71,7 +71,7 @@ public class MoimController {
         return moimService.getMoims(user);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/{id}")
     public Moim updateMoim(@RequestParam(value = "username") String username,
                           @RequestParam(value = "id") Long id,
                           @RequestBody MoimUpdateRequest request) {

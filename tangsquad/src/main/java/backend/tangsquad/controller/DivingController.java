@@ -33,7 +33,7 @@ public class DivingController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/new")
+    @PostMapping("")
     public Diving createDiving(@PathVariable("username") String username, @RequestBody DivingCreateRequest request) {
         Diving diving = new Diving();
 
@@ -70,7 +70,7 @@ public class DivingController {
         return divingService.getDivings(user);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/{id}")
     public Diving updateDiving(@RequestParam(value = "username") String username,
                            @RequestParam(value = "id") Long id,
                            @RequestBody DivingUpdateRequest request) {
