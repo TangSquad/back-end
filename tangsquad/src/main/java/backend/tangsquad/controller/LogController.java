@@ -11,6 +11,8 @@ import backend.tangsquad.service.LogService;
 import backend.tangsquad.service.UserService;
 import backend.tangsquad.swagger.global.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -102,13 +104,46 @@ public class LogController {
     }
     // Use @PathVariable for the ID since it's in the URL path
     @GetMapping("/{id}")
-    public Optional<Logbook> getLog(
+    public Optional<Logbook> getMyLog(
             @PathVariable("id") Long id,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         String username = userDetails.getUsername();
         return logService.getLog(username, id);
     }
+
+    @GetMapping("/{username}/{id}")
+    public ResponseEntity<Logbook> getLog(
+            @PathVariable("username") String username,
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        // Extract the username from the authenticated user's details
+        String currentUsername = userDetails.getUsername();
+
+        // Retrieve the logbook entry by ID
+        Optional<Logbook> logbookOptional = logService.getLog(username, id);
+
+        if (logbookOptional.isPresent()) {
+            Logbook logbook = logbookOptional.get();
+
+            // Check if the logbook belongs to the requested user
+            if (logbook.getUser().getUsername().equals(username)) {
+                // Implement permission check logic if needed
+                // For instance, if you allow access based on roles or specific permissions
+
+                return ResponseEntity.ok(logbook);
+            } else {
+                // Return a forbidden status if the logbook does not belong to the requested user
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
+
+        // Return not found status if the logbook entry doesn't exist
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+
 
     // Use @PathVariable for the ID since it's in the URL path
     @PutMapping("/{id}")
