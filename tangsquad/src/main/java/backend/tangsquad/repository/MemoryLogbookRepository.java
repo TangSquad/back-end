@@ -34,6 +34,13 @@ public class MemoryLogRepository implements LogRepository{
     }
 
     @Override
+    public Optional<Logbook> findByUserId(Long userId, Long logId) {
+        return logStore.values().stream()
+                .filter(logbook -> logbook.getUser().getId().equals(userId) && logbook.getId().equals(logId))
+                .findFirst();
+    }
+
+    @Override
     public List<Logbook> findAll() {
         return new ArrayList<>(logStore.values());
     }

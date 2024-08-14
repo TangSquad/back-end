@@ -1,27 +1,24 @@
 package backend.tangsquad.controller;
 
+import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.domain.Logbook;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.LogCreateRequest;
 import backend.tangsquad.dto.request.LogUpdateRequest;
 import backend.tangsquad.dto.response.LogReadResponse;
-import backend.tangsquad.repository.LogRepository;
+import backend.tangsquad.repository.LogbookRepository;
 import backend.tangsquad.repository.UserRepository;
-import backend.tangsquad.service.LogService;
-import backend.tangsquad.service.UserService;
+import backend.tangsquad.service.LogbookService;
 import backend.tangsquad.swagger.global.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,17 +27,17 @@ import java.util.Optional;
 // 로그북 내비게이션 바 - 내 다이빙 (나의 로그 CRUD)
 @RequestMapping("/logbook")
 @RestController
-public class LogController {
+public class LogbookController {
 
-    private final LogService logService;
+    private final LogbookService logbookService;
 
-    private final LogRepository logRepository;
+    private final LogbookRepository logRepository;
 
     private final UserRepository userRepository;
 
     @Autowired
-    public LogController(LogService logService, LogRepository logRepository, UserRepository userRepository) {
-        this.logService = logService;
+    public LogbookController(LogbookService logbookService, LogbookRepository logRepository, UserRepository userRepository) {
+        this.logbookService = logbookService;
         this.logRepository = logRepository;
         this.userRepository = userRepository;
     }
@@ -49,14 +46,14 @@ public class LogController {
 
     @PostMapping("")
     public ResponseEntity<Logbook> createLog(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestBody LogCreateRequest request) {
 
         // Extract the username from the authenticated user's details
-        String username = userDetails.getUsername();
+        Long userId = userDetailsImpl.getId();
 
         // Find the user in the database using the authenticated username
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) {
             // Handle user not found, you can throw an exception or return a specific response
             throw new UsernameNotFoundException("User not found");
@@ -104,63 +101,61 @@ public class LogController {
 
 
     @GetMapping("/")
-    public List<Logbook> getMyLogs() {
-        // Retrieve the current authentication object
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public List<Logbook> getMyLogs(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+        // Directly get the username from the UserDetails
+        Long userId = userDetailsImpl.getId();
 
-        // Check if the authentication is available and the principal is an instance of UserDetails
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String username = userDetails.getUsername();
-
-            Optional<User> userOptional = userRepository.findByUsername(username);
-            if (!userOptional.isPresent()) {
-                // Handle user not found, you can throw an exception or return a specific response
-                throw new UsernameNotFoundException("User not found");
-            }
-
-            User user = userOptional.get();
-            return logService.getLogs(user);
+        // Find the user in the database using the authenticated username
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (!userOptional.isPresent()) {
+            // Handle user not found
+            throw new UsernameNotFoundException("User not found");
         }
 
-        throw new UsernameNotFoundException("User is not authenticated");
+        // Retrieve the user and fetch their logs
+        User user = userOptional.get();
+        return logbookService.getLogs(user);
     }
 
     @GetMapping("/{username}/")
     @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
     public List<Logbook> getLogs(@PathVariable("username") String username,
-                                 @AuthenticationPrincipal UserDetails userDetails) {
+                                 @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
 
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        // Directly get the user ID from UserDetailsImpl
+        Long userId = userDetailsImpl.getId();
+
+        // Find the user in the database using the ID
+        Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) {
-            // Handle user not found, you can throw an exception or return a specific response
+            // Handle user not found
             throw new UsernameNotFoundException("User not found");
         }
 
         User user = userOptional.get();
-        return logService.getLogs(user);
+        return logbookService.getLogs(user);
     }
     // Use @PathVariable for the ID since it's in the URL path
     @GetMapping("/{id}")
     public Optional<Logbook> getMyLog(
-            @PathVariable("id") Long id,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable("id") Long logId,
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
 
-        String username = userDetails.getUsername();
-        return logService.getLog(username, id);
+        Long userId = userDetailsImpl.getId();
+        return logbookService.getLog(userId, logId);
     }
 
     @GetMapping("/{username}/{id}")
     public ResponseEntity<Logbook> getLog(
             @PathVariable("username") String username,
-            @PathVariable("id") Long id,
+            @PathVariable("id") Long logId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         // Extract the username from the authenticated user's details
         String currentUsername = userDetails.getUsername();
 
         // Retrieve the logbook entry by ID
-        Optional<Logbook> logbookOptional = logService.getLog(username, id);
+        Optional<Logbook> logbookOptional = logbookService.getLog(currentUsername, logId);
 
         if (logbookOptional.isPresent()) {
             Logbook logbook = logbookOptional.get();
@@ -185,24 +180,24 @@ public class LogController {
 
     // Use @PathVariable for the ID since it's in the URL path
     @PutMapping("/{id}")
-    public Logbook updateLog(
-            @PathVariable("id") Long id,
+    public Logbook updateLog (
+            @PathVariable("id") Long logId,
             @RequestBody LogUpdateRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
 
-        String username = userDetails.getUsername();
-        Logbook logbook = logService.updateLog(username, id, request);
+        Long userId = userDetailsImpl.getId();
+        Logbook logbook = logbookService.updateLog(userId, logId, request);
         return logbook;
     }
 
     // Use @PathVariable for the ID since it's in the URL path
     @DeleteMapping("/{id}")
     public CommonResponse<LogReadResponse> deleteLog(
-            @PathVariable("id") Long id,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable("id") Long logId,
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
 
-        String username = userDetails.getUsername();
-        logService.deleteLog(username, id);
+        Long userId = userDetailsImpl.getId();
+        logbookService.deleteLog(userId, logId);
         return CommonResponse.success();
     }
 }
