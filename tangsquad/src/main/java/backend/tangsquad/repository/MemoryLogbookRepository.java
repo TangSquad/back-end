@@ -1,14 +1,12 @@
 package backend.tangsquad.repository;
 
 import backend.tangsquad.domain.Logbook;
-import backend.tangsquad.domain.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
-public class MemoryLogRepository implements LogRepository{
+public class MemoryLogbookRepository implements LogbookRepository {
     private static Map<Long, Logbook> logStore = new HashMap<>();
     private static long sequence = 0L;
 
@@ -43,5 +41,16 @@ public class MemoryLogRepository implements LogRepository{
     @Override
     public List<Logbook> findAll() {
         return new ArrayList<>(logStore.values());
+    }
+
+
+    @Override
+    public void delete(Logbook logbook) {
+        if (logbook == null || logbook.getId() == null) {
+            throw new IllegalArgumentException("Logbook or Logbook ID must not be null");
+        }
+
+        // Remove the logbook from the store
+        logStore.remove(logbook.getId());
     }
 }
