@@ -21,6 +21,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,27 +45,63 @@ public class LogController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("")
-    public Logbook createLog(@PathVariable("username") String username, @RequestBody LogCreateRequest request) {
-        Logbook logbook = new Logbook();
+// Other imports...
 
+    @PostMapping("")
+    public ResponseEntity<Logbook> createLog(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody LogCreateRequest request) {
+
+        // Extract the username from the authenticated user's details
+        String username = userDetails.getUsername();
+
+        // Find the user in the database using the authenticated username
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (!userOptional.isPresent()) {
             // Handle user not found, you can throw an exception or return a specific response
             throw new UsernameNotFoundException("User not found");
         }
 
-        // LogCreateRequest 에 있는 데이터들을 보고 모두 request에서 가지고 와 저장하여야 함.
+        // Create a new logbook entry
+        Logbook logbook = new Logbook();
         User user = userOptional.get();
         logbook.setUser(user);
+
+        // Set the current date and time
+        logbook.setDate(LocalDateTime.now());
+
+        // Populate the logbook with data from the request
         logbook.setTitle(request.getTitle());
         logbook.setContents(request.getContents());
-        logbook.setDate(request.getDate());
 
+        logbook.setLocation(request.getLocation());
+        logbook.setWeather(request.getWeather());
+
+        logbook.setSurfTemp(request.getSurfTemp());
+        logbook.setUnderTemp(request.getUnderTemp());
+
+        logbook.setViewSight(request.getViewSight());
+        logbook.setTide(request.getTide());
+
+        logbook.setStartDiveTime(request.getStartDiveTime());
+        logbook.setEndDiveTime(request.getEndDiveTime());
+
+        logbook.setTimeDiffDive(request.getTimeDiffDive());
+        logbook.setAvgDepDiff(request.getAvgDepDiff());
+
+        logbook.setMaxDiff(request.getMaxDiff());
+        logbook.setStartBar(request.getStartBar());
+
+        logbook.setEndBar(request.getEndBar());
+        logbook.setDiffBar(request.getDiffBar());
+
+        // Save the logbook to the database
         logRepository.save(logbook);
 
-        return logbook;
+        // Return a response entity with the created logbook
+        return ResponseEntity.ok(logbook);
     }
+
 
     @GetMapping("/")
     public List<Logbook> getMyLogs() {
