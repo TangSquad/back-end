@@ -1,16 +1,11 @@
 package backend.tangsquad.service;
 
 import backend.tangsquad.domain.Diving;
-import backend.tangsquad.domain.Logbook;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.DivingCreateRequest;
 import backend.tangsquad.dto.request.DivingUpdateRequest;
-import backend.tangsquad.dto.request.LogCreateRequest;
-import backend.tangsquad.dto.request.LogUpdateRequest;
 import backend.tangsquad.dto.response.DivingCreateResponse;
-import backend.tangsquad.dto.response.LogCreateResponse;
 import backend.tangsquad.repository.DivingRepository;
-import backend.tangsquad.repository.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
