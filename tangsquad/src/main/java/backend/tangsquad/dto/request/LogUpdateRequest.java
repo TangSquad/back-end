@@ -14,6 +14,7 @@ public class LogUpdateRequest {
     // 제목
     private String title;
     private Integer squadId;
+    private LocalDateTime date;
 
     // 글
     private String contents;
