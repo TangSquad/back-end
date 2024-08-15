@@ -7,6 +7,7 @@ import backend.tangsquad.dto.response.RegisterResponse;
 import backend.tangsquad.dto.response.WithdrawResponse;
 import backend.tangsquad.service.AuthService;
 import backend.tangsquad.service.UserService;
+import backend.tangsquad.service.VerificationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    private final AuthService authService;
 
     @Autowired
-    public UserController(UserService userService, AuthService authService) {
+    public UserController(UserService userService, VerificationService verificationService) {
         this.userService = userService;
-        this.authService = authService;
     }
 
     @PostMapping("/register")
@@ -40,6 +39,4 @@ public class UserController {
         WithdrawResponse response = userService.deleteUser(userId);
         return ResponseEntity.ok(response);
     }
-
-
 }

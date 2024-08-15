@@ -100,4 +100,21 @@ public class UserService {
             return new WithdrawResponse(false, "User deletion failed.");
         }
     }
+
+    @Transactional
+    public boolean updatePassword(String email, String newPassword) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isUserExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
