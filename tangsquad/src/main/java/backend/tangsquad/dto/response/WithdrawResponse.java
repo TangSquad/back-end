@@ -3,14 +3,12 @@ package backend.tangsquad.dto.response;
 import lombok.Getter;
 
 @Getter
-public class RegisterResponse {
+public class WithdrawResponse {
     private boolean success;
     private String message;
-    private Long userId;
 
-    public RegisterResponse(boolean success, String message, Long userId) {
+    public WithdrawResponse(boolean success, String message) {
         this.success = success;
         this.message = message;
-        this.userId = userId;
     }
 }

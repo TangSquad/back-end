@@ -1,17 +1,18 @@
 package backend.tangsquad.controller;
 
+import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.RegisterRequestDto;
+import backend.tangsquad.dto.response.RegisterResponse;
+import backend.tangsquad.dto.response.WithdrawResponse;
 import backend.tangsquad.service.AuthService;
 import backend.tangsquad.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -28,9 +29,17 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Boolean> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
-        Boolean result = userService.registerUser(registerRequestDto);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<RegisterResponse> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
+        RegisterResponse response = userService.registerUser(registerRequestDto);
+        return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<WithdrawResponse> withdrawUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long userId = userDetails.getId();
+        WithdrawResponse response = userService.deleteUser(userId);
+        return ResponseEntity.ok(response);
+    }
+
 
 }

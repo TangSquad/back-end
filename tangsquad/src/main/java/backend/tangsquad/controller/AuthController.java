@@ -24,12 +24,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         try {
             JwtResponseDto jwtResponseDto = authService.authenticateUser(loginRequestDto);
             return ResponseEntity.ok(jwtResponseDto);
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body(null);
+            // 로그인 실패 시 401 상태 코드와 함께 메시지를 반환
+            return ResponseEntity.status(401).body("Invalid email or password. Please try again.");
+        } catch (Exception e) {
+            // 기타 예외 발생 시 500 상태 코드와 함께 메시지를 반환
+            return ResponseEntity.status(500).body("An unexpected error occurred. Please try again later.");
         }
     }
 
