@@ -3,6 +3,7 @@ package backend.tangsquad.controller;
 import backend.tangsquad.dto.request.PasswordResetCodeRequest;
 import backend.tangsquad.dto.request.PasswordResetEmailRequest;
 import backend.tangsquad.dto.request.PasswordResetRequest;
+import backend.tangsquad.dto.response.ApiResponse;
 import backend.tangsquad.service.EmailService;
 import backend.tangsquad.service.UserService;
 import backend.tangsquad.service.VerificationService;
@@ -29,46 +30,51 @@ public class PasswordController {
 
     @Operation(summary = "비밀번호 재설정 코드 전송", description = "비밀번호 재설정 코드를 전송합니다.")
     @PostMapping("/sendCode")
-    public String requestPasswordReset(@RequestBody PasswordResetEmailRequest request) {
+    public ApiResponse<Void> requestPasswordReset(@RequestBody PasswordResetEmailRequest request) {
         String email = request.getEmail();
 
         if (!userService.isEmailExists(email)) {
-            return "Email does not exist.";
+            return new ApiResponse<>(false, "Email does not exist.");
         }
 
-        if(!verificationService.canResendCode(email)) {
-            return "Too many attempts. Please try again later.";
+        if(!verificationService.canResendEmailCode(email)) {
+            return new ApiResponse<>(false, "Too many attempts. Please try again later.");
         }
 
         String code = verificationService.generateCode();
-        verificationService.saveVerificationCode(email, code);
+        verificationService.saveEmailVerificationCode(email, code);
 
         emailService.sendEmail(email, "Password Reset Code", "Your password reset code is: " + code);
-        verificationService.incrementResendAttempts(email);
+        verificationService.incrementResendEmailAttempts(email);
 
-        return "Code sent successfully.";
+        return new ApiResponse<>(true, "Code sent successfully.");
     }
 
     @Operation(summary = "비밀번호 재설정 코드 확인", description = "비밀번호 재설정 코드를 확인합니다.")
     @PostMapping("/verifyCode")
-    public boolean verifyCode(@RequestBody PasswordResetCodeRequest request) {
-        return verificationService.verifyCode(request.getEmail(), request.getCode());
+    public ApiResponse<Boolean> verifyCode(@RequestBody PasswordResetCodeRequest request) {
+        boolean isValid = verificationService.verifyEmailCode(request.getEmail(), request.getCode());
+        if (isValid) {
+            return new ApiResponse<>(true, "Code verified successfully.", true);
+        } else {
+            return new ApiResponse<>(false, "Invalid code.", false);
+        }
     }
 
     @Operation(summary = "비밀번호 재설정", description = "비밀번호를 재설정합니다.")
     @PostMapping("/reset")
-    public String resetPassword(@RequestBody PasswordResetRequest request) {
-        if(!verificationService.verifyCode(request.getEmail(), request.getCode())) {
-            return "Invalid code.";
+    public ApiResponse<Void> resetPassword(@RequestBody PasswordResetRequest request) {
+        if(!verificationService.verifyEmailCode(request.getEmail(), request.getCode())) {
+            return new ApiResponse<>(false, "Invalid code.");
         } else {
-            verificationService.deleteCode(request.getEmail());
+            verificationService.deleteEmailCode(request.getEmail());
         }
 
         boolean isUpdated = userService.updatePassword(request.getEmail(), request.getNewPassword());
         if(!isUpdated) {
-            return "Failed to reset password.";
+            return new ApiResponse<>(false, "Failed to reset password.");
         } else {
-            return "Password reset successfully.";
+            return new ApiResponse<>(true, "Password reset successfully.");
         }
     }
 }
