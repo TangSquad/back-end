@@ -32,8 +32,8 @@ public class PasswordController {
     public String requestPasswordReset(@RequestBody PasswordResetEmailRequest request) {
         String email = request.getEmail();
 
-        if (!userService.isUserExists(email)) {
-            return "User does not exist.";
+        if (!userService.isEmailExists(email)) {
+            return "Email does not exist.";
         }
 
         if(!verificationService.canResendCode(email)) {
