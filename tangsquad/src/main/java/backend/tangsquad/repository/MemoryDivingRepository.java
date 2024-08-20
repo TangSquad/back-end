@@ -12,11 +12,12 @@ public class MemoryDivingRepository implements DivingRepository {
     private Long currentId = 1L;
 
     @Override
-    public void save(Diving diving) {
+    public Diving save(Diving diving) {
         if (diving.getId() == null) {
             diving.setId(currentId++);
         }
         divingStorage.put(diving.getId(), diving);
+        return diving;
     }
 
     @Override
