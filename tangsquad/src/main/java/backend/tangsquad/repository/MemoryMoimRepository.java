@@ -19,8 +19,8 @@ public class MemoryMoimRepository implements MoimRepository {
     }
 
     @Override
-    public Moim findById(Long moimId) {
-        return moimStorage.get(moimId);
+    public Optional<Moim> findById(Long moimId) {
+        return Optional.ofNullable(moimStorage.get(moimId));
     }
 
 //    @Override
@@ -33,11 +33,16 @@ public class MemoryMoimRepository implements MoimRepository {
 //        return null; // Return null if no matching Moim is found
 //    }
 
+//    @Override
+//    public Optional<Moim> findById(Long moimId) {
+//        return moimStorage.values().stream()
+//                .filter(moim -> moim.getId().equals(moimId))
+//                .findFirst();
+//    }
+
     @Override
-    public Optional<Moim> findById(String username, Long id) {
-        return moimStorage.values().stream()
-                .filter(logbook -> logbook.getUser().getUsername().equals(username) && logbook.getId().equals(id))
-                .findFirst();
+    public void delete(Moim moim) {
+        moimStorage.remove(moim.getId());
     }
 
 
