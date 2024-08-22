@@ -4,7 +4,6 @@ import backend.tangsquad.auth.jwt.JwtTokenProvider;
 import backend.tangsquad.domain.RefreshToken;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.LoginRequestDto;
-import backend.tangsquad.dto.request.RefreshTokenRequestDto;
 import backend.tangsquad.dto.response.JwtResponseDto;
 import backend.tangsquad.repository.RefreshTokenRepository;
 import backend.tangsquad.repository.UserRepository;
@@ -19,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -43,27 +41,35 @@ public class AuthService {
 
     // methods
     public JwtResponseDto authenticateUser(LoginRequestDto loginRequestDto) throws AuthenticationException {
-        User user = userRepository.findByEmail(loginRequestDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + loginRequestDto.getEmail()));
+        try {
+            // 사용자 이메일로 사용자 조회
+            User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + loginRequestDto.getEmail()));
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        user.getUsername(),
-                        loginRequestDto.getPassword()
-                )
-        );
+            // 인증 시도
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            user.getUsername(),
+                            loginRequestDto.getPassword()
+                    )
+            );
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getUsername(), user.getRole());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
+            // 엑세스 토큰 및 리프레시 토큰 생성
+            String accessToken = jwtTokenProvider.generateAccessToken(user.getUsername(), user.getRole());
+            String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
 
-        refreshTokenRepository.save(user.getUsername(), refreshToken);
+            // 리프레시 토큰 저장
+            refreshTokenRepository.save(user.getUsername(), refreshToken);
 
-        return new JwtResponseDto(accessToken, refreshToken);
+            return new JwtResponseDto(accessToken, refreshToken);
+        } catch (UsernameNotFoundException ex) {
+            // 사용자 이메일이 잘못된 경우
+            throw new AuthenticationException("Invalid email or password.", ex) {
+            };
+        }
     }
 
-    public JwtResponseDto refreshAccessToken(RefreshTokenRequestDto refreshTokenRequestDto) {
-
-        String refreshToken = refreshTokenRequestDto.getRefreshToken();
+    public JwtResponseDto refreshAccessToken(String refreshToken) {
 
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new IllegalArgumentException("Invalid refresh token");
