@@ -48,4 +48,15 @@ public class MemoryDivingRepository implements DivingRepository {
         return new ArrayList<>(divingStorage.values());
     }
 
+
+    @Override
+    public void delete(Diving diving) {
+        if (diving != null && diving.getId() != null) {
+            divingStorage.remove(diving.getId());
+        } else {
+            throw new IllegalArgumentException("Diving entity or its ID must not be null");
+        }
+    }
+
+
 }

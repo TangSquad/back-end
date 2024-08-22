@@ -41,14 +41,14 @@ public class DivingController {
         return divingService.createDiving(userId, request);
     }
 
-    @GetMapping("")
-    public List<Diving> getDivings(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // Retrieve the current authenticated user's ID
-        Long userId = userDetails.getId();
-
-        // Get the diving list for the user
-        return divingService.getDivings(userId);
-    }
+//    @GetMapping("")
+//    public List<Diving> getDivings(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        // Retrieve the current authenticated user's ID
+//        Long userId = userDetails.getId();
+//
+//        // Get the diving list for the user
+//        return divingService.getDivings(userId);
+//    }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @securityService.isOwner(authentication, #id)")

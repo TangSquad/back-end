@@ -26,11 +26,11 @@ public class DivingService {
     public DivingService(DivingRepository divingRepository) {
         this.divingRepository = divingRepository;
     }
-    public List<Diving> getDivings(Long userId)
-    {
-        return divingRepository.findByUserId(userId);
-    }
-
+//    public List<Diving> getDivings(Long userId)
+//    {
+//        return divingRepository.findByUserId(userId);
+//    }
+//
 //    public Optional<Diving> getDiving(String username) {
 //        return divingRepository.findById(username, id);
 //    }
@@ -69,9 +69,7 @@ public class DivingService {
 
     public Diving updateDiving(Long userId, Long divingId, DivingUpdateRequest request) {
         // Retrieve the Diving entry to be updated
-        Diving diving = divingRepository.findById(divingId)
-                .orElseThrow(() -> new EntityNotFoundException("Diving entry not found"));
-
+        Diving diving = divingRepository.findById(divingId);
         // Verify if the userId matches the owner of the Diving entry
         if (!diving.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("You do not have permission to update this Diving entry");
@@ -90,9 +88,7 @@ public class DivingService {
 
     public void deleteDiving(Long userId, Long divingId) {
         // Retrieve the Diving entry to be deleted
-        Diving diving = divingRepository.findById(divingId)
-                .orElseThrow(() -> new EntityNotFoundException("Diving entry not found"));
-
+        Diving diving = divingRepository.findById(divingId);
         // Verify if the userId matches the owner of the Diving entry
         if (!diving.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("You do not have permission to delete this Diving entry");
