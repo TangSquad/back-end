@@ -62,7 +62,8 @@ public class ProfileService {
                     equipment.getSuit(),
                     equipment.getWeightBelt(),
                     equipment.getBc(),
-                    equipment.getShoes()
+                    equipment.getShoes(),
+                    equipment.getMask()
             );
         } else {
             throw new EntityNotFoundException("User not found with id " + userId);

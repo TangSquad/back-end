@@ -14,4 +14,5 @@ public class UserEquipmentResponse {
     private String weightBelt;
     private String bc;
     private String shoes;
+    private String mask;
 }

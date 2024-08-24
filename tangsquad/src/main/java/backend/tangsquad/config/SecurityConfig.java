@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/error").permitAll() // Allow access to /error endpoint
                         .requestMatchers("/favicon.ico").permitAll()
+                        .requestMatchers("/certificate/public/**").permitAll()
                         .anyRequest().hasRole("USER")  // ROLE_USER 권한을 가진 사용자만 접근 가능
                 )
 

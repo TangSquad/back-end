@@ -23,7 +23,7 @@ public class Certificate {
 
     // 자격증 등급
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "level_id", nullable = false)
+    @JoinColumn(name = "level_id", nullable = false, unique = true)
     private CertLevel certLevel;
 
     @Builder

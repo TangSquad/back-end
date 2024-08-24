@@ -10,14 +10,17 @@ import backend.tangsquad.domain.User;
 import backend.tangsquad.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserCertificateService {
 
     private final UserCertificateRepository userCertificateRepository;
     private final UserRepository userRepository;
-    private final CertificateRepository certificateRepository;
     private final CertificateService certificateService;
 
     public UserCertificateResponse getUserCertificate(Long userId) {
@@ -27,8 +30,17 @@ public class UserCertificateService {
     }
 
     public UserCertificateResponse createUserCertificate(Long userId, Long orgId, Long levelId, String imageUrl) {
+        // 이미 등록된 자격증이 있는지 확인
+        if (userCertificateRepository.findByUserId(userId).isPresent()) {
+            throw new IllegalArgumentException("이미 등록된 자격증이 존재합니다. id=" + userId);
+        }
+
+        if (imageUrl == null || imageUrl.trim().isEmpty()) {
+            throw new IllegalArgumentException("유효하지 않은 이미지 URL입니다.");
+        }
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다. id=" + userId));
+                .orElseThrow(() -> new NoSuchElementException("해당 사용자가 존재하지 않습니다. id=" + userId));
 
         Certificate cert = certificateService.findCertificate(orgId, levelId);
         if(cert == null) {
@@ -41,8 +53,12 @@ public class UserCertificateService {
                 .imageUrl(imageUrl)
                 .state(CertificateState.REQUESTED)
                 .build();
+
         userCertificateRepository.save(userCertificate);
-        return new UserCertificateResponse(userCertificate.getId(), user.getUsername(), cert.getCertOrganization().getName(), cert.getCertLevel().getName(), imageUrl, CertificateState.REQUESTED);
+
+        return new UserCertificateResponse(userCertificate.getId(), user.getUsername(),
+                cert.getCertOrganization().getName(), cert.getCertLevel().getName(),
+                imageUrl, CertificateState.REQUESTED);
     }
 
     public void deleteUserCertificate(Long userId) {
