@@ -25,6 +25,11 @@ public class UserService {
     private final CertificationRepository certificationRepository;
     private final PasswordEncoder passwordEncoder;
 
+
+    public Optional<User> findById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
     @Autowired
     public UserService(UserRepository userRepository, CertificationRepository certificationRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;

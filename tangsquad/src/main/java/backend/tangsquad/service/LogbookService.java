@@ -1,15 +1,20 @@
 package backend.tangsquad.service;
 
+import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.domain.Logbook;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.LogCreateRequest;
 import backend.tangsquad.dto.request.LogUpdateRequest;
 import backend.tangsquad.dto.response.LogCreateResponse;
 import backend.tangsquad.repository.LogbookRepository;
+import backend.tangsquad.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
 import java.util.List;
@@ -21,9 +26,12 @@ public class LogbookService {
 
     private final LogbookRepository logbookRepository;
 
+    private UserRepository userRepository;
+
     @Autowired
-    public LogbookService(LogbookRepository logbookRepository) {
+    public LogbookService(LogbookRepository logbookRepository, UserRepository userRepository) {
         this.logbookRepository = logbookRepository;
+        this.userRepository = userRepository;
     }
     public List<Logbook> getLogs(User user)
     {
@@ -40,10 +48,53 @@ public class LogbookService {
         return logbookRepository.findByUserId(userId, logId);
     }
 
-    public LogCreateResponse createLog(LogCreateRequest request) {
-        return null;
-    }
+    public Logbook createLog(LogCreateRequest request, UserDetailsImpl userDetails) {
+        // Extract the username from the authenticated user's details
+        Long userId = userDetails.getId();
 
+        // Find the user in the database using the authenticated username
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (!userOptional.isPresent()) {
+            // Handle user not found, you can throw an exception or return a specific response
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        // Create a new logbook entry
+        Logbook logbook = new Logbook();
+        User user = userOptional.get();
+        logbook.setUser(user);
+
+        // Set the current date and time
+        logbook.setDate(LocalDateTime.now());
+
+        // Populate the logbook with data from the request
+        logbook.setTitle(request.getTitle());
+        logbook.setContents(request.getContents());
+
+        logbook.setLocation(request.getLocation());
+        logbook.setWeather(request.getWeather());
+
+        logbook.setSurfTemp(request.getSurfTemp());
+        logbook.setUnderTemp(request.getUnderTemp());
+
+        logbook.setViewSight(request.getViewSight());
+        logbook.setTide(request.getTide());
+
+        logbook.setStartDiveTime(request.getStartDiveTime());
+        logbook.setEndDiveTime(request.getEndDiveTime());
+
+        logbook.setTimeDiffDive(request.getTimeDiffDive());
+        logbook.setAvgDepDiff(request.getAvgDepDiff());
+
+        logbook.setMaxDiff(request.getMaxDiff());
+        logbook.setStartBar(request.getStartBar());
+
+        logbook.setEndBar(request.getEndBar());
+        logbook.setDiffBar(request.getDiffBar());
+
+        // Save the logbook to the database
+        return logbookRepository.save(logbook);
+    }
     // 수정 필요.
     public Logbook updateLog(Long userId, Long logId, LogUpdateRequest request) {
         // Retrieve the existing Logbook

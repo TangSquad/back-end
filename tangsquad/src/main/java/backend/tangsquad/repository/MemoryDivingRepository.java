@@ -12,11 +12,12 @@ public class MemoryDivingRepository implements DivingRepository {
     private Long currentId = 1L;
 
     @Override
-    public void save(Diving diving) {
+    public Diving save(Diving diving) {
         if (diving.getId() == null) {
             diving.setId(currentId++);
         }
         divingStorage.put(diving.getId(), diving);
+        return diving;
     }
 
     @Override
@@ -46,5 +47,16 @@ public class MemoryDivingRepository implements DivingRepository {
     public List<Diving> findAll() {
         return new ArrayList<>(divingStorage.values());
     }
+
+
+    @Override
+    public void delete(Diving diving) {
+        if (diving != null && diving.getId() != null) {
+            divingStorage.remove(diving.getId());
+        } else {
+            throw new IllegalArgumentException("Diving entity or its ID must not be null");
+        }
+    }
+
 
 }
