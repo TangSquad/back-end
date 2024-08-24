@@ -39,10 +39,6 @@ public class User {
     @CreatedDate
     @Column(updatable = false) private LocalDateTime createdAt;
 
-    // 자격증 리스트
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Certification> certifications;
-
     // 프로필
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private UserProfile userProfile;
