@@ -49,6 +49,9 @@ public class SecurityConfig {
                 // 권한에 따른 접근 설정
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/logbook/**").permitAll()
+                        .requestMatchers("/moim/**").permitAll()
+                        .requestMatchers("/diving/**").permitAll()
                         .requestMatchers("/password/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll() // Allow access to Swagger UI
