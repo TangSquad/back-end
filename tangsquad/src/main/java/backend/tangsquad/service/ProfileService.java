@@ -1,6 +1,5 @@
 package backend.tangsquad.service;
 
-import backend.tangsquad.domain.Certification;
 import backend.tangsquad.domain.Equipment;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.domain.UserProfile;
@@ -29,7 +28,6 @@ public class ProfileService {
                     user.getUserProfile().getProfileImageUrl(),
                     user.getName(),
                     user.getUsername(),
-                    user.getCertifications().stream().map(Certification::getGrade).collect(Collectors.toList()),
                     0,
                     0,
                     0
@@ -45,7 +43,6 @@ public class ProfileService {
             UserProfile profile = userOptional.get().getUserProfile();
             return new UserIntroductionResponse(
                     profile.getIntroduction(),
-                    userOptional.get().getCertifications().stream().map(Certification::getGrade).collect(Collectors.toList()),
                     profile.getUrl(),
                     profile.getAffiliation(),
                     "null"
@@ -65,7 +62,8 @@ public class ProfileService {
                     equipment.getSuit(),
                     equipment.getWeightBelt(),
                     equipment.getBc(),
-                    equipment.getShoes()
+                    equipment.getShoes(),
+                    equipment.getMask()
             );
         } else {
             throw new EntityNotFoundException("User not found with id " + userId);
