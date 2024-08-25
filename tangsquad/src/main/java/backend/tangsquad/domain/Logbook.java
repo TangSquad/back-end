@@ -1,5 +1,7 @@
 package backend.tangsquad.domain;
 
+import backend.tangsquad.domain.User;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,14 +18,16 @@ public class Logbook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // In Logbook class
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonManagedReference
     private User user;
 
     @Column
     private LocalDateTime date;
 
-    @Column
+    @Column(nullable = false)
     private String title;
 
     @Column
