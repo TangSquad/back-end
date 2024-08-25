@@ -39,11 +39,9 @@ public class LogbookService {
         return logbookRepository.save(logbook);
     }
 
-    public List<Logbook> getLogs(User user)
+    public List<Logbook> getLogs(Long userId)
     {
-        return logbookRepository.findAll().stream()
-                .filter(logbook -> logbook.getUser().equals(user))
-                .collect(Collectors.toList());
+        return logbookRepository.findByUserId(userId);
     }
 
     public Optional<Logbook> getLog(Long logId) {

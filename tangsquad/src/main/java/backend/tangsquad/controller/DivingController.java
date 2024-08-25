@@ -10,6 +10,7 @@ import backend.tangsquad.dto.response.DivingReadResponse;
 import backend.tangsquad.service.DivingService;
 import backend.tangsquad.service.UserService;
 import backend.tangsquad.swagger.global.CommonResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@ApiResponse
 @RequestMapping("/diving")
 @RestController
 public class DivingController {
