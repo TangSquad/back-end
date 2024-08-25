@@ -76,6 +76,7 @@ public class UserCertificateService {
         }
         userCertificate.updateCertificate(cert);
         userCertificate.updateImageUrl(imageUrl);
+        userCertificate.updateState(CertificateState.REQUESTED);
         userCertificateRepository.save(userCertificate);
         return new UserCertificateResponse(userCertificate.getId(), userCertificate.getUser().getUsername(), userCertificate.getCertificate().getCertOrganization().getName(), userCertificate.getCertificate().getCertLevel().getName(), imageUrl, userCertificate.getState());
     }

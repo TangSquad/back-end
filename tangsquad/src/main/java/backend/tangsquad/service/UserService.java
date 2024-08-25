@@ -3,7 +3,6 @@ package backend.tangsquad.service;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.domain.UserProfile;
 import backend.tangsquad.domain.Equipment;
-import backend.tangsquad.dto.request.RegisterCheckRequest;
 import backend.tangsquad.dto.request.RegisterRequestDto;
 import backend.tangsquad.dto.response.RegisterResponse;
 import backend.tangsquad.dto.response.WithdrawResponse;
@@ -103,31 +102,15 @@ public class UserService {
         }
     }
 
-    public boolean isEmailExists(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    public boolean isUsernameExists(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
     public boolean isPhoneExists(String phone) {
         return userRepository.existsByPhone(phone);
     }
 
-    public String registerValidationCheck(RegisterCheckRequest registerCheckRequest) {
-        if (isEmailExists(registerCheckRequest.getEmail())) {
-            return "Email already exists.";
-        }
+    public boolean isEmailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
-        if (isUsernameExists(registerCheckRequest.getUsername())) {
-            return "Username already exists.";
-        }
-
-        if (isPhoneExists(registerCheckRequest.getPhone())) {
-            return "Phone number already exists.";
-        }
-
-        return "OK";
+    public boolean isNicknameExists(String username) {
+        return userRepository.existsByUsername(username);
     }
 }
