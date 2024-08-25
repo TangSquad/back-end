@@ -1,7 +1,9 @@
 package backend.tangsquad.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
-import backend.tangsquad.dto.request.RegisterCheckRequest;
+import backend.tangsquad.dto.request.EmailCheckRequest;
+import backend.tangsquad.dto.request.NicknameCheckRequest;
+import backend.tangsquad.dto.request.PhoneRequest;
 import backend.tangsquad.dto.request.RegisterRequestDto;
 import backend.tangsquad.dto.response.ApiResponse;
 import backend.tangsquad.dto.response.RegisterResponse;
@@ -30,11 +32,34 @@ public class UserController {
         this.verificationService = verificationService;
     }
 
-    @Operation(summary = "가입 전 중복(이메일, 사용자 이름, 전화번호) 확인 API", description = "가입 전 중복(이메일, 사용자 이름, 전화번호) 확인 API")
-    @PostMapping("/registerValidationCheck")
-    public ResponseEntity<ApiResponse<String>> registerValidationCheck(@Valid @RequestBody RegisterCheckRequest registerRequestDto) {
-        String result = userService.registerValidationCheck(registerRequestDto);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Validation check completed successfully.", result));
+    @Operation(summary = "가입 전 이메일 중복 확인 API", description = "가입 전 이메일 중복 확인 API")
+    @PostMapping("/check/email")
+    public ResponseEntity<ApiResponse<String>> checkEmail(@Valid @RequestBody EmailCheckRequest emailCheckRequest) {
+        if (userService.isEmailExists(emailCheckRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Email already registered."));
+        } else {
+            return ResponseEntity.ok(new ApiResponse<>(true, "Email available."));
+        }
+    }
+
+    @Operation(summary = "가입 전 전화번호 중복 확인 API", description = "가입 전 전화번호 중복 확인 API")
+    @PostMapping("/check/phone")
+    public ResponseEntity<ApiResponse<String>> checkPhone(@Valid @RequestBody PhoneRequest phoneRequest) {
+        if (userService.isPhoneExists(phoneRequest.getPhoneNumber())) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Phone number already registered."));
+        } else {
+            return ResponseEntity.ok(new ApiResponse<>(true, "Phone number available."));
+        }
+    }
+
+    @Operation(summary = "가입 전 닉네임 중복 확인 API", description = "가입 전 닉네임 중복 확인 API")
+    @PostMapping("/check/nickname")
+    public ResponseEntity<ApiResponse<String>> checkNickname(@Valid @RequestBody NicknameCheckRequest nicknameRequest) {
+        if (userService.isNicknameExists(nicknameRequest.getNickname())) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Nickname already registered."));
+        } else {
+            return ResponseEntity.ok(new ApiResponse<>(true, "Nickname available."));
+        }
     }
 
     @Operation(summary = "회원가입 API", description = "회원가입 API")
@@ -54,20 +79,20 @@ public class UserController {
 
     @Operation(summary = "전화번호 인증 코드 전송 API", description = "회원 가입 전 전화번호로 인증 코드를 전송합니다.")
     @PostMapping("/verification/phone/send")
-    public ResponseEntity<ApiResponse<String>> sendPhoneVerificationCode(@RequestParam String phoneNumber) {
+    public ResponseEntity<ApiResponse<String>> sendPhoneVerificationCode(@Valid @RequestBody PhoneRequest phoneRequest) {
         // 전화번호가 이미 등록되어 있는지 확인
-        if (userService.isPhoneExists(phoneNumber)) {
+        if (userService.isPhoneExists(phoneRequest.getPhoneNumber())) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Phone number already registered."));
         }
 
         // 인증 코드 전송
-        verificationService.sendPhoneVerificationCode(phoneNumber);
+        verificationService.sendPhoneVerificationCode(phoneRequest.getPhoneNumber());
         return ResponseEntity.ok(new ApiResponse<>(true, "Verification code sent successfully."));
     }
 
     @Operation(summary = "전화번호 인증 코드 확인 API", description = "사용자가 받은 인증 코드를 확인합니다.")
     @PostMapping("/verification/phone/verify")
-    public ResponseEntity<ApiResponse<String>> verifyPhoneCode(@RequestParam String phoneNumber, @RequestParam String code) {
+    public ResponseEntity<ApiResponse<String>> verifyPhoneCode(@RequestBody String phoneNumber, @RequestBody String code) {
         boolean isVerified = verificationService.verifyPhoneCode(phoneNumber, code);
 
         if (isVerified) {

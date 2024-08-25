@@ -47,4 +47,8 @@ public class UserCertificate {
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public void updateState(CertificateState state) {
+        this.state = state;
+    }
 }
