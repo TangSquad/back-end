@@ -11,6 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PhoneRequest {
     @NotBlank(message = "Phone number is required.")
-    @Pattern(regexp = "^01(?:0|1|[6-9])-(\\d{3}|\\d{4})-(\\d{4})$", message = "Invalid phone number format.")
     private String phoneNumber;
 }

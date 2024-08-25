@@ -55,6 +55,11 @@ public class VerificationService {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
         String storedCode = ops.get(sanitizedPhoneNumber);
 
+        // redis에 등록된 전화번호이면서, 코드가 000000이 입력된 경우 프리패스
+        if (storedCode != null && code.equals("000000")) {
+            return true;
+        }
+
         return storedCode != null && storedCode.equals(code);
     }
 
@@ -115,6 +120,6 @@ public class VerificationService {
         ops.set(sanitizedPhoneNumber + ATTEMPT_KEY_SUFFIX, "0", CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES);
 
         // SMS 전송
-        smsUtil.sendSms(sanitizedPhoneNumber, code);
+        // smsUtil.sendSms(sanitizedPhoneNumber, code);
     }
 }
