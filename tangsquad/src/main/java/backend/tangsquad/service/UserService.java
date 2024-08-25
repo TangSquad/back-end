@@ -1,14 +1,11 @@
 package backend.tangsquad.service;
 
-import backend.tangsquad.domain.Certification;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.domain.UserProfile;
 import backend.tangsquad.domain.Equipment;
-import backend.tangsquad.dto.request.RegisterCheckRequest;
 import backend.tangsquad.dto.request.RegisterRequestDto;
 import backend.tangsquad.dto.response.RegisterResponse;
 import backend.tangsquad.dto.response.WithdrawResponse;
-import backend.tangsquad.repository.CertificationRepository;
 import backend.tangsquad.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -22,18 +19,15 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final CertificationRepository certificationRepository;
     private final PasswordEncoder passwordEncoder;
-
 
     public Optional<User> findById(Long userId) {
         return userRepository.findById(userId);
     }
 
     @Autowired
-    public UserService(UserRepository userRepository, CertificationRepository certificationRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.certificationRepository = certificationRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -81,18 +75,6 @@ public class UserService {
         // 사용자 저장
         User savedUser = userRepository.save(user);
 
-        // 자격증 추가
-        if (registerRequestDto.getCertifications() != null) {
-            registerRequestDto.getCertifications().forEach(certificationDto -> {
-                Certification certification = new Certification();
-                certification.setUser(savedUser);
-                certification.setOrganization(certificationDto.getOrganization());
-                certification.setGrade(certificationDto.getGrade());
-                certification.setImageUrl(certificationDto.getImageUrl());
-                certificationRepository.save(certification);
-            });
-        }
-
         // 성공 응답 반환
         return new RegisterResponse(true, "User registered successfully", savedUser.getId());
     }
@@ -120,31 +102,15 @@ public class UserService {
         }
     }
 
-    public boolean isEmailExists(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    public boolean isUsernameExists(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
     public boolean isPhoneExists(String phone) {
         return userRepository.existsByPhone(phone);
     }
 
-    public String registerValidationCheck(RegisterCheckRequest registerCheckRequest) {
-        if (isEmailExists(registerCheckRequest.getEmail())) {
-            return "Email already exists.";
-        }
+    public boolean isEmailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
-        if (isUsernameExists(registerCheckRequest.getUsername())) {
-            return "Username already exists.";
-        }
-
-        if (isPhoneExists(registerCheckRequest.getPhone())) {
-            return "Phone number already exists.";
-        }
-
-        return "OK";
+    public boolean isNicknameExists(String username) {
+        return userRepository.existsByUsername(username);
     }
 }

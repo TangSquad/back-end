@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UserIntroductionResponse {
     private String introduction;
-    private List<String> certifications;
     private String link;
     private String affiliation;
     private String prevDiving;

@@ -31,15 +31,16 @@ public class AuthController {
             JwtResponseDto jwtResponseDto = authService.authenticateUser(loginRequestDto);
             return ResponseEntity.ok(new ApiResponse<>(true, "Login successful.", jwtResponseDto));
         } catch (AuthenticationException e) {
-            // 로그인 실패 시 401 상태 코드와 함께 구조화된 메시지를 반환
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponse<>(false, "Invalid email or password. Please try again.", null));
         } catch (Exception e) {
-            // 기타 예외 발생 시 500 상태 코드와 함께 구조화된 메시지를 반환
+            // 여기에 디버그 로그를 추가하여 예상치 못한 예외를 포착합니다.
+            e.printStackTrace();  // 예외의 스택 트레이스를 출력합니다.
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>(false, "An unexpected error occurred. Please try again later.", null));
         }
     }
+
 
 
     @Operation(summary = "토큰 재발급", description = "Refresh Token을 이용하여 Access Token을 재발급합니다. Authorization 헤더에 <Refresh Token> 형식으로 전달되어야 합니다.")

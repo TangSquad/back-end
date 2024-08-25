@@ -30,6 +30,9 @@ public class Equipment {
     //슈즈
     @Column private String shoes;
 
+    //마스크
+    @Column private String mask;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userprofile_id", nullable = false)
     private UserProfile userProfile;
