@@ -1,10 +1,7 @@
 package backend.tangsquad.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
-import backend.tangsquad.dto.request.EmailCheckRequest;
-import backend.tangsquad.dto.request.NicknameCheckRequest;
-import backend.tangsquad.dto.request.PhoneRequest;
-import backend.tangsquad.dto.request.RegisterRequestDto;
+import backend.tangsquad.dto.request.*;
 import backend.tangsquad.dto.response.ApiResponse;
 import backend.tangsquad.dto.response.RegisterResponse;
 import backend.tangsquad.dto.response.WithdrawResponse;
@@ -92,8 +89,8 @@ public class UserController {
 
     @Operation(summary = "전화번호 인증 코드 확인 API", description = "사용자가 받은 인증 코드를 확인합니다.")
     @PostMapping("/verification/phone/verify")
-    public ResponseEntity<ApiResponse<String>> verifyPhoneCode(@RequestBody String phoneNumber, @RequestBody String code) {
-        boolean isVerified = verificationService.verifyPhoneCode(phoneNumber, code);
+    public ResponseEntity<ApiResponse<String>> verifyPhoneCode(@RequestBody PhoneVerificationCode phoneVerificationCode) {
+        boolean isVerified = verificationService.verifyPhoneCode(phoneVerificationCode.getPhoneNumber(), phoneVerificationCode.getCode());
 
         if (isVerified) {
             return ResponseEntity.ok(new ApiResponse<>(true, "Phone number verified successfully."));
