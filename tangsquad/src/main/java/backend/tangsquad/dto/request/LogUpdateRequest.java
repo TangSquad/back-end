@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class LogUpdateRequest {
     // 제목
     private String title;
-    private Integer squadId;
+    private Long id;
     private LocalDateTime date;
 
     // 글
