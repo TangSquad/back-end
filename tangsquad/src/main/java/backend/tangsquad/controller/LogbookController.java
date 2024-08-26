@@ -2,7 +2,6 @@ package backend.tangsquad.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.domain.Logbook;
-import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.LogUpdateRequest;
 import backend.tangsquad.dto.response.LogCreateResponse;
 import backend.tangsquad.dto.response.LogReadResponse;
@@ -27,7 +26,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -256,17 +257,56 @@ public class LogbookController {
 
     // Use @PathVariable for the ID since it's in the URL path
     // 수정중
-    @PutMapping("/{id}")
-    public Logbook updateLog (
-            @PathVariable("id") Long logId,
+    @PutMapping("/")
+    @Operation(summary = "로그북 수정하기", description = "나의 로그를 수정합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<List<LogReadResponse>> updateLog(
             @RequestBody LogUpdateRequest request,
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
 
-        Long userId = userDetailsImpl.getId();
-//        Logbook logbook = logbookService.updateLog(userId, logId, request);
-//        return logbook;
-        return new Logbook();
+        // Extract the logId from the request (assuming LogUpdateRequest contains logId)
+        Long logId = request.getId();
+
+        // Call the service to update the logbook
+        Optional<Logbook> updatedLogbookOptional = Optional.ofNullable(logbookService.updateLog(logId, request));
+
+        // If the logbook was updated successfully
+        if (updatedLogbookOptional.isPresent()) {
+            Logbook updatedLogbook = updatedLogbookOptional.get();
+
+            // Convert the updated logbook to a LogReadResponse
+            LogReadResponse logReadResponse = new LogReadResponse(
+                    updatedLogbook.getId(),
+                    updatedLogbook.getUser().getId(),
+                    updatedLogbook.getDate(),
+                    updatedLogbook.getTitle(),
+                    updatedLogbook.getSquadId(),
+                    updatedLogbook.getContents(),
+                    updatedLogbook.getLocation(),
+                    updatedLogbook.getWeather(),
+                    updatedLogbook.getSurfTemp(),
+                    updatedLogbook.getUnderTemp(),
+                    updatedLogbook.getViewSight(),
+                    updatedLogbook.getTide(),
+                    updatedLogbook.getStartDiveTime(),
+                    updatedLogbook.getEndDiveTime(),
+                    updatedLogbook.getTimeDiffDive(),
+                    updatedLogbook.getAvgDepDiff(),
+                    updatedLogbook.getMaxDiff(),
+                    updatedLogbook.getStartBar(),
+                    updatedLogbook.getEndBar(),
+                    updatedLogbook.getDiffBar()
+            );
+            // Return the updated LogReadResponse in a list (to maintain consistency with previous GET mapping)
+            return ResponseEntity.ok(Collections.singletonList(logReadResponse));
+        } else {
+            // Return a NOT_FOUND status if the logbook could not be found or updated
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
+
+
+
+
 
     // Use @PathVariable for the ID since it's in the URL path
     @DeleteMapping("/{id}")
