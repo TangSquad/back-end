@@ -88,27 +88,14 @@ public class LogbookService {
         return logbookRepository.save(logbook);
     }
 
+    public void deleteLog(Long logId) {
+        // Retrieve the logbook based on logId
+        Logbook logbook = logbookRepository.findById(logId)
+                .orElseThrow(() -> new NoSuchElementException("Logbook not found for logId: " + logId));
 
+        // Delete the logbook
+        logbookRepository.delete(logbook);
+    }
 
-//    public void deleteLog(Long userId, Long logId) {
-//        // Retrieve the logbook based on userId and logId
-//        Optional<Logbook> logbookOptional = logbookRepository.findByUserId(userId, logId);
-//
-//        // Check if the logbook exists
-//        if (!logbookOptional.isPresent()) {
-//            throw new NoSuchElementException("Logbook not found for userId: " + userId + ", logId: " + logId);
-//        }
-//
-//        // Get the logbook
-//        Logbook logbook = logbookOptional.get();
-//
-//        // Check if the logbook belongs to the user
-//        if (!logbook.getUser().getId().equals(userId)) {
-//            throw new AccessDeniedException("Logbook does not belong to userId: " + userId);
-//        }
-//
-//        // Delete the logbook
-//        logbookRepository.delete(logbook);
-//    }
 
 }

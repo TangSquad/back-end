@@ -1,7 +1,7 @@
 package backend.tangsquad.dto.request;
 
 import backend.tangsquad.domain.User;
-import jakarta.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,39 +13,43 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class LogCreateRequest {
 
-    private User user;
-    private Integer id;
+    private Long userId; // Ensure User is serializable or use userId instead
+//    private User user;
+    private Long logId;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime date;
 
     // 제목
     private String title;
-    private Integer squadId;
 
-    // 글
+//    // 글
     private String contents;
-
-    // 장소
+//
+//    // 장소
     private String location;
-
-    // 날씨
-    private Integer weather;
-
+//
+//    // 날씨
+    private Long weather;
+//
     private Float surfTemp;
     private Float underTemp;
-    private Character viewSight;
-    private Character tide;
-
-    // 시간
+    private String viewSight;
+    private String tide;
+//
+//    // 시간
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startDiveTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endDiveTime;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timeDiffDive;
-
-    // 수심 및 공기
-    private Float AvgDepDiff;
+//
+//    // 수심 및 공기
+    private Float avgDepDiff; // Changed to camelCase
     private Float maxDiff;
-
-    private Integer startBar;
-    private Integer endBar;
-    private Integer diffBar;
+//
+    private Long startBar;
+    private Long endBar;
+    private Long diffBar;
 }
