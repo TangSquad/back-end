@@ -14,7 +14,7 @@ import java.util.List;
 @Schema(description = "프로필 수정")
 public class ProfileEditRequest {
 
-    private String username;
+    private String nickname;
     private String profileImageUrl;
 
     private Long certOrganizationId;

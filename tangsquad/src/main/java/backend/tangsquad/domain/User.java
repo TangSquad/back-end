@@ -25,7 +25,7 @@ public class User {
     @Column(nullable = false) private String name;
 
     // 닉네임
-    @Column(nullable = false, unique = true) private String username;
+    @Column(nullable = false, unique = true) private String nickname;
 
     // 이메일
     @Column(nullable = false, unique = true) private String email;

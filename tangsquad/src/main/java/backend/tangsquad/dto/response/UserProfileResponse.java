@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class UserProfileResponse {
     private String profileImageUrl;
     private String name;
-    private String username;
+    private String nickname;
     private Integer clubCount;
     private Integer divingCount;
     private Integer logBookCount;

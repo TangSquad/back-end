@@ -18,29 +18,29 @@ public class RefreshTokenRepository {
         this.redisTemplate = redisTemplate;
     }
 
-    public void save(String username, String refreshToken) {
-        redisTemplate.opsForValue().set(username, refreshToken, Duration.ofDays(7));
-        redisTemplate.opsForValue().set(refreshToken, username, Duration.ofDays(7)); // refreshToken도 키로 저장
+    public void save(String nickname, String refreshToken) {
+        redisTemplate.opsForValue().set(nickname, refreshToken, Duration.ofDays(7));
+        redisTemplate.opsForValue().set(refreshToken, nickname, Duration.ofDays(7)); // refreshToken도 키로 저장
     }
 
-    public Optional<RefreshToken> findByUsername(String username) {
-        return Optional.ofNullable(redisTemplate.opsForValue().get(username))
-                .map(refreshToken -> new RefreshToken(username, refreshToken));
+    public Optional<RefreshToken> findByNickname(String nickname) {
+        return Optional.ofNullable(redisTemplate.opsForValue().get(nickname))
+                .map(refreshToken -> new RefreshToken(nickname, refreshToken));
     }
 
     public Optional<RefreshToken> findByRefreshToken(String refreshToken) {
         return Optional.ofNullable(redisTemplate.opsForValue().get(refreshToken))
-                .map(username -> new RefreshToken(username, refreshToken));
+                .map(nickname -> new RefreshToken(nickname, refreshToken));
     }
 
-    public void deleteByUsername(String username) {
-        redisTemplate.delete(username);
-        findByUsername(username).ifPresent(token -> redisTemplate.delete(token.getRefreshToken())); // refreshToken도 삭제
+    public void deleteByNickname(String nickname) {
+        redisTemplate.delete(nickname);
+        findByNickname(nickname).ifPresent(token -> redisTemplate.delete(token.getRefreshToken())); // refreshToken도 삭제
     }
 
     public void deleteByRefreshToken(String refreshToken) {
         redisTemplate.delete(refreshToken);
-        findByRefreshToken(refreshToken).ifPresent(token -> redisTemplate.delete(token.getUsername())); // username도 삭제
+        findByRefreshToken(refreshToken).ifPresent(token -> redisTemplate.delete(token.getNickname())); // nickname도 삭제
     }
 
 }

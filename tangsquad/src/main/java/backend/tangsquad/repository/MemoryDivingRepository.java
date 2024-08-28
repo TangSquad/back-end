@@ -36,9 +36,9 @@ public class MemoryDivingRepository implements DivingRepository {
 //    }
 
     @Override
-    public Optional<Diving> findById(String username, Long id) {
+    public Optional<Diving> findById(String nickname, Long id) {
         return divingStorage.values().stream()
-                .filter(diving -> diving.getUser().getUsername().equals(username) && diving.getId().equals(id))
+                .filter(diving -> diving.getUser().getNickname().equals(nickname) && diving.getId().equals(id))
                 .findFirst();
     }
 

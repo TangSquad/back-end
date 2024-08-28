@@ -16,7 +16,7 @@ public interface DivingRepository {
 
 //    Moim findByOwner(String owner);
 
-    Optional<Diving> findById(String username, Long id);
+    Optional<Diving> findById(String nickname, Long id);
 
     List<Diving> findAll();
 
