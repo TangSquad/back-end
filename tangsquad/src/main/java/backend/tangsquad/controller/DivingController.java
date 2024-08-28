@@ -1,14 +1,16 @@
 package backend.tangsquad.controller;
 
+import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.domain.Diving;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.DivingCreateRequest;
 import backend.tangsquad.dto.request.DivingUpdateRequest;
+import backend.tangsquad.dto.response.DivingCreateResponse;
 import backend.tangsquad.dto.response.DivingReadResponse;
-import backend.tangsquad.repository.DivingRepository;
-import backend.tangsquad.repository.UserRepository;
 import backend.tangsquad.service.DivingService;
+import backend.tangsquad.service.UserService;
 import backend.tangsquad.swagger.global.CommonResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,91 +19,57 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
+@ApiResponse
 @RequestMapping("/diving")
 @RestController
-
 public class DivingController {
+
     private final DivingService divingService;
-
-    private final DivingRepository divingRepository;
-
-    private final UserRepository userRepository;
+    private final UserService userService; // Use UserService to handle user-related operations
 
     @Autowired
-    public DivingController(DivingService divingService, DivingRepository divingRepository, UserRepository userRepository) {
+    public DivingController(DivingService divingService, UserService userService) {
         this.divingService = divingService;
-        this.divingRepository = divingRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @PostMapping("")
-    public Diving createDiving(@AuthenticationPrincipal UserDetails userDetails, @RequestBody DivingCreateRequest request) {
-        // Retrieve the current authenticated user's username
-        String username = userDetails.getUsername();
+    public Diving createDiving(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody DivingCreateRequest request) {
+        // Retrieve the current authenticated user's ID
+        Long userId = userDetails.getId();
 
-        // Find the user by username
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (!userOptional.isPresent()) {
-            throw new UsernameNotFoundException("User not found");
-        }
-
-        // Create a new Diving instance
-        Diving diving = new Diving();
-
-        // Set the user for the diving instance
-        User user = userOptional.get();
-        diving.setUser(user);
-
-        // Set the diving details from the request
-        // diving.setDivingName(request.getDivingName());
-        // diving.setAge(request.getAge());
-        // diving.setDivingContents(request.getDivingContents());
-        // diving.setDivingIntro(request.getDivingIntro());
-        // diving.setDivingMembers(request.getDivingMembers());
-
-        // Save the diving instance
-        divingRepository.save(diving);
-
-        return diving;
+        // Create a new Diving instance and return the response
+        return divingService.createDiving(userId, request);
     }
 
-
-    @GetMapping("")
-    public List<Diving> getDivings(@AuthenticationPrincipal UserDetails userDetails) {
-        // Retrieve the current authenticated user's username
-        String username = userDetails.getUsername();
-
-        // Find the user by username
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (!userOptional.isPresent()) {
-            throw new UsernameNotFoundException("User not found");
-        }
-
-        // Get the diving list for the user
-        User user = userOptional.get();
-        return divingService.getDivings(user);
-    }
+//    @GetMapping("")
+//    public List<Diving> getDivings(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        // Retrieve the current authenticated user's ID
+//        Long userId = userDetails.getId();
+//
+//        // Get the diving list for the user
+//        return divingService.getDivings(userId);
+//    }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @securityService.isOwner(authentication, #id)")
-    public Diving updateDiving(@PathVariable("id") Long id, @RequestBody DivingUpdateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
-        // Retrieve the current authenticated user's username
-        String username = userDetails.getUsername();
+    public Diving updateDiving(@PathVariable("id") Long divingId, @RequestBody DivingUpdateRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // Retrieve the current authenticated user's ID
+        Long userId = userDetails.getId();
 
-        // Update the diving details
-        return divingService.updateDiving(username, id, request);
+        // Update the diving details using the service layer
+        return divingService.updateDiving(userId, divingId, request);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @securityService.isOwner(authentication, #id)")
-    public CommonResponse<DivingReadResponse> deleteDiving(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
-        // Retrieve the current authenticated user's username
-        String username = userDetails.getUsername();
+    public CommonResponse<DivingReadResponse> deleteDiving(@PathVariable("id") Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // Retrieve the current authenticated user's ID
+        Long userId = userDetails.getId();
 
-        // Delete the diving instance
-        divingService.deleteDiving(username, id);
+        // Delete the diving instance using the service layer
+        divingService.deleteDiving(userId, divingId);
 
         return CommonResponse.success();
     }

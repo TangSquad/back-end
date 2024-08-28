@@ -9,11 +9,11 @@ import java.util.Optional;
 public interface MoimRepository {
 
     void save(Moim moim);
-    Moim findById(Long moimId);
+    Optional<Moim> findById(Long moimId);
 
 //    Moim findByOwner(String owner);
 
-    Optional<Moim> findById(String username, Long id);
+    void delete(Moim moim);
 
     List<Moim> findAll();
 

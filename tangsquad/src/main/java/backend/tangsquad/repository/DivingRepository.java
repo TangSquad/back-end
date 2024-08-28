@@ -9,12 +9,16 @@ import java.util.Optional;
 
 @Repository
 public interface DivingRepository {
-    void save(Diving diving);
+    Diving save(Diving diving);
     Diving findById(Long divingId);
+
+
 
 //    Moim findByOwner(String owner);
 
     Optional<Diving> findById(String username, Long id);
 
     List<Diving> findAll();
+
+    void delete(Diving diving);
 }

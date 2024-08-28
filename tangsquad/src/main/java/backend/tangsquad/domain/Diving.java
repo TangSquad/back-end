@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -18,5 +20,23 @@ public class Diving {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column
+    private String licenseLimit;
+
+    @Column
+    private String moimLeader;
+
+    @Column
+    private LocalDateTime startDate;
+
+    @Column
+    private LocalDateTime endDate;
+
+    @Column
+    private String region;
+
+    @Column
+    private String theme;
 
 }

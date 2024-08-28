@@ -1,5 +1,6 @@
 package backend.tangsquad.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,10 +40,6 @@ public class User {
     @CreatedDate
     @Column(updatable = false) private LocalDateTime createdAt;
 
-    // 자격증 리스트
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Certification> certifications;
-
     // 프로필
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private UserProfile userProfile;
@@ -50,7 +47,11 @@ public class User {
     // 역할
     @Column(nullable = false) private String role;
 
-    // 로그북 리스트
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    // In User class
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
     private List<Logbook> logbooks;
+    // 로그북 리스트
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Logbook> logbooks;
 }

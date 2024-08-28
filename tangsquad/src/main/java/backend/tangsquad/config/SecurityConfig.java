@@ -49,11 +49,16 @@ public class SecurityConfig {
                 // 권한에 따른 접근 설정
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/logbook/**").permitAll()
+                        .requestMatchers("/moim/**").permitAll()
+                        .requestMatchers("/diving/**").permitAll()
+                        .requestMatchers("/password/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll() // Allow access to Swagger UI
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/error").permitAll() // Allow access to /error endpoint
                         .requestMatchers("/favicon.ico").permitAll()
+                        .requestMatchers("/certificate/public/**").permitAll()
                         .anyRequest().hasRole("USER")  // ROLE_USER 권한을 가진 사용자만 접근 가능
                 )
 
