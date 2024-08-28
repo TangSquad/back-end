@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,26 +65,30 @@ public class LogbookController {
         System.out.println("PostMapping called");
         try {
             Logbook logbook = new Logbook();
-            User user = new User();
-//            user.setId(userDetails.getId());
             // 테스트용
-            user.setId(logCreateRequest.getUserId());
-            logbook.setUser(user);
-
+//            user.setId(logCreateRequest.getUserId());
+//            logbook.setUser(user);
+            logbook.setUser(userDetails.getUser());
             logbook.setTitle(logCreateRequest.getTitle());
             logbook.setDate(logCreateRequest.getDate());
             logbook.setContents(logCreateRequest.getContents());
+
             logbook.setLocation(logCreateRequest.getLocation());
             logbook.setWeather(logCreateRequest.getWeather());
+
             logbook.setSurfTemp(logCreateRequest.getSurfTemp());
             logbook.setUnderTemp(logCreateRequest.getUnderTemp());
+
             logbook.setViewSight(logCreateRequest.getViewSight());
             logbook.setTide(logCreateRequest.getTide());
+
             logbook.setStartDiveTime(logCreateRequest.getStartDiveTime());
             logbook.setEndDiveTime(logCreateRequest.getEndDiveTime());
             logbook.setTimeDiffDive(logCreateRequest.getTimeDiffDive());
+
             logbook.setAvgDepDiff(logCreateRequest.getAvgDepDiff());
             logbook.setMaxDiff(logCreateRequest.getMaxDiff());
+
             logbook.setStartBar(logCreateRequest.getStartBar());
             logbook.setEndBar(logbook.getEndBar());
             logbook.setDiffBar(logbook.getDiffBar());
@@ -151,8 +156,8 @@ public class LogbookController {
     @Operation(summary = "내 로그북 불러오기", description = "나의 로그들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<LogReadResponse>> getMyLogs(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         // Retrieve the current authenticated user's ID
-        Long userId = 1L;
-//        Long userId = userDetails.getId();  // Use the authenticated user's ID
+//        Long userId = 1L;
+        Long userId = userDetails.getId();  // Use the authenticated user's ID
 
         try {
             System.out.println("userId: " + userId);
@@ -164,8 +169,7 @@ public class LogbookController {
             List<LogReadResponse> logReadResponses = logbooks.stream()
                     .map(logbook -> new LogReadResponse(
                             logbook.getId(),
-                            1L,
-//                            logbook.getUser().getId(),  // Retrieve the actual user ID
+                            logbook.getUser().getId(),  // Retrieve the actual user ID
                             logbook.getDate(),
                             logbook.getTitle(),
                             logbook.getSquadId(),
@@ -205,21 +209,18 @@ public class LogbookController {
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그들을 불러옵니다.")
-    public ResponseEntity<List<LogReadResponse>> getLogs(@PathVariable("userId") Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<List<LogReadResponse>> getLogs(@PathVariable("userId") Long userId) {
         // Retrieve the current authenticated user's ID
 
-//        Long userId = userDetails.getId();
         System.out.println("userId: " + userId);
 //         Retrieve the user's logs
         List<Logbook> logbooks = logbookService.getLogs(userId);
-//        List<Logbook> logbooks = logbookService.getLogs(1L);
 
 
         // Map Logbook entities to LogReadResponse DTOs
         List<LogReadResponse> logReadResponses = logbooks.stream()
                 .map(logbook -> new LogReadResponse(
                         logbook.getId(),
-//                        1L,
                         logbook.getUser().getId(),
                         logbook.getDate(),
                         logbook.getTitle(),
@@ -252,9 +253,6 @@ public class LogbookController {
     public ResponseEntity<LogReadResponse> getUserLog(
             @PathVariable("userId") Long userId,
             @PathVariable("logId") Long logId) {
-
-        // Extract the ID of the currently authenticated user
-//        Long currentUserId = userDetails.getId();  // Ensure this method exists in UserDetailsImpl
 
         // Retrieve the logbook entry by ID
         Optional<Logbook> logbookOptional = logbookService.getLog(logId);
@@ -323,9 +321,9 @@ public class LogbookController {
             if (updatedLogbook.getUser() == null) {
                 throw new IllegalStateException("User associated with logbook is null");
             }
-//            if (!userDetailsImpl.getId().equals(updatedLogbook.getUser().getId())) {
-//                throw new AccessDeniedException("User is not authorized to update this logbook");
-//            }
+            if (!userDetailsImpl.getId().equals(updatedLogbook.getUser().getId())) {
+                throw new AccessDeniedException("User is not authorized to update this logbook");
+            }
 
             // Convert the updated logbook to a LogReadResponse
             LogReadResponse logReadResponse = new LogReadResponse(
@@ -382,11 +380,11 @@ public class LogbookController {
             Long logOwnerId = logbook.getUser().getId();
 
 //            // Check if the authenticated user is authorized to delete the log
-//            if (!userDetailsImpl.getId().equals(logOwnerId)) {
-//                // User is not authorized to delete this log
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                        .build();
-//            }
+            if (!userDetailsImpl.getId().equals(logOwnerId)) {
+                // User is not authorized to delete this log
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .build();
+            }
 
             // Proceed to delete the logbook
             logbookService.deleteLog(logId);
