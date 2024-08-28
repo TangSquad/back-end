@@ -1,5 +1,7 @@
 package backend.tangsquad.domain;
 
+import backend.tangsquad.domain.User;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,18 +18,20 @@ public class Logbook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // In Logbook class
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonManagedReference
     private User user;
 
     @Column
     private LocalDateTime date;
 
-    @Column
+    @Column(nullable = false)
     private String title;
 
     @Column
-    private Integer squadId;
+    private Long squadId;
 
     @Column
     private String contents;
@@ -36,7 +40,7 @@ public class Logbook {
     private String location;
 
     @Column
-    private Integer weather;
+    private Long weather;
 
     @Column
     private Float surfTemp;
@@ -45,10 +49,10 @@ public class Logbook {
     private Float underTemp;
 
     @Column
-    private Character viewSight;
+    private String viewSight;
 
     @Column
-    private Character tide;
+    private String tide;
 
     @Column
     private LocalDateTime startDiveTime;
@@ -66,11 +70,11 @@ public class Logbook {
     private Float maxDiff;
 
     @Column
-    private Integer startBar;
+    private Long startBar;
 
     @Column
-    private Integer endBar;
+    private Long endBar;
 
     @Column
-    private Integer diffBar;
+    private Long diffBar;
 }

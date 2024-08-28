@@ -1,0 +1,62 @@
+package backend.tangsquad.repository;
+
+import backend.tangsquad.domain.Diving;
+import backend.tangsquad.domain.Moim;
+import org.springframework.stereotype.Repository;
+
+import java.util.*;
+
+@Repository
+public class MemoryDivingRepository implements DivingRepository {
+    private Map<Long, Diving> divingStorage = new HashMap<>();
+    private Long currentId = 1L;
+
+    @Override
+    public Diving save(Diving diving) {
+        if (diving.getId() == null) {
+            diving.setId(currentId++);
+        }
+        divingStorage.put(diving.getId(), diving);
+        return diving;
+    }
+
+    @Override
+    public Diving findById(Long divingId) {
+        return divingStorage.get(divingId);
+    }
+
+//    @Override
+//    public Moim findByOwner(String owner) {
+//        for (Moim moim : moimStorage.values()) {
+//            if (moim.getMoimOwner().equals(owner)) {
+//                return moim;
+//            }
+//        }
+//        return null; // Return null if no matching Moim is found
+//    }
+
+    @Override
+    public Optional<Diving> findById(String nickname, Long id) {
+        return divingStorage.values().stream()
+                .filter(diving -> diving.getUser().getNickname().equals(nickname) && diving.getId().equals(id))
+                .findFirst();
+    }
+
+
+    @Override
+    public List<Diving> findAll() {
+        return new ArrayList<>(divingStorage.values());
+    }
+
+
+    @Override
+    public void delete(Diving diving) {
+        if (diving != null && diving.getId() != null) {
+            divingStorage.remove(diving.getId());
+        } else {
+            throw new IllegalArgumentException("Diving entity or its ID must not be null");
+        }
+    }
+
+
+}

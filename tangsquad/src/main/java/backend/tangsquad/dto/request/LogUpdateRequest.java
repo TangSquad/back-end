@@ -1,6 +1,7 @@
 package backend.tangsquad.dto.request;
 
 import backend.tangsquad.domain.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,10 @@ import java.time.LocalDateTime;
 public class LogUpdateRequest {
     // 제목
     private String title;
-    private Integer squadId;
+    private Long id;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime date;
 
     // 글
     private String contents;
@@ -22,25 +26,26 @@ public class LogUpdateRequest {
     private String location;
 
     // 날씨
-    private Integer weather;
+    private Long weather;
 
     private Float surfTemp;
     private Float underTemp;
-    private Character viewSight;
-    private Character tide;
+    private String viewSight;
+    private String tide;
 
     // 시간
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startDiveTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endDiveTime;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timeDiffDive;
 
     // 수심 및 공기
     private Float AvgDepDiff;
     private Float maxDiff;
 
-    private Integer startBar;
-    private Integer endBar;
-    private Integer diffBar;
-
+    private Long startBar;
+    private Long endBar;
+    private Long diffBar;
 }

@@ -29,17 +29,17 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(String username, String role) {
-        return generateToken(username, role, accessTokenExpiration);
+    public String generateAccessToken(String nickname, String role) {
+        return generateToken(nickname, role, accessTokenExpiration);
     }
 
-    public String generateRefreshToken(String username) {
-        return generateToken(username, null, refreshTokenExpiration);
+    public String generateRefreshToken(String nickname) {
+        return generateToken(nickname, null, refreshTokenExpiration);
     }
 
-    public String generateToken(String username, String role, long expirationTime) {
+    public String generateToken(String nickname, String role, long expirationTime) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("sub", username);  // "sub" is the standard claim name for subject
+        claims.put("sub", nickname);  // "sub" is the standard claim name for subject
         if (role != null) {
             claims.put("role", role);
         }
@@ -76,7 +76,7 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    public String getUserName(String token) {
+    public String getNickname(String token) {
         return getClaims(token).getSubject();
     }
 }

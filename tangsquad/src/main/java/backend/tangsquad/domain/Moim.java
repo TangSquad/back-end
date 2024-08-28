@@ -1,0 +1,54 @@
+package backend.tangsquad.domain;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@Setter
+@Table(name="moim")
+public class Moim {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+//    private String[] moimMembers;
+    @Column
+    private String moimMembers;
+    @Column
+    private LocalDateTime startDate;
+    @Column
+    private LocalDateTime endDate;
+    @Column
+    private String moimName;
+    @Column
+    private String moimIntro;
+    @Column
+    private String moimContents;
+    @Column
+    private Integer maxPeople;
+    @Column
+    private Float price;
+
+//    private String[] licenseLimit;
+    @Column
+    private String licenseLimit;
+//    private String[] region;
+    @Column
+    private String region;
+    @Column
+    private String age;
+
+//    private String[] mood;
+    @Column
+    private String mood;
+
+}
