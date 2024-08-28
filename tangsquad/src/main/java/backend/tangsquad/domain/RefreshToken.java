@@ -15,7 +15,7 @@ import org.springframework.data.redis.core.index.Indexed;
 @NoArgsConstructor
 public class RefreshToken {
     @Id
-    private String username;
+    private String nickname;
     @Indexed
     private String refreshToken;
 }

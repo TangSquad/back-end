@@ -10,7 +10,7 @@ import lombok.Getter;
 @Schema(description = "프로필 수정 응답")
 public class ProfileEditResponse {
         private String name;
-        private String username;
+        private String nickname;
         private String profileImageUrl;
 
         private Long certificateId;

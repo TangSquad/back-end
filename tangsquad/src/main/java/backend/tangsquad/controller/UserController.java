@@ -31,39 +31,42 @@ public class UserController {
 
     @Operation(summary = "가입 전 이메일 중복 확인 API", description = "가입 전 이메일 중복 확인 API")
     @PostMapping("/check/email")
-    public ResponseEntity<ApiResponse<String>> checkEmail(@Valid @RequestBody EmailCheckRequest emailCheckRequest) {
+    public ResponseEntity<ApiResponse<Boolean>> checkEmail(@Valid @RequestBody EmailCheckRequest emailCheckRequest) {
         if (userService.isEmailExists(emailCheckRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Email already registered."));
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Email already registered.", false));
         } else {
-            return ResponseEntity.ok(new ApiResponse<>(true, "Email available."));
+            return ResponseEntity.ok(new ApiResponse<>(true, "Email available.", true));
         }
     }
 
     @Operation(summary = "가입 전 전화번호 중복 확인 API", description = "가입 전 전화번호 중복 확인 API")
     @PostMapping("/check/phone")
-    public ResponseEntity<ApiResponse<String>> checkPhone(@Valid @RequestBody PhoneRequest phoneRequest) {
+    public ResponseEntity<ApiResponse<Boolean>> checkPhone(@Valid @RequestBody PhoneRequest phoneRequest) {
         if (userService.isPhoneExists(phoneRequest.getPhoneNumber())) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Phone number already registered."));
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Phone number already registered.", false));
         } else {
-            return ResponseEntity.ok(new ApiResponse<>(true, "Phone number available."));
+            return ResponseEntity.ok(new ApiResponse<>(true, "Phone number available.", true));
         }
     }
 
     @Operation(summary = "가입 전 닉네임 중복 확인 API", description = "가입 전 닉네임 중복 확인 API")
     @PostMapping("/check/nickname")
-    public ResponseEntity<ApiResponse<String>> checkNickname(@Valid @RequestBody NicknameCheckRequest nicknameRequest) {
+    public ResponseEntity<ApiResponse<Boolean>> checkNickname(@Valid @RequestBody NicknameCheckRequest nicknameRequest) {
         if (userService.isNicknameExists(nicknameRequest.getNickname())) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Nickname already registered."));
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Nickname already registered.", false));
         } else {
-            return ResponseEntity.ok(new ApiResponse<>(true, "Nickname available."));
+            return ResponseEntity.ok(new ApiResponse<>(true, "Nickname available.", true));
         }
     }
 
     @Operation(summary = "회원가입 API", description = "회원가입 API")
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<RegisterResponse>> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
+    public ResponseEntity<ApiResponse<Boolean>> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
         RegisterResponse response = userService.registerUser(registerRequestDto);
-        return ResponseEntity.ok(new ApiResponse<>(true, "User registered successfully.", response));
+        if (!response.isSuccess()){
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, response.getMessage(), false));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(true, response.getMessage(), true));
     }
 
     @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API")
@@ -76,26 +79,26 @@ public class UserController {
 
     @Operation(summary = "전화번호 인증 코드 전송 API", description = "회원 가입 전 전화번호로 인증 코드를 전송합니다.")
     @PostMapping("/verification/phone/send")
-    public ResponseEntity<ApiResponse<String>> sendPhoneVerificationCode(@Valid @RequestBody PhoneRequest phoneRequest) {
+    public ResponseEntity<ApiResponse<Boolean>> sendPhoneVerificationCode(@Valid @RequestBody PhoneRequest phoneRequest) {
         // 전화번호가 이미 등록되어 있는지 확인
         if (userService.isPhoneExists(phoneRequest.getPhoneNumber())) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Phone number already registered."));
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Phone number already registered.", false));
         }
 
         // 인증 코드 전송
         verificationService.sendPhoneVerificationCode(phoneRequest.getPhoneNumber());
-        return ResponseEntity.ok(new ApiResponse<>(true, "Verification code sent successfully."));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Verification code sent successfully.", true));
     }
 
     @Operation(summary = "전화번호 인증 코드 확인 API", description = "사용자가 받은 인증 코드를 확인합니다.")
     @PostMapping("/verification/phone/verify")
-    public ResponseEntity<ApiResponse<String>> verifyPhoneCode(@RequestBody PhoneVerificationCode phoneVerificationCode) {
+    public ResponseEntity<ApiResponse<Boolean>> verifyPhoneCode(@RequestBody PhoneVerificationCode phoneVerificationCode) {
         boolean isVerified = verificationService.verifyPhoneCode(phoneVerificationCode.getPhoneNumber(), phoneVerificationCode.getCode());
 
         if (isVerified) {
-            return ResponseEntity.ok(new ApiResponse<>(true, "Phone number verified successfully."));
+            return ResponseEntity.ok(new ApiResponse<>(true, "Phone number verified successfully.", true));
         } else {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Invalid verification code."));
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Invalid verification code.", false));
         }
     }
 }

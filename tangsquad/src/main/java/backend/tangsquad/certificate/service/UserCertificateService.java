@@ -26,7 +26,7 @@ public class UserCertificateService {
     public UserCertificateResponse getUserCertificate(Long userId) {
         UserCertificate userCertificate = userCertificateRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 자격증이 존재하지 않습니다. id=" + userId));
-        return new UserCertificateResponse(userCertificate.getId(), userCertificate.getUser().getUsername(), userCertificate.getCertificate().getCertOrganization().getName(), userCertificate.getCertificate().getCertLevel().getName(), userCertificate.getImageUrl(), userCertificate.getState());
+        return new UserCertificateResponse(userCertificate.getId(), userCertificate.getUser().getNickname(), userCertificate.getCertificate().getCertOrganization().getName(), userCertificate.getCertificate().getCertLevel().getName(), userCertificate.getImageUrl(), userCertificate.getState());
     }
 
     public UserCertificateResponse createUserCertificate(Long userId, Long orgId, Long levelId, String imageUrl) {
@@ -56,7 +56,7 @@ public class UserCertificateService {
 
         userCertificateRepository.save(userCertificate);
 
-        return new UserCertificateResponse(userCertificate.getId(), user.getUsername(),
+        return new UserCertificateResponse(userCertificate.getId(), user.getNickname(),
                 cert.getCertOrganization().getName(), cert.getCertLevel().getName(),
                 imageUrl, CertificateState.REQUESTED);
     }
@@ -78,7 +78,7 @@ public class UserCertificateService {
         userCertificate.updateImageUrl(imageUrl);
         userCertificate.updateState(CertificateState.REQUESTED);
         userCertificateRepository.save(userCertificate);
-        return new UserCertificateResponse(userCertificate.getId(), userCertificate.getUser().getUsername(), userCertificate.getCertificate().getCertOrganization().getName(), userCertificate.getCertificate().getCertLevel().getName(), imageUrl, userCertificate.getState());
+        return new UserCertificateResponse(userCertificate.getId(), userCertificate.getUser().getNickname(), userCertificate.getCertificate().getCertOrganization().getName(), userCertificate.getCertificate().getCertLevel().getName(), imageUrl, userCertificate.getState());
     }
 
 }

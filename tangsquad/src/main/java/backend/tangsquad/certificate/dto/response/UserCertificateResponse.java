@@ -10,7 +10,7 @@ import lombok.Getter;
 @Schema(description = "사용자 자격증 응답")
 public class UserCertificateResponse {
     private Long userCertificateId;
-    private String username;
+    private String nickname;
     private String organizationName;
     private String levelName;
     private String imageUrl;

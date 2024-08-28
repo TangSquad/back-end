@@ -49,17 +49,17 @@ public class AuthService {
             // 인증 시도
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            user.getUsername(),
+                            user.getNickname(),
                             loginRequestDto.getPassword()
                     )
             );
 
             // 엑세스 토큰 및 리프레시 토큰 생성
-            String accessToken = jwtTokenProvider.generateAccessToken(user.getUsername(), user.getRole());
-            String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
+            String accessToken = jwtTokenProvider.generateAccessToken(user.getNickname(), user.getRole());
+            String refreshToken = jwtTokenProvider.generateRefreshToken(user.getNickname());
 
             // 리프레시 토큰 저장
-            refreshTokenRepository.save(user.getUsername(), refreshToken);
+            refreshTokenRepository.save(user.getNickname(), refreshToken);
 
             return new JwtResponseDto(accessToken, refreshToken);
         } catch (UsernameNotFoundException ex) {
@@ -75,9 +75,9 @@ public class AuthService {
             throw new IllegalArgumentException("Invalid refresh token");
         }
 
-        String username = jwtTokenProvider.getUserName(refreshToken);
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        String nickname = jwtTokenProvider.getNickname(refreshToken);
+        User user = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + nickname));
 
         Optional<RefreshToken> storedRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken);
         if (storedRefreshToken.isEmpty() || !storedRefreshToken.get().getRefreshToken().equals(refreshToken)) {
@@ -86,10 +86,10 @@ public class AuthService {
 
         refreshTokenRepository.deleteByRefreshToken(refreshToken);
 
-        String newAccessToken = jwtTokenProvider.generateAccessToken(username, user.getRole());
-        String newRefreshToken = jwtTokenProvider.generateRefreshToken(username);
+        String newAccessToken = jwtTokenProvider.generateAccessToken(nickname, user.getRole());
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(nickname);
 
-        refreshTokenRepository.save(username, newRefreshToken);
+        refreshTokenRepository.save(nickname, newRefreshToken);
 
         return new JwtResponseDto(newAccessToken, newRefreshToken);
     }

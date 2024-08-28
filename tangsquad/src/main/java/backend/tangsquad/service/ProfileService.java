@@ -39,7 +39,7 @@ public class ProfileService {
             return new UserProfileResponse(
                     user.getUserProfile().getProfileImageUrl(),
                     user.getName(),
-                    user.getUsername(),
+                    user.getNickname(),
                     0,
                     0,
                     0
@@ -89,7 +89,7 @@ public class ProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
 
-        updateUsername(user, request.getUsername());
+        updateNickname(user, request.getNickname());
         updateProfileImage(user.getUserProfile(), request.getProfileImageUrl());
         updateUserCertificate(userId, request);
         updateProfileDetails(user.getUserProfile(), request);
@@ -98,12 +98,12 @@ public class ProfileService {
         return createProfileEditResponse(user);
     }
 
-    private void updateUsername(User user, String username) {
-        if (username != null) {
-            if (userRepository.existsByUsername(username)) {
+    private void updateNickname(User user, String nickname) {
+        if (nickname != null) {
+            if (userRepository.existsByNickname(nickname)) {
                 throw new IllegalArgumentException("Username already exists");
             }
-            user.setUsername(username);
+            user.setNickname(nickname);
         }
     }
 
@@ -173,7 +173,7 @@ public class ProfileService {
 
         return new ProfileEditResponse(
                 user.getName(),
-                user.getUsername(),
+                user.getNickname(),
                 profile.getProfileImageUrl(),
                 userCertificate.getId(),
                 userCertificate.getImageUrl(),

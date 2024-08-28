@@ -7,8 +7,10 @@ import backend.tangsquad.dto.request.RegisterRequestDto;
 import backend.tangsquad.dto.response.RegisterResponse;
 import backend.tangsquad.dto.response.WithdrawResponse;
 import backend.tangsquad.repository.UserRepository;
+import backend.tangsquad.util.RandomNickname;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,19 +18,15 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RandomNickname randomNickname;
 
     public Optional<User> findById(Long userId) {
         return userRepository.findById(userId);
-    }
-
-    @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -39,14 +37,16 @@ public class UserService {
             return new RegisterResponse(false, "Email already exists.", null);
         }
 
-        Optional<User> existingUserByUsername = userRepository.findByUsername(registerRequestDto.getUsername());
-        if (existingUserByUsername.isPresent()) {
-            return new RegisterResponse(false, "Username already exists.", null);
-        }
 
         Optional<User> existingUserByPhone = userRepository.findByPhone(registerRequestDto.getPhone());
         if (existingUserByPhone.isPresent()) {
             return new RegisterResponse(false, "Phone number already exists.", null);
+        }
+
+        String nickname = randomNickname.generate();
+
+        while (userRepository.existsByNickname(nickname)) {
+            nickname = randomNickname.generate();
         }
 
         // 패스워드 암호화
@@ -56,7 +56,7 @@ public class UserService {
         User user = new User();
         user.setEmail(registerRequestDto.getEmail());
         user.setPassword(encodedPassword);
-        user.setUsername(registerRequestDto.getUsername());
+        user.setNickname(nickname);
         user.setPhone(registerRequestDto.getPhone());
         user.setName(registerRequestDto.getName());
         user.setRole("ROLE_USER");
@@ -110,7 +110,7 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public boolean isNicknameExists(String username) {
-        return userRepository.existsByUsername(username);
+    public boolean isNicknameExists(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 }
