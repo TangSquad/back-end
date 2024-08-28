@@ -5,9 +5,11 @@ import backend.tangsquad.dto.request.*;
 import backend.tangsquad.dto.response.ApiResponse;
 import backend.tangsquad.dto.response.RegisterResponse;
 import backend.tangsquad.dto.response.WithdrawResponse;
+import backend.tangsquad.service.ProfileService;
 import backend.tangsquad.service.UserService;
 import backend.tangsquad.service.VerificationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +24,13 @@ public class UserController {
 
     private final UserService userService;
     private final VerificationService verificationService;
+    private final ProfileService profileService;
 
     @Autowired
-    public UserController(UserService userService, VerificationService verificationService) {
+    public UserController(UserService userService, VerificationService verificationService, ProfileService profileService) {
         this.userService = userService;
         this.verificationService = verificationService;
+        this.profileService = profileService;
     }
 
     @Operation(summary = "가입 전 이메일 중복 확인 API", description = "가입 전 이메일 중복 확인 API")
@@ -99,6 +103,18 @@ public class UserController {
             return ResponseEntity.ok(new ApiResponse<>(true, "Phone number verified successfully.", true));
         } else {
             return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Invalid verification code.", false));
+        }
+    }
+
+    @Operation(summary = "추가정보 입력 API", description = "추가정보를 입력합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    @PostMapping("/additional")
+    public ResponseEntity<ApiResponse<Boolean>> addAdditionalInfo(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody AdditionalInfoRequest additionalInfoRequest) {
+        Long userId = userDetails.getId();
+        boolean isSuccess = profileService.setAdditionalInfo(userId, additionalInfoRequest.getNickname(), additionalInfoRequest.getOrganizationId(), additionalInfoRequest.getLevelId(), additionalInfoRequest.getCertificateImage());
+        if (isSuccess) {
+            return ResponseEntity.ok(new ApiResponse<>(true, "Additional info added successfully.", true));
+        } else {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Failed to add additional info.", false));
         }
     }
 }
