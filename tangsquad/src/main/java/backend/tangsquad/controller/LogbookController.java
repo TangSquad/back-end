@@ -2,6 +2,8 @@ package backend.tangsquad.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.domain.Logbook;
+import backend.tangsquad.domain.User;
+import backend.tangsquad.dto.request.LogCreateRequest;
 import backend.tangsquad.dto.request.LogUpdateRequest;
 import backend.tangsquad.dto.response.LogCreateResponse;
 import backend.tangsquad.dto.response.LogReadResponse;
@@ -21,14 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -59,36 +58,45 @@ public class LogbookController {
             @ApiResponse(responseCode = "201", description = "로그북 생성 성공", content = @Content(schema = @Schema(implementation = LogCreateResponse.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
     })
-    public ResponseEntity<Logbook> createLogbook(
-            @RequestBody Logbook logbook,
+    public ResponseEntity<LogCreateRequest> createLogbook(
+            @RequestBody LogCreateRequest logCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         System.out.println("PostMapping called");
         try {
-            // Log the incoming request body
-            System.out.println("Received Logbook: " + logbook);
+            Logbook logbook = new Logbook();
+            User user = new User();
+//            user.setId(userDetails.getId());
+            // 테스트용
+            user.setId(logCreateRequest.getUserId());
+            logbook.setUser(user);
 
-            // Set default values for missing fields (for testing purposes)
-            if (logbook.getDate() == null) {
-                logbook.setDate(LocalDateTime.now());
-            }
-            if (logbook.getUser() == null) {
-                logbook.setUser(userDetails.getUser());
-            }
-
-            // Validate fields
-            if (logbook.getDate() == null || logbook.getTitle() == null) {
-                return ResponseEntity.badRequest().body(null);
-            }
-
+            logbook.setTitle(logCreateRequest.getTitle());
+            logbook.setDate(logCreateRequest.getDate());
+            logbook.setContents(logCreateRequest.getContents());
+            logbook.setLocation(logCreateRequest.getLocation());
+            logbook.setWeather(logCreateRequest.getWeather());
+            logbook.setSurfTemp(logCreateRequest.getSurfTemp());
+            logbook.setUnderTemp(logCreateRequest.getUnderTemp());
+            logbook.setViewSight(logCreateRequest.getViewSight());
+            logbook.setTide(logCreateRequest.getTide());
+            logbook.setStartDiveTime(logCreateRequest.getStartDiveTime());
+            logbook.setEndDiveTime(logCreateRequest.getEndDiveTime());
+            logbook.setTimeDiffDive(logCreateRequest.getTimeDiffDive());
+            logbook.setAvgDepDiff(logCreateRequest.getAvgDepDiff());
+            logbook.setMaxDiff(logCreateRequest.getMaxDiff());
+            logbook.setStartBar(logCreateRequest.getStartBar());
+            logbook.setEndBar(logbook.getEndBar());
+            logbook.setDiffBar(logbook.getDiffBar());
             // Save logbook
             Logbook savedLogbook = logbookService.save(logbook);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedLogbook);
+            return ResponseEntity.status(HttpStatus.CREATED).body(logCreateRequest);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("WRONG");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
 
     @GetMapping("/{logId}")
     @Operation(summary = "내 로그북 불러오기", description = "내 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
@@ -139,8 +147,64 @@ public class LogbookController {
     }
 
 
+    @GetMapping("")
+    @Operation(summary = "내 로그북 불러오기", description = "나의 로그들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<List<LogReadResponse>> getMyLogs(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // Retrieve the current authenticated user's ID
+        Long userId = 1L;
+//        Long userId = userDetails.getId();  // Use the authenticated user's ID
+
+        try {
+            System.out.println("userId: " + userId);
+
+            // Retrieve the user's logs
+            List<Logbook> logbooks = logbookService.getLogs(userId);
+
+            // Map Logbook entities to LogReadResponse DTOs
+            List<LogReadResponse> logReadResponses = logbooks.stream()
+                    .map(logbook -> new LogReadResponse(
+                            logbook.getId(),
+                            1L,
+//                            logbook.getUser().getId(),  // Retrieve the actual user ID
+                            logbook.getDate(),
+                            logbook.getTitle(),
+                            logbook.getSquadId(),
+                            logbook.getContents(),
+                            logbook.getLocation(),
+                            logbook.getWeather(),
+                            logbook.getSurfTemp(),
+                            logbook.getUnderTemp(),
+                            logbook.getViewSight(),
+                            logbook.getTide(),
+                            logbook.getStartDiveTime(),
+                            logbook.getEndDiveTime(),
+                            logbook.getTimeDiffDive(),
+                            logbook.getAvgDepDiff(),
+                            logbook.getMaxDiff(),
+                            logbook.getStartBar(),
+                            logbook.getEndBar(),
+                            logbook.getDiffBar()
+                    ))
+                    .collect(Collectors.toList());
+
+            // Return the list of LogReadResponse
+            return ResponseEntity.ok(logReadResponses);
+
+        } catch (Exception e) {
+            // Log the exception with details
+            Logger logger = LoggerFactory.getLogger(LogbookController.class);
+            logger.error("Error retrieving logs for user ID: " + userId, e);
+
+            // Return a generic error response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonList(new LogReadResponse()));  // Adjust response as needed
+        }
+    }
+
+
+
     @GetMapping("/user/{userId}")
-    @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그들을 불러옵니다.")
     public ResponseEntity<List<LogReadResponse>> getLogs(@PathVariable("userId") Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // Retrieve the current authenticated user's ID
 
@@ -183,28 +247,11 @@ public class LogbookController {
     }
 
 
-
-
-//    @GetMapping("/{userId}")
-//    public List<Logbook> getUserLogs(@PathVariable("userId") Long userId,
-//                                 @AuthenticationPrincipal UserDetails userDetails) {
-//
-//        // Get the user from the service
-//        User user = userService.findById(userId)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-//
-//        // Fetch the logs for the user
-//        return logbookService.getLogs(userId);
-//    }
-    // Use @PathVariable for the ID since it's in the URL path
-
-
-    @GetMapping("/{userId}/{logId}")
-    @Operation(summary = "타 유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    @GetMapping("/user/{userId}/{logId}")
+    @Operation(summary = "타 유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.")
     public ResponseEntity<LogReadResponse> getUserLog(
             @PathVariable("userId") Long userId,
-            @PathVariable("logId") Long logId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @PathVariable("logId") Long logId) {
 
         // Extract the ID of the currently authenticated user
 //        Long currentUserId = userDetails.getId();  // Ensure this method exists in UserDetailsImpl
@@ -257,7 +304,7 @@ public class LogbookController {
 
     // Use @PathVariable for the ID since it's in the URL path
     // 수정중
-    @PutMapping("/")
+    @PutMapping("")
     @Operation(summary = "로그북 수정하기", description = "나의 로그를 수정합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<LogReadResponse>> updateLog(
             @RequestBody LogUpdateRequest request,
@@ -268,10 +315,17 @@ public class LogbookController {
 
         // Call the service to update the logbook
         Optional<Logbook> updatedLogbookOptional = Optional.ofNullable(logbookService.updateLog(logId, request));
-
         // If the logbook was updated successfully
         if (updatedLogbookOptional.isPresent()) {
             Logbook updatedLogbook = updatedLogbookOptional.get();
+
+            // Check if the user IDs match
+            if (updatedLogbook.getUser() == null) {
+                throw new IllegalStateException("User associated with logbook is null");
+            }
+//            if (!userDetailsImpl.getId().equals(updatedLogbook.getUser().getId())) {
+//                throw new AccessDeniedException("User is not authorized to update this logbook");
+//            }
 
             // Convert the updated logbook to a LogReadResponse
             LogReadResponse logReadResponse = new LogReadResponse(
@@ -310,12 +364,42 @@ public class LogbookController {
 
     // Use @PathVariable for the ID since it's in the URL path
     @DeleteMapping("/{id}")
-    public CommonResponse<LogReadResponse> deleteLog(
+    public ResponseEntity<CommonResponse> deleteLog(
             @PathVariable("id") Long logId,
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
 
-        Long userId = userDetailsImpl.getId();
-//        logbookService.deleteLog(userId, logId);
-        return CommonResponse.success();
+        try {
+            // Retrieve the logbook from the service
+            Optional<Logbook> logbookOptional = logbookService.getLog(logId);
+
+            if (!logbookOptional.isPresent()) {
+                // Log not found
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .build();
+            }
+
+            Logbook logbook = logbookOptional.get();
+            Long logOwnerId = logbook.getUser().getId();
+
+//            // Check if the authenticated user is authorized to delete the log
+//            if (!userDetailsImpl.getId().equals(logOwnerId)) {
+//                // User is not authorized to delete this log
+//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                        .build();
+//            }
+
+            // Proceed to delete the logbook
+            logbookService.deleteLog(logId);
+
+            // Return success response
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .build();
+        } catch (Exception e) {
+            // Handle other potential exceptions
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
     }
+
 }
