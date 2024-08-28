@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -39,6 +40,10 @@ public class User {
     // 가입 날짜
     @CreatedDate
     @Column(updatable = false) private LocalDateTime createdAt;
+
+    // 수정 날짜
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     // 프로필
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

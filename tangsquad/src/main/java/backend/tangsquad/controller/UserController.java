@@ -117,4 +117,12 @@ public class UserController {
             return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Failed to add additional info.", false));
         }
     }
+
+    @Operation(summary = "추가 정보 입력 여부 확인 API", description = "추가 정보 입력 여부를 확인합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    @GetMapping("/additional/check")
+    public ResponseEntity<ApiResponse<Boolean>> checkAdditionalInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long userId = userDetails.getId();
+        boolean isAdditionalInfoSet = userService.isUserUpdated(userId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Additional info check successful.", isAdditionalInfoSet));
+    }
 }

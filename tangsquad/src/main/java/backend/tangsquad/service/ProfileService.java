@@ -30,7 +30,7 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final UserCertificateService userCertificateService;
     private final UserCertificateRepository userCertificateRepository;
-    private final CertificateService certificateService;
+
 
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfile(Long userId) {
@@ -105,7 +105,9 @@ public class ProfileService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
 
         updateNickname(user, nickname);
-        userCertificateService.createUserCertificate(userId, organizationId, levelId, certificateImageUrl);
+        if(organizationId != null && levelId != null && certificateImageUrl != null){
+            userCertificateService.createUserCertificate(userId, organizationId, levelId, certificateImageUrl);
+        }
 
         return true;
     }

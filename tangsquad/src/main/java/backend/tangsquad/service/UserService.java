@@ -8,12 +8,12 @@ import backend.tangsquad.dto.response.RegisterResponse;
 import backend.tangsquad.dto.response.WithdrawResponse;
 import backend.tangsquad.repository.UserRepository;
 import backend.tangsquad.util.RandomNickname;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -102,15 +102,31 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public boolean isPhoneExists(String phone) {
         return userRepository.existsByPhone(phone);
     }
 
+    @Transactional(readOnly = true)
     public boolean isEmailExists(String email) {
         return userRepository.existsByEmail(email);
     }
 
+    @Transactional(readOnly = true)
     public boolean isNicknameExists(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
+
+    @Transactional(readOnly = true)
+    public boolean isUserUpdated(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            // create 시간에 3초 여유
+            return user.getUpdatedAt().isAfter(user.getCreatedAt().plusSeconds(3));
+        } else {
+            throw new IllegalArgumentException("User not found with id: " + userId);
+        }
+    }
+
 }
