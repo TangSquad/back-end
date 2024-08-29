@@ -1,5 +1,6 @@
 package backend.tangsquad.dto.response;
 
+import backend.tangsquad.domain.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,8 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class LogReadResponse {
     private Long id;
-    private Long userId; // Replace User with User ID or simpler representation
-
+    private User user;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime date;
 

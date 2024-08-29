@@ -13,10 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class LogCreateRequest {
 
-    private Long userId; // Ensure User is serializable or use userId instead
-//    private User user;
-    private Long logId;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime date;
 
