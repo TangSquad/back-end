@@ -3,13 +3,18 @@ package backend.tangsquad.controller;
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.dto.request.*;
 import backend.tangsquad.dto.response.ApiResponse;
+import backend.tangsquad.dto.response.JwtResponseDto;
 import backend.tangsquad.dto.response.RegisterResponse;
 import backend.tangsquad.dto.response.WithdrawResponse;
+import backend.tangsquad.service.AuthService;
+import backend.tangsquad.service.ProfileService;
 import backend.tangsquad.service.UserService;
 import backend.tangsquad.service.VerificationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,17 +22,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 @Tag(name = "Auth", description = "Authentication API")
 public class UserController {
 
     private final UserService userService;
     private final VerificationService verificationService;
+    private final ProfileService profileService;
+    private final AuthService authService;
 
-    @Autowired
-    public UserController(UserService userService, VerificationService verificationService) {
-        this.userService = userService;
-        this.verificationService = verificationService;
-    }
 
     @Operation(summary = "가입 전 이메일 중복 확인 API", description = "가입 전 이메일 중복 확인 API")
     @PostMapping("/check/email")
@@ -59,14 +62,15 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "회원가입 API", description = "회원가입 API")
+    @Operation(summary = "회원가입 API", description = "회원가입 API 토큰을 반환합니다.")
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Boolean>> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
+    public ResponseEntity<ApiResponse<JwtResponseDto>> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
         RegisterResponse response = userService.registerUser(registerRequestDto);
         if (!response.isSuccess()){
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, response.getMessage(), false));
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, response.getMessage(), null));
         }
-        return ResponseEntity.ok(new ApiResponse<>(true, response.getMessage(), true));
+        JwtResponseDto jwtResponseDto = authService.authenticateUser(new LoginRequestDto(registerRequestDto.getEmail(), registerRequestDto.getPassword()));
+        return ResponseEntity.ok(new ApiResponse<>(true, "User registered successfully.", jwtResponseDto));
     }
 
     @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API")
@@ -100,5 +104,25 @@ public class UserController {
         } else {
             return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Invalid verification code.", false));
         }
+    }
+
+    @Operation(summary = "추가정보 입력 API", description = "추가정보를 입력합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    @PostMapping("/additional")
+    public ResponseEntity<ApiResponse<Boolean>> addAdditionalInfo(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody AdditionalInfoRequest additionalInfoRequest) {
+        Long userId = userDetails.getId();
+        boolean isSuccess = profileService.setAdditionalInfo(userId, additionalInfoRequest.getNickname(), additionalInfoRequest.getOrganizationId(), additionalInfoRequest.getLevelId(), additionalInfoRequest.getCertificateImage());
+        if (isSuccess) {
+            return ResponseEntity.ok(new ApiResponse<>(true, "Additional info added successfully.", true));
+        } else {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Failed to add additional info.", false));
+        }
+    }
+
+    @Operation(summary = "추가 정보 입력 여부 확인 API", description = "추가 정보 입력 여부를 확인합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    @GetMapping("/additional/check")
+    public ResponseEntity<ApiResponse<Boolean>> checkAdditionalInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long userId = userDetails.getId();
+        boolean isAdditionalInfoSet = userService.isUserUpdated(userId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Additional info check successful.", isAdditionalInfoSet));
     }
 }

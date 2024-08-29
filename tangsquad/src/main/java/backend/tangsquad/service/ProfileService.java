@@ -31,6 +31,7 @@ public class ProfileService {
     private final UserCertificateService userCertificateService;
     private final UserCertificateRepository userCertificateRepository;
 
+
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfile(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
@@ -91,11 +92,24 @@ public class ProfileService {
 
         updateNickname(user, request.getNickname());
         updateProfileImage(user.getUserProfile(), request.getProfileImageUrl());
-        updateUserCertificate(userId, request);
+        updateUserCertificate(userId, request.getCertOrganizationId(), request.getCertLevelId(), request.getCertificateImageUrl());
         updateProfileDetails(user.getUserProfile(), request);
         updateEquipment(user.getUserProfile().getEquipment(), request);
 
         return createProfileEditResponse(user);
+    }
+
+    @Transactional
+    public Boolean setAdditionalInfo(Long userId, String nickname, Long organizationId, Long levelId, String certificateImageUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
+
+        updateNickname(user, nickname);
+        if(organizationId != null && levelId != null && certificateImageUrl != null){
+            userCertificateService.createUserCertificate(userId, organizationId, levelId, certificateImageUrl);
+        }
+
+        return true;
     }
 
     private void updateNickname(User user, String nickname) {
@@ -113,9 +127,9 @@ public class ProfileService {
         }
     }
 
-    private void updateUserCertificate(Long userId, ProfileEditRequest request) {
-        if (request.getCertOrganizationId() != null && request.getCertLevelId() != null && request.getCertificateImageUrl() != null) {
-            userCertificateService.updateUserCertificate(userId, request.getCertOrganizationId(), request.getCertLevelId(), request.getCertificateImageUrl());
+    private void updateUserCertificate(Long userId, Long OrganizationId, Long levelId, String certificateImageUrl) {
+        if (OrganizationId != null && levelId != null && certificateImageUrl != null) {
+            userCertificateService.updateUserCertificate(userId, OrganizationId, levelId, certificateImageUrl);
         }
     }
 
