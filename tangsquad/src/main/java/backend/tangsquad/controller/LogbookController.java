@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,11 +65,8 @@ public class LogbookController {
         System.out.println("PostMapping called");
         try {
             Logbook logbook = new Logbook();
-            User user = new User();
-//            user.setId(userDetails.getId());
-            // 테스트용
-            user.setId(logCreateRequest.getUserId());
-            logbook.setUser(user);
+
+            logbook.setUser(userDetails.getUser());
 
             logbook.setTitle(logCreateRequest.getTitle());
             logbook.setDate(logCreateRequest.getDate());
@@ -113,7 +111,7 @@ public class LogbookController {
                 // Convert Logbook to LogReadResponse
                 LogReadResponse logReadResponse = new LogReadResponse(
                         logbook.getId(),
-                        logbook.getUser().getId(),
+                        logbook.getUser(),
                         logbook.getDate(),
                         logbook.getTitle(),
                         logbook.getSquadId(),
@@ -151,11 +149,9 @@ public class LogbookController {
     @Operation(summary = "내 로그북 불러오기", description = "나의 로그들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<LogReadResponse>> getMyLogs(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         // Retrieve the current authenticated user's ID
-        Long userId = 1L;
-//        Long userId = userDetails.getId();  // Use the authenticated user's ID
+        Long userId = userDetails.getId();  // Use the authenticated user's ID
 
         try {
-            System.out.println("userId: " + userId);
 
             // Retrieve the user's logs
             List<Logbook> logbooks = logbookService.getLogs(userId);
@@ -164,8 +160,7 @@ public class LogbookController {
             List<LogReadResponse> logReadResponses = logbooks.stream()
                     .map(logbook -> new LogReadResponse(
                             logbook.getId(),
-                            1L,
-//                            logbook.getUser().getId(),  // Retrieve the actual user ID
+                            logbook.getUser(),  // Retrieve the actual user ID
                             logbook.getDate(),
                             logbook.getTitle(),
                             logbook.getSquadId(),
@@ -206,21 +201,17 @@ public class LogbookController {
     @GetMapping("/user/{userId}")
     @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그들을 불러옵니다.")
     public ResponseEntity<List<LogReadResponse>> getLogs(@PathVariable("userId") Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // Retrieve the current authenticated user's ID
 
-//        Long userId = userDetails.getId();
         System.out.println("userId: " + userId);
 //         Retrieve the user's logs
         List<Logbook> logbooks = logbookService.getLogs(userId);
-//        List<Logbook> logbooks = logbookService.getLogs(1L);
 
 
         // Map Logbook entities to LogReadResponse DTOs
         List<LogReadResponse> logReadResponses = logbooks.stream()
                 .map(logbook -> new LogReadResponse(
                         logbook.getId(),
-//                        1L,
-                        logbook.getUser().getId(),
+                        logbook.getUser(),
                         logbook.getDate(),
                         logbook.getTitle(),
                         logbook.getSquadId(),
@@ -247,57 +238,55 @@ public class LogbookController {
     }
 
 
-    @GetMapping("/user/{userId}/{logId}")
-    @Operation(summary = "타 유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.")
-    public ResponseEntity<LogReadResponse> getUserLog(
-            @PathVariable("userId") Long userId,
-            @PathVariable("logId") Long logId) {
-
-        // Extract the ID of the currently authenticated user
-//        Long currentUserId = userDetails.getId();  // Ensure this method exists in UserDetailsImpl
-
-        // Retrieve the logbook entry by ID
-        Optional<Logbook> logbookOptional = logbookService.getLog(logId);
-
-        if (logbookOptional.isPresent()) {
-            Logbook logbook = logbookOptional.get();
-
-            // Check if the logbook belongs to the requested user
-            if (logbook.getUser().getId().equals(userId)) {
-                // Map Logbook entity to LogReadResponse DTO
-                LogReadResponse logReadResponse = new LogReadResponse(
-                        logbook.getId(),
-                        logbook.getUser().getId(),  // Assuming you want to include the user ID
-                        logbook.getDate(),
-                        logbook.getTitle(),
-                        logbook.getSquadId(),
-                        logbook.getContents(),
-                        logbook.getLocation(),
-                        logbook.getWeather(),
-                        logbook.getSurfTemp(),
-                        logbook.getUnderTemp(),
-                        logbook.getViewSight(),
-                        logbook.getTide(),
-                        logbook.getStartDiveTime(),
-                        logbook.getEndDiveTime(),
-                        logbook.getTimeDiffDive(),
-                        logbook.getAvgDepDiff(),
-                        logbook.getMaxDiff(),
-                        logbook.getStartBar(),
-                        logbook.getEndBar(),
-                        logbook.getDiffBar()
-                );
-
-                return ResponseEntity.ok(logReadResponse);
-            } else {
-                // Return forbidden status if the logbook does not belong to the requested user
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-        }
-
-        // Return not found status if the logbook entry doesn't exist
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
+//    @GetMapping("/user/{userId}/{logId}")
+//    @Operation(summary = "타 유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.")
+//    public ResponseEntity<LogReadResponse> getUserLog(
+//            @PathVariable("userId") Long userId,
+//            @PathVariable("logId") Long logId) {
+//
+//
+//        // Retrieve the logbook entry by ID
+//        Optional<Logbook> logbookOptional = logbookService.getLog(logId);
+//
+//        if (logbookOptional.isPresent()) {
+//            Logbook logbook = logbookOptional.get();
+//
+//            // Check if the logbook belongs to the requested user
+//            if (logbook.getUser().getId().equals(userId)) {
+//                // Map Logbook entity to LogReadResponse DTO
+//                LogReadResponse logReadResponse = new LogReadResponse(
+//                        logbook.getId(),
+//                        logbook.getUser().getId(),  // Assuming you want to include the user ID
+//                        logbook.getDate(),
+//                        logbook.getTitle(),
+//                        logbook.getSquadId(),
+//                        logbook.getContents(),
+//                        logbook.getLocation(),
+//                        logbook.getWeather(),
+//                        logbook.getSurfTemp(),
+//                        logbook.getUnderTemp(),
+//                        logbook.getViewSight(),
+//                        logbook.getTide(),
+//                        logbook.getStartDiveTime(),
+//                        logbook.getEndDiveTime(),
+//                        logbook.getTimeDiffDive(),
+//                        logbook.getAvgDepDiff(),
+//                        logbook.getMaxDiff(),
+//                        logbook.getStartBar(),
+//                        logbook.getEndBar(),
+//                        logbook.getDiffBar()
+//                );
+//
+//                return ResponseEntity.ok(logReadResponse);
+//            } else {
+//                // Return forbidden status if the logbook does not belong to the requested user
+//                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//            }
+//        }
+//
+//        // Return not found status if the logbook entry doesn't exist
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//    }
 
 
 
@@ -323,14 +312,14 @@ public class LogbookController {
             if (updatedLogbook.getUser() == null) {
                 throw new IllegalStateException("User associated with logbook is null");
             }
-//            if (!userDetailsImpl.getId().equals(updatedLogbook.getUser().getId())) {
-//                throw new AccessDeniedException("User is not authorized to update this logbook");
-//            }
+            if (!userDetailsImpl.getId().equals(updatedLogbook.getUser().getId())) {
+                throw new AccessDeniedException("User is not authorized to update this logbook");
+            }
 
             // Convert the updated logbook to a LogReadResponse
             LogReadResponse logReadResponse = new LogReadResponse(
                     updatedLogbook.getId(),
-                    updatedLogbook.getUser().getId(),
+                    updatedLogbook.getUser(),
                     updatedLogbook.getDate(),
                     updatedLogbook.getTitle(),
                     updatedLogbook.getSquadId(),
@@ -363,10 +352,16 @@ public class LogbookController {
 
 
     // Use @PathVariable for the ID since it's in the URL path
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{logId}")
     public ResponseEntity<CommonResponse> deleteLog(
-            @PathVariable("id") Long logId,
+            @PathVariable("logId") Long logId,
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+
+        // Check if the user details are present
+        if (userDetailsImpl == null) {
+            // User is not authenticated
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         try {
             // Retrieve the logbook from the service
@@ -374,32 +369,31 @@ public class LogbookController {
 
             if (!logbookOptional.isPresent()) {
                 // Log not found
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
             Logbook logbook = logbookOptional.get();
             Long logOwnerId = logbook.getUser().getId();
 
-//            // Check if the authenticated user is authorized to delete the log
-//            if (!userDetailsImpl.getId().equals(logOwnerId)) {
-//                // User is not authorized to delete this log
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                        .build();
-//            }
+            System.out.println("logOwnerId: " + logOwnerId + "userDetails.getId(): " + userDetailsImpl.getId());
+
+            // Check if the authenticated user is authorized to delete the log
+            if (!userDetailsImpl.getId().equals(logOwnerId)) {
+                // User is not authorized to delete this log
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
 
             // Proceed to delete the logbook
             logbookService.deleteLog(logId);
 
             // Return success response
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                    .build();
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             // Handle other potential exceptions
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 
 }
