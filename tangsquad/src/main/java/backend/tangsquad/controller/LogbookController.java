@@ -238,55 +238,55 @@ public class LogbookController {
     }
 
 
-//    @GetMapping("/user/{userId}/{logId}")
-//    @Operation(summary = "타 유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.")
-//    public ResponseEntity<LogReadResponse> getUserLog(
-//            @PathVariable("userId") Long userId,
-//            @PathVariable("logId") Long logId) {
-//
-//
-//        // Retrieve the logbook entry by ID
-//        Optional<Logbook> logbookOptional = logbookService.getLog(logId);
-//
-//        if (logbookOptional.isPresent()) {
-//            Logbook logbook = logbookOptional.get();
-//
-//            // Check if the logbook belongs to the requested user
-//            if (logbook.getUser().getId().equals(userId)) {
-//                // Map Logbook entity to LogReadResponse DTO
-//                LogReadResponse logReadResponse = new LogReadResponse(
-//                        logbook.getId(),
-//                        logbook.getUser().getId(),  // Assuming you want to include the user ID
-//                        logbook.getDate(),
-//                        logbook.getTitle(),
-//                        logbook.getSquadId(),
-//                        logbook.getContents(),
-//                        logbook.getLocation(),
-//                        logbook.getWeather(),
-//                        logbook.getSurfTemp(),
-//                        logbook.getUnderTemp(),
-//                        logbook.getViewSight(),
-//                        logbook.getTide(),
-//                        logbook.getStartDiveTime(),
-//                        logbook.getEndDiveTime(),
-//                        logbook.getTimeDiffDive(),
-//                        logbook.getAvgDepDiff(),
-//                        logbook.getMaxDiff(),
-//                        logbook.getStartBar(),
-//                        logbook.getEndBar(),
-//                        logbook.getDiffBar()
-//                );
-//
-//                return ResponseEntity.ok(logReadResponse);
-//            } else {
-//                // Return forbidden status if the logbook does not belong to the requested user
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//            }
-//        }
-//
-//        // Return not found status if the logbook entry doesn't exist
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//    }
+    @GetMapping("/user/{userId}/{logId}")
+    @Operation(summary = "타 유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<LogReadResponse> getUserLog(
+            @PathVariable("userId") Long userId,
+            @PathVariable("logId") Long logId) {
+
+
+        // Retrieve the logbook entry by ID
+        Optional<Logbook> logbookOptional = logbookService.getLog(logId);
+
+        if (logbookOptional.isPresent()) {
+            Logbook logbook = logbookOptional.get();
+
+            // Check if the logbook belongs to the requested user
+            if (logbook.getUser().getId().equals(userId)) {
+                // Map Logbook entity to LogReadResponse DTO
+                LogReadResponse logReadResponse = new LogReadResponse(
+                        logbook.getId(),
+                        logbook.getUser(),  // Assuming you want to include the user ID
+                        logbook.getDate(),
+                        logbook.getTitle(),
+                        logbook.getSquadId(),
+                        logbook.getContents(),
+                        logbook.getLocation(),
+                        logbook.getWeather(),
+                        logbook.getSurfTemp(),
+                        logbook.getUnderTemp(),
+                        logbook.getViewSight(),
+                        logbook.getTide(),
+                        logbook.getStartDiveTime(),
+                        logbook.getEndDiveTime(),
+                        logbook.getTimeDiffDive(),
+                        logbook.getAvgDepDiff(),
+                        logbook.getMaxDiff(),
+                        logbook.getStartBar(),
+                        logbook.getEndBar(),
+                        logbook.getDiffBar()
+                );
+
+                return ResponseEntity.ok(logReadResponse);
+            } else {
+                // Return forbidden status if the logbook does not belong to the requested user
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
+
+        // Return not found status if the logbook entry doesn't exist
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 
 
 
