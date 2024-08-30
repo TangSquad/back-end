@@ -353,6 +353,7 @@ public class LogbookController {
 
     // Use @PathVariable for the ID since it's in the URL path
     @DeleteMapping("/{logId}")
+    @Operation(summary = "로그북 삭제하기", description = "나의 로그를 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<CommonResponse> deleteLog(
             @PathVariable("logId") Long logId,
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
@@ -375,7 +376,8 @@ public class LogbookController {
             Logbook logbook = logbookOptional.get();
             Long logOwnerId = logbook.getUser().getId();
 
-            System.out.println("logOwnerId: " + logOwnerId + "userDetails.getId(): " + userDetailsImpl.getId());
+            System.out.println("userId: " + userDetailsImpl.getId() + "logOwnerId: " + logOwnerId);
+
 
             // Check if the authenticated user is authorized to delete the log
             if (!userDetailsImpl.getId().equals(logOwnerId)) {
@@ -394,6 +396,7 @@ public class LogbookController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 
 
 }
