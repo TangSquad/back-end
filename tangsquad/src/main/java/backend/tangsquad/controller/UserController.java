@@ -36,7 +36,7 @@ public class UserController {
     @PostMapping("/check/email")
     public ResponseEntity<ApiResponse<Boolean>> checkEmail(@Valid @RequestBody EmailCheckRequest emailCheckRequest) {
         if (userService.isEmailExists(emailCheckRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Email already registered.", false));
+            return ResponseEntity.ok(new ApiResponse<>(false, "Email already registered.", false));
         } else {
             return ResponseEntity.ok(new ApiResponse<>(true, "Email available.", true));
         }
@@ -46,7 +46,7 @@ public class UserController {
     @PostMapping("/check/phone")
     public ResponseEntity<ApiResponse<Boolean>> checkPhone(@Valid @RequestBody PhoneRequest phoneRequest) {
         if (userService.isPhoneExists(phoneRequest.getPhoneNumber())) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Phone number already registered.", false));
+            return ResponseEntity.ok(new ApiResponse<>(false, "Phone number already registered.", false));
         } else {
             return ResponseEntity.ok(new ApiResponse<>(true, "Phone number available.", true));
         }
@@ -56,7 +56,7 @@ public class UserController {
     @PostMapping("/check/nickname")
     public ResponseEntity<ApiResponse<Boolean>> checkNickname(@Valid @RequestBody NicknameCheckRequest nicknameRequest) {
         if (userService.isNicknameExists(nicknameRequest.getNickname())) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Nickname already registered.", false));
+            return ResponseEntity.ok(new ApiResponse<>(false, "Nickname already registered.", false));
         } else {
             return ResponseEntity.ok(new ApiResponse<>(true, "Nickname available.", true));
         }
