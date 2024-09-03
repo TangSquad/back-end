@@ -100,11 +100,12 @@ public class ProfileService {
     }
 
     @Transactional
-    public Boolean setAdditionalInfo(Long userId, String nickname, Long organizationId, Long levelId, String certificateImageUrl) {
+    public Boolean setAdditionalInfo(Long userId, String nickname, String ProfileImage, Long organizationId, Long levelId, String certificateImageUrl) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
 
         updateNickname(user, nickname);
+        updateProfileImage(user.getUserProfile(), ProfileImage);
         if(organizationId != null && levelId != null && certificateImageUrl != null){
             userCertificateService.createUserCertificate(userId, organizationId, levelId, certificateImageUrl);
         }

@@ -15,4 +15,5 @@ public class AdditionalInfoRequest {
     Long organizationId;
     Long levelId;
     String certificateImage;
+    String profileImage;
 }

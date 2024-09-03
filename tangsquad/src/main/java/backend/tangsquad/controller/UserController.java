@@ -110,7 +110,7 @@ public class UserController {
     @PostMapping("/additional")
     public ResponseEntity<ApiResponse<Boolean>> addAdditionalInfo(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody AdditionalInfoRequest additionalInfoRequest) {
         Long userId = userDetails.getId();
-        boolean isSuccess = profileService.setAdditionalInfo(userId, additionalInfoRequest.getNickname(), additionalInfoRequest.getOrganizationId(), additionalInfoRequest.getLevelId(), additionalInfoRequest.getCertificateImage());
+        boolean isSuccess = profileService.setAdditionalInfo(userId, additionalInfoRequest.getNickname(), additionalInfoRequest.getProfileImage(), additionalInfoRequest.getOrganizationId(), additionalInfoRequest.getLevelId(), additionalInfoRequest.getCertificateImage());
         if (isSuccess) {
             return ResponseEntity.ok(new ApiResponse<>(true, "Additional info added successfully.", true));
         } else {
