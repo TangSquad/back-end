@@ -397,6 +397,4 @@ public class LogbookController {
         }
     }
 
-
-
 }
