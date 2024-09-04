@@ -1,24 +1,13 @@
 package backend.tangsquad.repository;
 
 import backend.tangsquad.domain.Diving;
-import backend.tangsquad.domain.Moim;
+import backend.tangsquad.domain.Logbook;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
-public interface DivingRepository {
-    Diving save(Diving diving);
-    Diving findById(Long divingId);
-
-
-
-//    Moim findByOwner(String owner);
-
-    Optional<Diving> findById(String nickname, Long id);
-
-    List<Diving> findAll();
-
-    void delete(Diving diving);
+public interface DivingRepository extends JpaRepository<Diving, Long> {
+    List<Diving> findByUserId(Long userId);
 }

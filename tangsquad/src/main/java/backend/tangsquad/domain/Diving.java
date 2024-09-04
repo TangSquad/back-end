@@ -1,42 +1,40 @@
 package backend.tangsquad.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
-@Getter
-@Setter
-@Table(name="diving")
+@Table(name = "diving")  // Ensure this matches your database table name
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Diving {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")  // Ensure this matches the column name in your database
+    private Long divingId;
 
-    // figma 작업 완료 후 개발
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)  // Ensure the join column matches the foreign key column in the database
     private User user;
 
-    @Column
-    private String licenseLimit;
+    private String divingName;
+    private String divingIntro;
+    private Long age;
+    private String moodOne;
+    private String moodTwo;
+    private Long limitPeople;
+    private String limitLicense;
 
-    @Column
-    private String moimLeader;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
 
-    @Column
-    private LocalDateTime startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
 
-    @Column
-    private LocalDateTime endDate;
-
-    @Column
-    private String region;
-
-    @Column
-    private String theme;
-
+    private String location;
 }
