@@ -4,6 +4,8 @@ import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.domain.Diving;
 import backend.tangsquad.dto.request.DivingCreateRequest;
 import backend.tangsquad.dto.request.DivingUpdateRequest;
+import backend.tangsquad.dto.request.MoimCreateRequest;
+import backend.tangsquad.dto.response.DivingCreateResponse;
 import backend.tangsquad.dto.response.DivingReadResponse;
 import backend.tangsquad.dto.response.LogCreateResponse;
 import backend.tangsquad.service.DivingService;
@@ -52,10 +54,10 @@ public class DivingController {
             security = @SecurityRequirement(name = "AccessToken")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "로그북 생성 성공", content = @Content(schema = @Schema(implementation = LogCreateResponse.class))),
+            @ApiResponse(responseCode = "201", description = "다이빙 생성 성공", content = @Content(schema = @Schema(implementation = DivingCreateResponse.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
     })
-    public ResponseEntity<DivingCreateRequest> creatediving(
+    public ResponseEntity<DivingCreateRequest> createDiving(
             @RequestBody DivingCreateRequest divingCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
