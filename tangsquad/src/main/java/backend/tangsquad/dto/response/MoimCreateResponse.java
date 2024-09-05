@@ -1,19 +1,14 @@
 package backend.tangsquad.dto.response;
 
-
 import backend.tangsquad.domain.User;
-import jakarta.persistence.JoinColumn;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 
-public class MoimReadResponse {
+public class MoimCreateResponse {
     private Long id;
     private Long userId;
     private Boolean anonymous;

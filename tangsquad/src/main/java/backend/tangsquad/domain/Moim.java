@@ -1,5 +1,6 @@
 package backend.tangsquad.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,37 +19,46 @@ public class Moim {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonManagedReference
     private User user;
 
-//    private String[] moimMembers;
     @Column
-    private String moimMembers;
-    @Column
-    private LocalDateTime startDate;
-    @Column
-    private LocalDateTime endDate;
+    private Boolean anonymous;
+
     @Column
     private String moimName;
+
     @Column
     private String moimIntro;
-    @Column
-    private String moimContents;
-    @Column
-    private Integer maxPeople;
-    @Column
-    private Float price;
 
-//    private String[] licenseLimit;
+    @Column
+    private String moimDetails;
+
+    @Column
+    private Long limitPeople;
+
+    @Column
+    private Long expense;
+
     @Column
     private String licenseLimit;
-//    private String[] region;
-    @Column
-    private String region;
-    @Column
-    private String age;
 
-//    private String[] mood;
     @Column
-    private String mood;
+    private String locationOne;
+
+    @Column
+    private String locationTwo;
+
+    @Column
+    private String locationThree;
+
+    @Column
+    private Long age;
+
+    @Column
+    private String moodOne;
+
+    @Column
+    private String moodTwo;
 
 }

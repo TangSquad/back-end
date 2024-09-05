@@ -1,6 +1,9 @@
 package backend.tangsquad.dto.request;
 
 
+import backend.tangsquad.domain.User;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,25 +15,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class MoimUpdateRequest {
     private Long id;
-
-    private String moimOwner;
-
-    //    private String[] moimMembers;
-    private String moimMembers;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+//    private User user;
+    private Boolean anonymous;
     private String moimName;
     private String moimIntro;
-    private String moimContents;
-    private Integer maxPeople;
-    private Float price;
-
-    //    private String[] licenseLimit;
+    private String moimDetails;
+    private Long limitPeople;
+    private Long expense;
     private String licenseLimit;
-    //    private String[] region;
-    private String region;
-    private String age;
+    private String locationOne;
+    private String locationTwo;
+    private String locationThree;
+    private Long age;
+    private String moodOne;
+    private String moodTwo;
 
-    //    private String[] mood;
-    private String mood;
 }
