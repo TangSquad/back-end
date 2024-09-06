@@ -1,7 +1,7 @@
 package backend.tangsquad.moim.repository;
 
 import backend.tangsquad.moim.entity.Moim;
-import backend.tangsquad.domain.User;
+import backend.tangsquad.common.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

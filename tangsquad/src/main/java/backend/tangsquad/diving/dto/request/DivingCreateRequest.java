@@ -1,12 +1,9 @@
 package backend.tangsquad.diving.dto.request;
 
-import backend.tangsquad.domain.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor

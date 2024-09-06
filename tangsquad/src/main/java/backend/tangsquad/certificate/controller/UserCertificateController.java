@@ -8,7 +8,7 @@ import backend.tangsquad.certificate.entity.CertOrganization;
 import backend.tangsquad.certificate.service.CertLevelService;
 import backend.tangsquad.certificate.service.CertOrganizationService;
 import backend.tangsquad.certificate.service.UserCertificateService;
-import backend.tangsquad.dto.response.ApiResponse;
+import backend.tangsquad.common.dto.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

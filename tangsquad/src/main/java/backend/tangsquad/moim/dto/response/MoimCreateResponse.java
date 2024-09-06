@@ -1,7 +1,5 @@
 package backend.tangsquad.moim.dto.response;
 
-import backend.tangsquad.domain.User;
-import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

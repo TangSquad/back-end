@@ -1,7 +1,6 @@
 package backend.tangsquad.logbook.dto.response;
 
-import backend.tangsquad.domain.User;
-import backend.tangsquad.logbook.dto.response.LogReadResponse;
+import backend.tangsquad.common.entity.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

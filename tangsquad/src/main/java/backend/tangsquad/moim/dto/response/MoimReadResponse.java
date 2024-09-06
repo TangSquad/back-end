@@ -1,13 +1,9 @@
 package backend.tangsquad.moim.dto.response;
 
 
-import backend.tangsquad.domain.User;
-import jakarta.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor

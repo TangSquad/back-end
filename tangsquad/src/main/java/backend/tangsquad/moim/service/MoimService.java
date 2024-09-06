@@ -1,11 +1,11 @@
 package backend.tangsquad.moim.service;
 
 import backend.tangsquad.moim.entity.Moim;
-import backend.tangsquad.domain.User;
+import backend.tangsquad.common.entity.User;
 import backend.tangsquad.moim.dto.request.MoimLeaderUpdateRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import backend.tangsquad.moim.repository.MoimRepository;
-import backend.tangsquad.repository.UserRepository;
+import backend.tangsquad.common.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

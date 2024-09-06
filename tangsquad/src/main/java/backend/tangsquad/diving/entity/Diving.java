@@ -1,6 +1,6 @@
 package backend.tangsquad.diving.entity;
 
-import backend.tangsquad.domain.User;
+import backend.tangsquad.common.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
