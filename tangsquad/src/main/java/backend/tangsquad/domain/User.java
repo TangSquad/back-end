@@ -56,7 +56,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonBackReference
     private List<Logbook> logbooks;
-    // 로그북 리스트
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Logbook> logbooks;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
+    @JsonBackReference
+    private List<Moim> moims;
+
 }

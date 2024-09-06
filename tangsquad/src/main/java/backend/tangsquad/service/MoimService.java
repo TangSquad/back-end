@@ -1,15 +1,19 @@
 package backend.tangsquad.service;
 
+import backend.tangsquad.domain.Diving;
 import backend.tangsquad.domain.Logbook;
 import backend.tangsquad.domain.Moim;
 import backend.tangsquad.domain.User;
 import backend.tangsquad.dto.request.LogUpdateRequest;
+import backend.tangsquad.dto.request.MoimLeaderUpdateRequest;
 import backend.tangsquad.dto.request.MoimUpdateRequest;
 import backend.tangsquad.repository.MoimRepository;
+import backend.tangsquad.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -21,9 +25,12 @@ import java.util.stream.Collectors;
 public class MoimService  {
     private MoimRepository moimRepository;
 
+    private UserRepository userRepository;
+
     @Autowired
-    public MoimService (MoimRepository moimRepository) {
+    public MoimService (MoimRepository moimRepository, UserRepository userRepository) {
         this.moimRepository = moimRepository;
+        this.userRepository = userRepository;
     }
 
     public Moim save(Moim moim) {
@@ -37,7 +44,7 @@ public class MoimService  {
         Optional<Moim> moimOptional = moimRepository.findById(moimId);
 
         if (!moimOptional.isPresent()) {
-            throw new NoSuchElementException(", logId: " + moimId);
+            throw new NoSuchElementException(", moimId: " + moimId);
         }
 
         // Get the existing logbook
@@ -63,11 +70,68 @@ public class MoimService  {
         return moimRepository.save(moim);
     }
 
+    public Optional<Moim> findById(Long moimId) {
+        return moimRepository.findById(moimId);
+    }
+
+    public List<Moim> getRegisteredMoims(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found with id: " + userId));
+
+        return moimRepository.findByRegisteredUsersContaining(user);
+    }
+
+
+
+    public Moim updateMoimLeader(Long moimId, MoimLeaderUpdateRequest request) {
+        // Retrieve the existing Moim by moimId
+        Moim moim = moimRepository.findById(moimId)
+                .orElseThrow(() -> new NoSuchElementException("Moim not found for moimId: " + moimId));
+
+        // Retrieve the new leader (user) by userId if it's not null
+        if (request.getUserId() != null) {
+            User newUser = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new NoSuchElementException("User not found for userId: " + request.getUserId()));
+
+            // Update the Moim's user (leader) with the new User object
+            moim.setUser(newUser);
+        }
+
+        // Save and return the updated Moim
+        return moimRepository.save(moim);
+    }
+
+    // Method to check if the user is authorized to update the leader
+    public boolean isAuthorizedToUpdateLeader(Long moimId, Long currentUserId) {
+        return moimRepository.findById(moimId)
+                .map(moim -> moim.getUser().getId().equals(currentUserId))
+                .orElse(false);
+    }
+
+
+
+
 
     public List<Moim> getMoims(Long userId)
     {
         return moimRepository.findByUserId(userId);
     }
 
+    public Optional<Moim> getMoim(Long moimId) {
+        return moimRepository.findById(moimId);
+    }
 
+    public void deleteMoim(Long moimId) {
+        // Retrieve the logbook based on logId
+        Moim moim = moimRepository.findById(moimId)
+                .orElseThrow(() -> new NoSuchElementException("Logbook not found for moimId: " + moimId));
+
+        // Delete the logbook
+        moimRepository.delete(moim);
+    }
+
+
+    public List<Moim> getAllMoims() {
+        return moimRepository.findAll();
+    }
 }
