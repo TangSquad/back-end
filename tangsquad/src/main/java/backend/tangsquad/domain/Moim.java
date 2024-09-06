@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,10 +18,12 @@ public class Moim {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)  // Ensure nullable=false matches DB constraint
     @JsonManagedReference
+    // 모임의 소유자
     private User user;
+
 
     @Column
     private Boolean anonymous;
@@ -60,5 +63,15 @@ public class Moim {
 
     @Column
     private String moodTwo;
+
+    @ManyToMany
+    @JoinTable(
+            name = "moim_user",
+            joinColumns = @JoinColumn(name = "moim_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @JsonManagedReference
+    private List<User> registeredUsers; // List of registered users
+
 
 }
