@@ -68,7 +68,7 @@ public class DivingService {
     public void deleteDiving(Long divingId) {
         // Retrieve the logbook based on logId
         Diving diving = divingRepository.findById(divingId)
-                .orElseThrow(() -> new NoSuchElementException("Logbook not found for logId: " + divingId));
+                .orElseThrow(() -> new NoSuchElementException("Logbook not found for divingId: " + divingId));
 
         // Delete the logbook
         divingRepository.delete(diving);
