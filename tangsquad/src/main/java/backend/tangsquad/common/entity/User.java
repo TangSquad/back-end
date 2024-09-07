@@ -36,8 +36,11 @@ public class User {
     // 전화번호
     @Column(nullable = false, unique = true) private String phone;
 
-    // 비밀번호(해시)
+    // 비밀번호
     @Column private String password;
+
+    // 가입 플랫폼
+    @Column private String platform;
 
     // 가입 날짜
     @CreatedDate

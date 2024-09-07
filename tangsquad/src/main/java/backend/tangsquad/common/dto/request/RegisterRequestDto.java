@@ -24,4 +24,6 @@ public class RegisterRequestDto {
 
     private String phone;
 
+    private String platform;
+
 }

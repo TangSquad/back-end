@@ -24,10 +24,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RandomNickname randomNickname;
 
-    public Optional<User> findById(Long userId) {
-        return userRepository.findById(userId);
-    }
-
     @Transactional
     public RegisterResponse registerUser(@Valid RegisterRequestDto registerRequestDto) {
         // 이메일 또는 사용자 이름 중복 확인
@@ -48,8 +44,13 @@ public class UserService {
             nickname = randomNickname.generate();
         }
 
-        // 패스워드 암호화
-        String encodedPassword = passwordEncoder.encode(registerRequestDto.getPassword());
+        String encodedPassword;
+        if (registerRequestDto.getPassword() == null) {
+            encodedPassword = passwordEncoder.encode(registerRequestDto.getPlatform());
+        } else {
+            // 패스워드 암호화
+            encodedPassword = passwordEncoder.encode(registerRequestDto.getPassword());
+        }
 
         // 새 사용자 생성
         User user = new User();
@@ -59,6 +60,9 @@ public class UserService {
         user.setPhone(registerRequestDto.getPhone());
         user.setName(registerRequestDto.getName());
         user.setRole("ROLE_USER");
+        if (registerRequestDto.getPlatform() != null) {
+            user.setPlatform(registerRequestDto.getPlatform());
+        }
 
         // UserProfile 생성 및 설정
         UserProfile userProfile = new UserProfile();
@@ -98,6 +102,17 @@ public class UserService {
             return true;
         } else {
             return false;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public String getUserPlatform(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return user.getPlatform();
+        } else {
+            return null;
         }
     }
 
