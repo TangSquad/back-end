@@ -34,6 +34,7 @@ public class ProfileService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             return new UserProfileResponse(
+                    userId,
                     user.getUserProfile().getProfileImageUrl(),
                     user.getName(),
                     user.getNickname(),

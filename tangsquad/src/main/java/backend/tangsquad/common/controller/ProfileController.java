@@ -46,6 +46,7 @@ public class ProfileController {
     }
 
     @GetMapping("/profile/{userId}")
+    @Operation(summary = "유저 프로필 조회", description = "유저ID로 유저 프로필 조회", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<ApiResponse<UserProfileResponse>> getUserProfile(@PathVariable Long userId) {
         UserProfileResponse userProfileResponse = profileService.getUserProfile(userId);
         return ResponseEntity.ok(new ApiResponse<>(true, "User profile retrieved successfully.", userProfileResponse));
