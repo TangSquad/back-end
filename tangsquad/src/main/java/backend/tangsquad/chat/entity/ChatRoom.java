@@ -15,16 +15,22 @@ import java.util.UUID;
 
 public class ChatRoom {
 
+    public enum RoomType {
+        DIVING, MOIM
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String roomId;
     private String name;
+    private RoomType type;
 
-    public static ChatRoom create(String name) {
+    public static ChatRoom create(String name, RoomType type) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.roomId = UUID.randomUUID().toString();
         chatRoom.name = name;
+        chatRoom.type = type;
         return chatRoom;
     }
 }

@@ -23,8 +23,8 @@ public class ChatRoomService {
         return chatRoomRepository.findByRoomId(roomId);
     }
 
-    public ChatRoom createChatRoom(String name) {
-        ChatRoom chatRoom = ChatRoom.create(name);
+    public ChatRoom createChatRoom(String name, ChatRoom.RoomType type) {
+        ChatRoom chatRoom = ChatRoom.create(name, type);
         return chatRoomRepository.save(chatRoom);
     }
 }
