@@ -129,4 +129,10 @@ public class UserService {
         }
     }
 
+    public User findByName(String username) {
+        return userRepository.findByName(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+    }
+
+
 }

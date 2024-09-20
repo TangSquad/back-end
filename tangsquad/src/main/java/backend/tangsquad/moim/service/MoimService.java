@@ -6,6 +6,7 @@ import backend.tangsquad.moim.dto.request.MoimLeaderUpdateRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import backend.tangsquad.moim.repository.MoimRepository;
 import backend.tangsquad.repository.UserRepository;
+import backend.tangsquad.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +21,40 @@ public class MoimService  {
 
     private UserRepository userRepository;
 
+    private UserService userService;
+
     @Autowired
-    public MoimService (MoimRepository moimRepository, UserRepository userRepository) {
+    public MoimService (MoimRepository moimRepository, UserRepository userRepository, UserService userService) {
         this.moimRepository = moimRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public Moim save(Moim moim) {
         return moimRepository.save(moim);
     }
 
+
+    public Moim updateMoimLeaderByUsername(Long moimId, Long newLeaderId) {
+        Moim moim = moimRepository.findById(moimId)
+                .orElseThrow(() -> new IllegalArgumentException("Moim not found"));
+
+        // Find the new leader by ID, handle Optional
+        User newLeader = userService.findById(newLeaderId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + newLeaderId));
+
+        // Set the new leader of the Moim
+        moim.setUser(newLeader);
+
+        // Save the updated Moim
+        return moimRepository.save(moim);
+    }
+
+
+    public User findByName(String username) {
+        return userRepository.findByName(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+    }
 
     // 수정 필요
     public Moim updateMoim(Long moimId, MoimUpdateRequest request) {

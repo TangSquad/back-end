@@ -2,6 +2,8 @@ package backend.tangsquad.moim.controller;
 
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.domain.User;
+import backend.tangsquad.moim.dto.request.MoimLeaderUpdateByUsernameRequest;
 import backend.tangsquad.moim.entity.Moim;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
 import backend.tangsquad.moim.dto.request.MoimLeaderUpdateRequest;
@@ -363,6 +365,56 @@ public class MoimController {
         // Return the updated MoimReadResponse in a list (to maintain consistency with previous GET mapping)
         return ResponseEntity.ok(Collections.singletonList(moimReadResponse));
     }
+
+    @PutMapping("/update-leader-by-name")
+    @Operation(summary = "모임 소유자 수정하기 (사용자 이름)", description = "모임의 소유자를 사용자 이름으로 수정합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<List<MoimReadResponse>> updateMoimLeaderByUsername(
+            @RequestBody MoimLeaderUpdateByUsernameRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+
+        Long moimId = request.getMoimId();
+        String newUsername = request.getNewUsername();
+        Long currentUserId = userDetailsImpl.getId();
+
+        // Ensure the user is authorized to update this moim leader
+        if (!moimService.isAuthorizedToUpdateLeader(moimId, currentUserId)) {
+            throw new AccessDeniedException("User is not authorized to update this Moim");
+        }
+
+        System.out.println("newUsername: " + newUsername);
+        // Find the user by username
+        User newLeader = userService.findByName(newUsername);
+        System.out.println(newLeader.getName());
+        if (newLeader == null) {
+            throw new IllegalArgumentException("The specified username does not exist");
+        }
+
+        // Update the Moim leader with the new user's ID
+        Moim updatedMoim = moimService.updateMoimLeaderByUsername(moimId, newLeader.getId());
+
+        // Convert the updated Moim to MoimReadResponse
+        MoimReadResponse moimReadResponse = new MoimReadResponse(
+                updatedMoim.getId(),
+                updatedMoim.getUser().getId(),
+                updatedMoim.getAnonymous(),
+                updatedMoim.getMoimName(),
+                updatedMoim.getMoimIntro(),
+                updatedMoim.getMoimDetails(),
+                updatedMoim.getAge(),
+                updatedMoim.getLimitPeople(),
+                updatedMoim.getLicenseLimit(),
+                updatedMoim.getLocationOne(),
+                updatedMoim.getLocationTwo(),
+                updatedMoim.getLocationThree(),
+                updatedMoim.getExpense(),
+                updatedMoim.getMoodOne(),
+                updatedMoim.getMoodTwo()
+        );
+
+        // Return the updated MoimReadResponse in a list
+        return ResponseEntity.ok(Collections.singletonList(moimReadResponse));
+    }
+
 
 
 
