@@ -1,7 +1,7 @@
 package backend.tangsquad.auth.jwt;
 
-import backend.tangsquad.domain.User;
-import backend.tangsquad.repository.UserRepository;
+import backend.tangsquad.common.entity.User;
+import backend.tangsquad.common.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

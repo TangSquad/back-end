@@ -1,6 +1,6 @@
 package backend.tangsquad.logbook.entity;
 
-import backend.tangsquad.domain.User;
+import backend.tangsquad.common.entity.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;

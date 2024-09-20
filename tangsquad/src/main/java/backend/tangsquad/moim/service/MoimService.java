@@ -1,12 +1,12 @@
 package backend.tangsquad.moim.service;
 
+import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.moim.entity.Moim;
-import backend.tangsquad.domain.User;
+import backend.tangsquad.common.entity.User;
 import backend.tangsquad.moim.dto.request.MoimLeaderUpdateRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import backend.tangsquad.moim.repository.MoimRepository;
-import backend.tangsquad.repository.UserRepository;
-import backend.tangsquad.service.UserService;
+import backend.tangsquad.common.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +17,11 @@ import java.util.Optional;
 
 @Service
 public class MoimService  {
-    private MoimRepository moimRepository;
+    final private MoimRepository moimRepository;
 
-    private UserRepository userRepository;
+    final private UserRepository userRepository;
 
-    private UserService userService;
+    final private UserService userService;
 
     @Autowired
     public MoimService (MoimRepository moimRepository, UserRepository userRepository, UserService userService) {
@@ -35,7 +35,7 @@ public class MoimService  {
     }
 
 
-    public Moim updateMoimLeaderByUsername(Long moimId, Long newLeaderId) {
+    public Moim updateMoimLeaderByName(Long moimId, Long newLeaderId) {
         Moim moim = moimRepository.findById(moimId)
                 .orElseThrow(() -> new IllegalArgumentException("Moim not found"));
 
@@ -50,11 +50,6 @@ public class MoimService  {
         return moimRepository.save(moim);
     }
 
-
-    public User findByName(String username) {
-        return userRepository.findByName(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
-    }
 
     // 수정 필요
     public Moim updateMoim(Long moimId, MoimUpdateRequest request) {

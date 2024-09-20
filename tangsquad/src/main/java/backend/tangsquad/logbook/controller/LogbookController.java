@@ -7,7 +7,7 @@ import backend.tangsquad.logbook.dto.request.LogUpdateRequest;
 import backend.tangsquad.logbook.dto.response.LogCreateResponse;
 import backend.tangsquad.logbook.dto.response.LogReadResponse;
 import backend.tangsquad.logbook.service.LogbookService;
-import backend.tangsquad.service.UserService;
+import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.swagger.global.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

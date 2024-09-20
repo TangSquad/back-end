@@ -2,7 +2,7 @@ package backend.tangsquad.moim.controller;
 
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
-import backend.tangsquad.domain.User;
+import backend.tangsquad.common.entity.User;
 import backend.tangsquad.moim.dto.request.MoimLeaderUpdateByUsernameRequest;
 import backend.tangsquad.moim.entity.Moim;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
@@ -11,9 +11,9 @@ import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import backend.tangsquad.moim.dto.response.MoimCreateResponse;
 import backend.tangsquad.moim.dto.response.MoimReadResponse;
 import backend.tangsquad.moim.repository.MoimRepository;
-import backend.tangsquad.repository.UserRepository;
+import backend.tangsquad.common.repository.UserRepository;
 import backend.tangsquad.moim.service.MoimService;
-import backend.tangsquad.service.UserService;
+import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.swagger.global.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -390,7 +390,7 @@ public class MoimController {
         }
 
         // Update the Moim leader with the new user's ID
-        Moim updatedMoim = moimService.updateMoimLeaderByUsername(moimId, newLeader.getId());
+        Moim updatedMoim = moimService.updateMoimLeaderByName(moimId, newLeader.getId());
 
         // Convert the updated Moim to MoimReadResponse
         MoimReadResponse moimReadResponse = new MoimReadResponse(

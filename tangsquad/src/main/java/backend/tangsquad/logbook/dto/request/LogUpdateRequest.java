@@ -1,6 +1,5 @@
 package backend.tangsquad.logbook.dto.request;
 
-import backend.tangsquad.domain.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;

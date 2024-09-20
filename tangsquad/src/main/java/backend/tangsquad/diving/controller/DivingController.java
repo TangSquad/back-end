@@ -7,7 +7,7 @@ import backend.tangsquad.diving.dto.request.DivingUpdateRequest;
 import backend.tangsquad.diving.dto.response.DivingCreateResponse;
 import backend.tangsquad.diving.dto.response.DivingReadResponse;
 import backend.tangsquad.diving.service.DivingService;
-import backend.tangsquad.service.UserService;
+import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.swagger.global.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

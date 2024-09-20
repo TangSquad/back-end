@@ -1,9 +1,8 @@
 package backend.tangsquad.diving.dto.response;
 
-import backend.tangsquad.domain.User;
+import backend.tangsquad.common.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

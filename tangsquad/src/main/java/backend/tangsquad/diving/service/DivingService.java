@@ -3,7 +3,7 @@ package backend.tangsquad.diving.service;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.dto.request.DivingUpdateRequest;
 import backend.tangsquad.diving.repository.DivingRepository;
-import backend.tangsquad.service.UserService;
+import backend.tangsquad.common.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

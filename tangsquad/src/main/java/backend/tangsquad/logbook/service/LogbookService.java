@@ -3,7 +3,7 @@ package backend.tangsquad.logbook.service;
 import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.dto.request.LogUpdateRequest;
 import backend.tangsquad.logbook.repository.LogbookRepository;
-import backend.tangsquad.repository.UserRepository;
+import backend.tangsquad.common.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

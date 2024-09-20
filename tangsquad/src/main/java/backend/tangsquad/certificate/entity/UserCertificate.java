@@ -1,7 +1,7 @@
 package backend.tangsquad.certificate.entity;
 
 import backend.tangsquad.certificate.Enum.CertificateState;
-import backend.tangsquad.domain.User;
+import backend.tangsquad.common.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

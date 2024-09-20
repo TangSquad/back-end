@@ -1,14 +1,9 @@
 package backend.tangsquad.moim.dto.request;
 
 
-import backend.tangsquad.domain.User;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
