@@ -1,5 +1,6 @@
 package backend.tangsquad.moim.service;
 
+import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.moim.entity.Moim;
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.moim.dto.request.MoimLeaderUpdateRequest;
@@ -16,17 +17,36 @@ import java.util.Optional;
 
 @Service
 public class MoimService  {
-    private MoimRepository moimRepository;
+    final private MoimRepository moimRepository;
 
-    private UserRepository userRepository;
+    final private UserRepository userRepository;
+
+    final private UserService userService;
 
     @Autowired
-    public MoimService (MoimRepository moimRepository, UserRepository userRepository) {
+    public MoimService (MoimRepository moimRepository, UserRepository userRepository, UserService userService) {
         this.moimRepository = moimRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public Moim save(Moim moim) {
+        return moimRepository.save(moim);
+    }
+
+
+    public Moim updateMoimLeaderByName(Long moimId, Long newLeaderId) {
+        Moim moim = moimRepository.findById(moimId)
+                .orElseThrow(() -> new IllegalArgumentException("Moim not found"));
+
+        // Find the new leader by ID, handle Optional
+        User newLeader = userService.findById(newLeaderId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + newLeaderId));
+
+        // Set the new leader of the Moim
+        moim.setUser(newLeader);
+
+        // Save the updated Moim
         return moimRepository.save(moim);
     }
 
