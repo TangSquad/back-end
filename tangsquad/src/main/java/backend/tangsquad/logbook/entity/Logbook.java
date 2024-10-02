@@ -54,6 +54,7 @@ public class Logbook {
         if (logbookRequest.getLocation() != null) this.location = logbookRequest.getLocation();
     }
 
+<<<<<<< HEAD
     @Builder
     public Logbook(User user, LocalDateTime date,  String location, String title, String contents) {
         this.user = user;
@@ -61,5 +62,19 @@ public class Logbook {
         this.title = title;
         this.contents = contents;
         this.location = location;
+=======
+    @Column
+    private Float surfTemp;
+
+    @Column
+    private Float underTemp;
+
+    @Builder
+    public Logbook(User user,  String location, String title, String contents) {
+        this.user = user;
+        this.location = location;
+        this.title = title;
+        this.contents = contents;
+>>>>>>> c31f0a1 (fix: Log 엔티티 생성, 불변의 정보는 Logbook에, 변하는 정보는 Log에 저장)
     }
 }

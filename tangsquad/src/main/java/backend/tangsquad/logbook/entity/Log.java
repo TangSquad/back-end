@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31f0a1 (fix: Log 엔티티 생성, 불변의 정보는 Logbook에, 변하는 정보는 Log에 저장)
 package backend.tangsquad.logbook.entity;
 
 import jakarta.persistence.*;
@@ -14,6 +17,10 @@ public class Log {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c31f0a1 (fix: Log 엔티티 생성, 불변의 정보는 Logbook에, 변하는 정보는 Log에 저장)
     @Column
     private String viewSight;
 
@@ -44,7 +51,10 @@ public class Log {
     @Column
     private Long diffBar;
 
+<<<<<<< HEAD
 =======
 package backend.tangsquad.logbook.entity;public class Log {
 >>>>>>> 08e0c42 (refactor: Logbook CREATE 기능 refactor)
+=======
+>>>>>>> c31f0a1 (fix: Log 엔티티 생성, 불변의 정보는 Logbook에, 변하는 정보는 Log에 저장)
 }
