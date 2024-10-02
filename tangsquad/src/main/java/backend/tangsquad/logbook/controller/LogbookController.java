@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -38,9 +37,8 @@ import java.util.stream.Collectors;
 public class LogbookController {
 
     private final LogbookService logbookService;
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
     public LogbookController(LogbookService logbookService, UserService userService) {
         this.logbookService = logbookService;
         this.userService = userService;
@@ -61,34 +59,12 @@ public class LogbookController {
             @RequestBody LogCreateRequest logCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         System.out.println("PostMapping called");
-        try {
-            Logbook logbook = new Logbook();
 
-            logbook.setUser(userDetails.getUser());
+        Logbook savedLogbook = logbookService.save(logCreateRequest, userDetails);
 
-            logbook.setTitle(logCreateRequest.getTitle());
-            logbook.setDate(logCreateRequest.getDate());
-            logbook.setContents(logCreateRequest.getContents());
-            logbook.setLocation(logCreateRequest.getLocation());
-            logbook.setWeather(logCreateRequest.getWeather());
-            logbook.setSurfTemp(logCreateRequest.getSurfTemp());
-            logbook.setUnderTemp(logCreateRequest.getUnderTemp());
-            logbook.setViewSight(logCreateRequest.getViewSight());
-            logbook.setTide(logCreateRequest.getTide());
-            logbook.setStartDiveTime(logCreateRequest.getStartDiveTime());
-            logbook.setEndDiveTime(logCreateRequest.getEndDiveTime());
-            logbook.setTimeDiffDive(logCreateRequest.getTimeDiffDive());
-            logbook.setAvgDepDiff(logCreateRequest.getAvgDepDiff());
-            logbook.setMaxDiff(logCreateRequest.getMaxDiff());
-            logbook.setStartBar(logCreateRequest.getStartBar());
-            logbook.setEndBar(logbook.getEndBar());
-            logbook.setDiffBar(logbook.getDiffBar());
-            // Save logbook
-            Logbook savedLogbook = logbookService.save(logbook);
+        if (savedLogbook != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body(logCreateRequest);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("WRONG");
+        } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
