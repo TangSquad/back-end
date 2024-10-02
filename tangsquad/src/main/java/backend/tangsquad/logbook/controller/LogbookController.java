@@ -84,26 +84,16 @@ public class LogbookController {
 
                 // Convert Logbook to LogReadResponse
                 LogReadResponse logReadResponse = new LogReadResponse(
-                        logbook.getId(),
-                        logbook.getUser(),
-                        logbook.getDate(),
-                        logbook.getTitle(),
-                        logbook.getSquadId(),
-                        logbook.getContents(),
-                        logbook.getLocation(),
-                        logbook.getWeather(),
-                        logbook.getSurfTemp(),
-                        logbook.getUnderTemp(),
-                        logbook.getViewSight(),
-                        logbook.getTide(),
-                        logbook.getStartDiveTime(),
-                        logbook.getEndDiveTime(),
-                        logbook.getTimeDiffDive(),
-                        logbook.getAvgDepDiff(),
-                        logbook.getMaxDiff(),
-                        logbook.getStartBar(),
-                        logbook.getEndBar(),
-                        logbook.getDiffBar()
+//                        logbook.getId(),
+//                        logbook.getUser(),
+//                        logbook.getDate(),
+//                        logbook.getTitle(),
+//                        logbook.getSquadId(),
+//                        logbook.getContents(),
+//                        logbook.getLocation(),
+//                        logbook.getWeather(),
+//                        logbook.getSurfTemp(),
+//                        logbook.getUnderTemp()
                 );
 
                 // Return the response entity with the log data
@@ -133,26 +123,16 @@ public class LogbookController {
             // Map Logbook entities to LogReadResponse DTOs
             List<LogReadResponse> logReadResponses = logbooks.stream()
                     .map(logbook -> new LogReadResponse(
-                            logbook.getId(),
-                            logbook.getUser(),  // Retrieve the actual user ID
-                            logbook.getDate(),
-                            logbook.getTitle(),
-                            logbook.getSquadId(),
-                            logbook.getContents(),
-                            logbook.getLocation(),
-                            logbook.getWeather(),
-                            logbook.getSurfTemp(),
-                            logbook.getUnderTemp(),
-                            logbook.getViewSight(),
-                            logbook.getTide(),
-                            logbook.getStartDiveTime(),
-                            logbook.getEndDiveTime(),
-                            logbook.getTimeDiffDive(),
-                            logbook.getAvgDepDiff(),
-                            logbook.getMaxDiff(),
-                            logbook.getStartBar(),
-                            logbook.getEndBar(),
-                            logbook.getDiffBar()
+//                            logbook.getId(),
+//                            logbook.getUser(),  // Retrieve the actual user ID
+//                            logbook.getDate(),
+//                            logbook.getTitle(),
+//                            logbook.getSquadId(),
+//                            logbook.getContents(),
+//                            logbook.getLocation(),
+//                            logbook.getWeather(),
+//                            logbook.getSurfTemp(),
+//                            logbook.getUnderTemp()
                     ))
                     .collect(Collectors.toList());
 
@@ -184,26 +164,16 @@ public class LogbookController {
         // Map Logbook entities to LogReadResponse DTOs
         List<LogReadResponse> logReadResponses = logbooks.stream()
                 .map(logbook -> new LogReadResponse(
-                        logbook.getId(),
-                        logbook.getUser(),
-                        logbook.getDate(),
-                        logbook.getTitle(),
-                        logbook.getSquadId(),
-                        logbook.getContents(),
-                        logbook.getLocation(),
-                        logbook.getWeather(),
-                        logbook.getSurfTemp(),
-                        logbook.getUnderTemp(),
-                        logbook.getViewSight(),
-                        logbook.getTide(),
-                        logbook.getStartDiveTime(),
-                        logbook.getEndDiveTime(),
-                        logbook.getTimeDiffDive(),
-                        logbook.getAvgDepDiff(),
-                        logbook.getMaxDiff(),
-                        logbook.getStartBar(),
-                        logbook.getEndBar(),
-                        logbook.getDiffBar()
+//                        logbook.getId(),
+//                        logbook.getUser(),
+//                        logbook.getDate(),
+//                        logbook.getTitle(),
+//                        logbook.getSquadId(),
+//                        logbook.getContents(),
+//                        logbook.getLocation(),
+//                        logbook.getWeather(),
+//                        logbook.getSurfTemp(),
+//                        logbook.getUnderTemp()
                 ))
                 .collect(Collectors.toList());
 
@@ -229,26 +199,16 @@ public class LogbookController {
             if (logbook.getUser().getId().equals(userId)) {
                 // Map Logbook entity to LogReadResponse DTO
                 LogReadResponse logReadResponse = new LogReadResponse(
-                        logbook.getId(),
-                        logbook.getUser(),  // Assuming you want to include the user ID
-                        logbook.getDate(),
-                        logbook.getTitle(),
-                        logbook.getSquadId(),
-                        logbook.getContents(),
-                        logbook.getLocation(),
-                        logbook.getWeather(),
-                        logbook.getSurfTemp(),
-                        logbook.getUnderTemp(),
-                        logbook.getViewSight(),
-                        logbook.getTide(),
-                        logbook.getStartDiveTime(),
-                        logbook.getEndDiveTime(),
-                        logbook.getTimeDiffDive(),
-                        logbook.getAvgDepDiff(),
-                        logbook.getMaxDiff(),
-                        logbook.getStartBar(),
-                        logbook.getEndBar(),
-                        logbook.getDiffBar()
+//                        logbook.getId(),
+//                        logbook.getUser(),  // Assuming you want to include the user ID
+//                        logbook.getDate(),
+//                        logbook.getTitle(),
+//                        logbook.getSquadId(),
+//                        logbook.getContents(),
+//                        logbook.getLocation(),
+//                        logbook.getWeather(),
+//                        logbook.getSurfTemp(),
+//                        logbook.getUnderTemp()
                 );
 
                 return ResponseEntity.ok(logReadResponse);
@@ -292,26 +252,26 @@ public class LogbookController {
 
             // Convert the updated logbook to a LogReadResponse
             LogReadResponse logReadResponse = new LogReadResponse(
-                    updatedLogbook.getId(),
-                    updatedLogbook.getUser(),
-                    updatedLogbook.getDate(),
-                    updatedLogbook.getTitle(),
-                    updatedLogbook.getSquadId(),
-                    updatedLogbook.getContents(),
-                    updatedLogbook.getLocation(),
-                    updatedLogbook.getWeather(),
-                    updatedLogbook.getSurfTemp(),
-                    updatedLogbook.getUnderTemp(),
-                    updatedLogbook.getViewSight(),
-                    updatedLogbook.getTide(),
-                    updatedLogbook.getStartDiveTime(),
-                    updatedLogbook.getEndDiveTime(),
-                    updatedLogbook.getTimeDiffDive(),
-                    updatedLogbook.getAvgDepDiff(),
-                    updatedLogbook.getMaxDiff(),
-                    updatedLogbook.getStartBar(),
-                    updatedLogbook.getEndBar(),
-                    updatedLogbook.getDiffBar()
+//                    updatedLogbook.getId(),
+//                    updatedLogbook.getUser(),
+//                    updatedLogbook.getDate(),
+//                    updatedLogbook.getTitle(),
+//                    updatedLogbook.getSquadId(),
+//                    updatedLogbook.getContents(),
+//                    updatedLogbook.getLocation(),
+//                    updatedLogbook.getWeather(),
+//                    updatedLogbook.getSurfTemp(),
+//                    updatedLogbook.getUnderTemp()
+//                    updatedLogbook.getViewSight(),
+//                    updatedLogbook.getTide(),
+//                    updatedLogbook.getStartDiveTime(),
+//                    updatedLogbook.getEndDiveTime(),
+//                    updatedLogbook.getTimeDiffDive(),
+//                    updatedLogbook.getAvgDepDiff(),
+//                    updatedLogbook.getMaxDiff(),
+//                    updatedLogbook.getStartBar(),
+//                    updatedLogbook.getEndBar(),
+//                    updatedLogbook.getDiffBar()
             );
             // Return the updated LogReadResponse in a list (to maintain consistency with previous GET mapping)
             return ResponseEntity.ok(Collections.singletonList(logReadResponse));
