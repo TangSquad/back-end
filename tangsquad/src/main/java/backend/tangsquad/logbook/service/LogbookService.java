@@ -75,7 +75,6 @@ public class LogbookService {
             // Convert each Logbook to a LogbookRequest
             List<LogbookRequest> logbookRequests = logbooks.stream()
                     .map(logbook -> LogbookRequest.builder()
-                            .userId(userId)  // Set the userId or user object
                             .contents(logbook.getContents())  // Map the contents of the logbook
                             .location(logbook.getLocation())  // Replace with actual location data if available in Logbook
                             .title(logbook.getTitle())  // Add title from Logbook
@@ -117,7 +116,6 @@ public class LogbookService {
             // Convert each Logbook to a LogbookRequest
             List<LogbookRequest> logbookRequests = logbooks.stream()
                     .map(logbook -> LogbookRequest.builder()
-                            .userId(logbook.getUser().getId())  // Set the userId or user object
                             .contents(logbook.getContents())  // Map the contents of the logbook
                             .location(logbook.getLocation())  // Replace with actual location data if available in Logbook
                             .title(logbook.getTitle())  // Add title from Logbook

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package backend.tangsquad.logbook.entity;
 
 import jakarta.persistence.*;
@@ -43,4 +44,7 @@ public class Log {
     @Column
     private Long diffBar;
 
+=======
+package backend.tangsquad.logbook.entity;public class Log {
+>>>>>>> 08e0c42 (refactor: Logbook CREATE 기능 refactor)
 }
