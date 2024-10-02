@@ -1,10 +1,14 @@
 package backend.tangsquad.logbook.service;
 
+import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.logbook.dto.request.LogCreateRequest;
 import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.dto.request.LogUpdateRequest;
 import backend.tangsquad.logbook.repository.LogbookRepository;
 import backend.tangsquad.common.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -17,17 +21,31 @@ public class LogbookService {
 
     private final LogbookRepository logbookRepository;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
     public LogbookService(LogbookRepository logbookRepository, UserRepository userRepository) {
         this.logbookRepository = logbookRepository;
         this.userRepository = userRepository;
     }
 
-    public Logbook save(Logbook logbook) {
+    public Logbook save(LogCreateRequest logCreateRequest, UserDetailsImpl userDetails) {
+
+        try {
+            Logbook logbook = Logbook.builder()
+                    .user(userDetails.getUser())
+                    .location(logCreateRequest.getLocation())
+                    .title(logCreateRequest.getTitle())
+                    .contents(logCreateRequest.getContents())
+                    .build();
+            // Save logbook
+            return logbookRepository.save(logbook);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("WRONG");
+            return null;
+        }
+
         // Save the logbook to the database
-        return logbookRepository.save(logbook);
     }
 
     public List<Logbook> getLogs(Long userId)
@@ -64,16 +82,6 @@ public class LogbookService {
         if (request.getWeather() != null) logbook.setWeather(request.getWeather());
         if (request.getSurfTemp() != null) logbook.setSurfTemp(request.getSurfTemp());
         if (request.getUnderTemp() != null) logbook.setUnderTemp(request.getUnderTemp());
-        if (request.getViewSight() != null) logbook.setViewSight(request.getViewSight());
-        if (request.getTide() != null) logbook.setTide(request.getTide());
-        if (request.getStartDiveTime() != null) logbook.setStartDiveTime(request.getStartDiveTime());
-        if (request.getEndDiveTime() != null) logbook.setEndDiveTime(request.getEndDiveTime());
-        if (request.getTimeDiffDive() != null) logbook.setTimeDiffDive(request.getTimeDiffDive());
-        if (request.getAvgDepDiff() != null) logbook.setAvgDepDiff(request.getAvgDepDiff());
-        if (request.getMaxDiff() != null) logbook.setMaxDiff(request.getMaxDiff());
-        if (request.getStartBar() != null) logbook.setStartBar(request.getStartBar());
-        if (request.getEndBar() != null) logbook.setEndBar(request.getEndBar());
-        if (request.getDiffBar() != null) logbook.setDiffBar(request.getDiffBar());
 
         // Save and return the updated logbook
         return logbookRepository.save(logbook);
