@@ -3,15 +3,20 @@ package backend.tangsquad.logbook.entity;
 import backend.tangsquad.common.entity.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "logbook")
+@NoArgsConstructor
 public class Logbook {
 
     @Id
@@ -48,33 +53,11 @@ public class Logbook {
     @Column
     private Float underTemp;
 
-    @Column
-    private String viewSight;
-
-    @Column
-    private String tide;
-
-    @Column
-    private LocalDateTime startDiveTime;
-
-    @Column
-    private LocalDateTime endDiveTime;
-
-    @Column
-    private LocalDateTime timeDiffDive;
-
-    @Column
-    private Float avgDepDiff;
-
-    @Column
-    private Float maxDiff;
-
-    @Column
-    private Long startBar;
-
-    @Column
-    private Long endBar;
-
-    @Column
-    private Long diffBar;
+    @Builder
+    public Logbook(User user,  String location, String title, String contents) {
+        this.user = user;
+        this.location = location;
+        this.title = title;
+        this.contents = contents;
+    }
 }
