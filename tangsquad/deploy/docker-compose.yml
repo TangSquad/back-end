@@ -25,6 +25,10 @@ services:
       - COOLSMS_API_SECRET=${COOLSMS_API_SECRET}
       - PHONE=${PHONE}
       - SERVER_URL=${SERVER_URL}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - ACCESS_KEY=${ACCESS_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+      - AWS_REGION=${AWS_REGION}
     volumes:
       - /var/log/:/logs/
     depends_on:
