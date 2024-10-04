@@ -33,6 +33,24 @@ public class ProfileService {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+            Optional<UserCertificate> userCertificateOptional = userCertificateRepository.findByUserId(userId);
+            if (userCertificateOptional.isPresent()) {
+                UserCertificate userCertificate = userCertificateOptional.get();
+                return new UserProfileResponse(
+                        userId,
+                        user.getUserProfile().getProfileImageUrl(),
+                        user.getName(),
+                        user.getNickname(),
+                        0,
+                        0,
+                        0,
+                        userCertificate.getCertificate().getCertLevel().getName(),
+                        userCertificate.getImageUrl(),
+                        true,
+                        true,
+                        true
+                );
+            }
             return new UserProfileResponse(
                     userId,
                     user.getUserProfile().getProfileImageUrl(),
@@ -40,7 +58,12 @@ public class ProfileService {
                     user.getNickname(),
                     0,
                     0,
-                    0
+                    0,
+                    "",
+                    "",
+                    true,
+                    true,
+                    true
             );
         } else {
             throw new EntityNotFoundException("User not found with id " + userId);

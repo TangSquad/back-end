@@ -15,4 +15,9 @@ public class UserProfileResponse {
     private Integer clubCount;
     private Integer divingCount;
     private Integer logBookCount;
+    private String certificationName;
+    private String certificationImageUrl;
+    private Boolean isLogbookOpen;
+    private Boolean isLikeOpen;
+    private Boolean isEquipmentOpen;
 }
