@@ -102,17 +102,17 @@ public class MoimController {
         }
     }
 
-    @PostMapping("/register")
+    @PostMapping("/join")
     @Operation(
-            summary = "모임 등록",
-            description = "사용자가 기존 모임에 등록합니다.",
+            summary = "모임 가입",
+            description = "사용자가 기존 모임에 가입합니다.",
             security = @SecurityRequirement(name = "AccessToken")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "모임 등록 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
     })
-    public ResponseEntity<String> registerMoim(
+    public ResponseEntity<String> joinMoim(
             @RequestParam Long moimId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -127,19 +127,19 @@ public class MoimController {
 
             Moim moim = moimOptional.get();
 
-            // Check if the user is already registered
+            // Check if the user is already joined
             if (moim.getRegisteredUsers().contains(userDetails.getUser())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already registered.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already joined.");
             }
 
             // Register the user
             moim.getRegisteredUsers().add(userDetails.getUser());
             moimService.save(moim);
 
-            return ResponseEntity.ok("User registered successfully.");
+            return ResponseEntity.ok("User joined successfully.");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to register user.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to join user.");
         }
     }
 
@@ -186,10 +186,10 @@ public class MoimController {
     }
 
 
-    @GetMapping("/registered")
+    @GetMapping("/joined")
     @Operation(
-            summary = "등록한 모임 목록 조회",
-            description = "사용자가 등록한 모임 목록을 조회합니다.",
+            summary = "가입한 모임 목록 조회",
+            description = "사용자가 가입한 모임 목록을 조회합니다.",
             security = @SecurityRequirement(name = "AccessToken")
     )
     @ApiResponses({
