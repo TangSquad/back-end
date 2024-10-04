@@ -1,5 +1,6 @@
 package backend.tangsquad.common.entity;
 
+import backend.tangsquad.converter.LongListConverter;
 import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.moim.entity.Moim;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -11,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -61,6 +63,16 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonBackReference
     private List<Logbook> logbooks;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_likes_logbook",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "logbook_id")
+    )
+    private List<Logbook> likedLogbooks = new ArrayList<>(); // Initialize to avoid null issues
+
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
     @JsonBackReference
