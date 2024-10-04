@@ -27,7 +27,7 @@ public class Diving {
 
     private String divingName;
     private String divingIntro;
-    private Long age;
+    private String age;
     private String moodOne;
     private String moodTwo;
     private Long limitPeople;
@@ -41,7 +41,7 @@ public class Diving {
 
     private String location;
 
-    public Diving(User user, String divingName, String divingIntro, Long age, String moodOne, String moodTwo, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+    public Diving(User user, String divingName, String divingIntro, String age, String moodOne, String moodTwo, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
         this.user = user;
         this.divingName = divingName;
         this.divingIntro = divingIntro;

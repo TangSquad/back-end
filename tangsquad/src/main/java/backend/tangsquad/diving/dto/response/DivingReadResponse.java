@@ -14,7 +14,7 @@ public class DivingReadResponse {
     private Long userId;  // Changed from User to Long userId
     private String divingName;
     private String divingIntro;
-    private Long age;
+    private String age;
     private String moodOne;
     private String moodTwo;
     private Long limitPeople;
