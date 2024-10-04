@@ -62,17 +62,19 @@ public class DivingController {
         try {
             Diving diving = new Diving();
 
-            diving.setUser(userDetails.getUser());
-            diving.setDivingName(divingCreateRequest.getDivingName());
-            diving.setDivingIntro(divingCreateRequest.getDivingIntro());
-            diving.setAge(divingCreateRequest.getAge());
-            diving.setLocation(divingCreateRequest.getLocation());
-            diving.setLimitLicense(divingCreateRequest.getLimitLicense());
-            diving.setLimitPeople(divingCreateRequest.getLimitPeople());
-            diving.setMoodOne(divingCreateRequest.getMoodOne());
-            diving.setMoodTwo(divingCreateRequest.getMoodTwo());
-            diving.setStartDate(divingCreateRequest.getStartDate());
-            diving.setEndDate(divingCreateRequest.getEndDate());
+            diving.builder()
+                    .user(userDetails.getUser())
+                    .divingName(divingCreateRequest.getDivingName())
+                    .divingIntro(divingCreateRequest.getDivingIntro())
+                    .age(divingCreateRequest.getAge())
+                    .moodOne(divingCreateRequest.getMoodOne())
+                    .moodTwo(divingCreateRequest.getMoodTwo())
+                    .limitPeople(divingCreateRequest.getLimitPeople())
+                    .limitLicense(divingCreateRequest.getLimitLicense())
+                    .startDate(divingCreateRequest.getStartDate())
+                    .endDate(divingCreateRequest.getEndDate())
+                    .location(divingCreateRequest.getLocation())
+                    .build();
 
             // Save diving
             Diving savedDiving = divingService.save(diving);
