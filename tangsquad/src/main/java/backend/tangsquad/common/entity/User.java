@@ -59,23 +59,4 @@ public class User {
     // 역할
     @Column(nullable = false) private String role;
 
-    // In User class
-    @OneToMany(mappedBy = "user")
-    @JsonBackReference
-    private List<Logbook> logbooks;
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_likes_logbook",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "logbook_id")
-    )
-    private List<Logbook> likedLogbooks = new ArrayList<>(); // Initialize to avoid null issues
-
-
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-    @JsonBackReference
-    private List<Moim> moims;
-
 }

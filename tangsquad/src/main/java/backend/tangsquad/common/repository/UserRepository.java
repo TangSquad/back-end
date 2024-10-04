@@ -20,7 +20,4 @@ public interface UserRepository extends JpaRepository<User, Long>{
 
     Optional<User> findByName(String username);
 
-
-    @Query("SELECT l.id FROM Logbook l JOIN l.likedUsers u WHERE u.id = :userId")
-    Optional<List<Long>> findLikedLogbooksById(@Param("userId") Long userId);
 }

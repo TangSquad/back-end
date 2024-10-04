@@ -29,6 +29,7 @@ public class Logbook {
     @JsonManagedReference
     private User user;
 
+
     @Column
     private LocalDateTime date;
 

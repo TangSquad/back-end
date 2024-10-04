@@ -7,7 +7,9 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+
 @Entity
+@Builder
 @Table(name = "diving")  // Ensure this matches your database table name
 @Data
 @NoArgsConstructor
@@ -38,4 +40,18 @@ public class Diving {
     private LocalDate endDate;
 
     private String location;
+
+    public Diving(User user, String divingName, String divingIntro, Long age, String moodOne, String moodTwo, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+        this.user = user;
+        this.divingName = divingName;
+        this.divingIntro = divingIntro;
+        this.age = age;
+        this.moodOne = moodOne;
+        this.moodTwo = moodTwo;
+        this.limitPeople = limitPeople;
+        this.limitLicense = limitLicense;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.location = location;
+    }
 }
