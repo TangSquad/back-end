@@ -56,7 +56,7 @@ public class Moim {
     private String locationThree;
 
     @Column
-    private Long age;
+    private String age;
 
     @Column
     private String moodOne;
