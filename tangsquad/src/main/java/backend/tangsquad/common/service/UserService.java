@@ -146,12 +146,6 @@ public class UserService {
         }
     }
 
-    public Optional<List<Long>> getLikedLogbookIds(Long userId) {
-        // Fetch logbook IDs that the user has liked
-        return userRepository.findLikedLogbooksById(userId);
-    }
-
-
 
     public User findByName(String username) {
         return userRepository.findByName(username)

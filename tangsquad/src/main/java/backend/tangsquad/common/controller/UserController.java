@@ -37,56 +37,6 @@ public class UserController {
     private final VerificationService verificationService;
     private final ProfileService profileService;
     private final AuthService authService;
-    private final LogbookService logbookService;
-
-//    @Operation(summary = "유저가 좋아요한 로그북을 불러오는 API", description = "좋아요한 로그북 불러오기", security = @SecurityRequirement(name = "AccessToken"))
-//    @GetMapping("/likeLogbook")
-//    public ResponseEntity<List<LogCreateRequest>> getLikeLogbooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        // Fetch liked logbook IDs for the authenticated user
-//        Optional<List<String>> likedLogbookIds = userService.getLikedLogbookIds(userDetails.getId());
-//
-//        if (likedLogbookIds.isPresent() && !likedLogbookIds.get().isEmpty()) {
-//            // Convert List<String> to List<Long>
-//            List<Long> logbookIdsAsLong = likedLogbookIds.get().stream()
-//                    .map(Long::valueOf)  // Convert each String to Long
-//                    .collect(Collectors.toList());
-//
-//            // Fetch Logbook entities based on the IDs
-//            List<Logbook> likedLogbooks = userService.findLogbooksByIds(logbookIdsAsLong);
-//
-//            // Convert Logbooks to LogCreateRequest DTOs
-//            List<LogCreateRequest> logCreateRequests = likedLogbooks.stream()
-//                    .map(this::convertToLogCreateRequest)
-//                    .collect(Collectors.toList());
-//
-//            return ResponseEntity.ok(logCreateRequests);  // Return the list of LogCreateRequest DTOs
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // No liked logbooks found
-//        }
-//    }
-
-    @Operation(summary = "유저가 좋아요한 로그북을 불러오는 API", description = "좋아요한 로그북 불러오기", security = @SecurityRequirement(name = "AccessToken"))
-    @GetMapping("/likeLogbook")
-    public ResponseEntity<List<Long>> getLikeLogbooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // Fetch liked logbook IDs for the authenticated user
-        Optional<List<Long>> likedLogbookIds = userService.getLikedLogbookIds(userDetails.getId());
-
-        if (likedLogbookIds.isPresent() && !likedLogbookIds.get().isEmpty()) {
-            // Print out the list of liked logbook IDs as Strings
-            return ResponseEntity.ok(likedLogbookIds.get());  // Return the list of String IDs directly
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // No liked logbooks found
-        }
-    }
-
-
-
-    // Example method to convert Logbook to LogCreateRequest (adjust as necessary)
-    private LogCreateRequest convertToLogCreateRequest(Logbook logbook) {
-        LogCreateRequest request = new LogCreateRequest();
-        // set fields from logbook to request
-        return request;
-    }
 
 
     @Operation(summary = "가입 전 이메일 중복 확인 API", description = "가입 전 이메일 중복 확인 API")

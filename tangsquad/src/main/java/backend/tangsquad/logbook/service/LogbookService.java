@@ -1,7 +1,10 @@
 package backend.tangsquad.logbook.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.common.entity.User;
 import backend.tangsquad.logbook.dto.request.LogCreateRequest;
+import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
+import backend.tangsquad.logbook.entity.Log;
 import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.dto.request.LogUpdateRequest;
 import backend.tangsquad.logbook.repository.LogbookRepository;
@@ -28,14 +31,15 @@ public class LogbookService {
         this.userRepository = userRepository;
     }
 
-    public Logbook save(LogCreateRequest logCreateRequest, UserDetailsImpl userDetails) {
+
+    public Logbook save(LogbookCreateRequest logbookCreateRequest, UserDetailsImpl userDetails) {
 
         try {
             Logbook logbook = Logbook.builder()
                     .user(userDetails.getUser())
-                    .location(logCreateRequest.getLocation())
-                    .title(logCreateRequest.getTitle())
-                    .contents(logCreateRequest.getContents())
+                    .location(logbookCreateRequest.getLocation())
+                    .title(logbookCreateRequest.getTitle())
+                    .contents(logbookCreateRequest.getContents())
                     .build();
             // Save logbook
             return logbookRepository.save(logbook);
@@ -48,10 +52,20 @@ public class LogbookService {
         // Save the logbook to the database
     }
 
+    public Logbook getLogbookByIdAndUserId(Long logId, Long userId) {
+        // Fetch the logbook by ID and ensure it belongs to the authenticated user
+        return logbookRepository.findByIdAndUserId(logId, userId)
+                .orElse(null); // Return null if not found
+    }
+
+
     public List<Logbook> getLogs(Long userId)
     {
+
         return logbookRepository.findByUserId(userId);
     }
+
+
 
     public Optional<Logbook> getLog(Long logId) {
         return logbookRepository.findById(logId);
@@ -95,6 +109,5 @@ public class LogbookService {
         // Delete the logbook
         logbookRepository.delete(logbook);
     }
-
 
 }
