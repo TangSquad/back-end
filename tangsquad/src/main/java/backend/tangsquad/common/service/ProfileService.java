@@ -27,91 +27,90 @@ public class ProfileService {
     private final UserCertificateService userCertificateService;
     private final UserCertificateRepository userCertificateRepository;
 
-
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfile(Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            return new UserProfileResponse(
-                    userId,
-                    user.getUserProfile().getProfileImageUrl(),
-                    user.getName(),
-                    user.getNickname(),
-                    0,
-                    0,
-                    0
-            );
-        } else {
-            throw new EntityNotFoundException("User not found with id " + userId);
-        }
+        User user = getUserById(userId);
+        UserCertificate userCertificate = userCertificateRepository.findByUserId(userId).orElse(null);
+
+        return new UserProfileResponse(
+                userId,
+                user.getUserProfile().getProfileImageUrl(),
+                user.getName(),
+                user.getNickname(),
+                0, // 다양한 데이터에 대한 추가 처리가 필요할 경우 이 부분에서 수행
+                0,
+                0,
+                userCertificate != null ? userCertificate.getCertificate().getCertLevel().getName() : "",
+                userCertificate != null ? userCertificate.getImageUrl() : "",
+                true,
+                true,
+                true
+        );
     }
 
     @Transactional(readOnly = true)
-    public UserIntroductionResponse getUserIntroduction(Long userId){
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            UserProfile profile = userOptional.get().getUserProfile();
-            return new UserIntroductionResponse(
-                    profile.getIntroduction(),
-                    profile.getUrl(),
-                    profile.getAffiliation(),
-                    "null"
-            );
-        } else {
-            throw new EntityNotFoundException("User not found with id " + userId);
-        }
+    public UserIntroductionResponse getUserIntroduction(Long userId) {
+        UserProfile profile = getUserById(userId).getUserProfile();
+        return new UserIntroductionResponse(
+                profile.getIntroduction(),
+                profile.getUrl(),
+                profile.getAffiliation(),
+                "null"
+        );
     }
 
     @Transactional(readOnly = true)
     public UserEquipmentResponse getUserEquipment(Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            Equipment equipment = userOptional.get().getUserProfile().getEquipment();
-            return new UserEquipmentResponse(
-                    equipment.getHeight(),
-                    equipment.getWeight(),
-                    equipment.getSuit(),
-                    equipment.getWeightBelt(),
-                    equipment.getBc(),
-                    equipment.getShoes(),
-                    equipment.getMask()
-            );
-        } else {
-            throw new EntityNotFoundException("User not found with id " + userId);
-        }
+        Equipment equipment = getUserById(userId).getUserProfile().getEquipment();
+        return new UserEquipmentResponse(
+                equipment.getHeight(),
+                equipment.getWeight(),
+                equipment.getSuit(),
+                equipment.getWeightBelt(),
+                equipment.getBc(),
+                equipment.getShoes(),
+                equipment.getMask()
+        );
     }
 
     @Transactional
     public ProfileEditResponse updateProfile(Long userId, ProfileEditRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
+        User user = getUserById(userId);
 
-        updateNickname(user, request.getNickname());
-        updateProfileImage(user.getUserProfile(), request.getProfileImageUrl());
+        updateUserData(user, request);
         updateUserCertificate(userId, request.getCertOrganizationId(), request.getCertLevelId(), request.getCertificateImageUrl());
-        updateProfileDetails(user.getUserProfile(), request);
-        updateEquipment(user.getUserProfile().getEquipment(), request);
 
         return createProfileEditResponse(user);
     }
 
     @Transactional
-    public Boolean setAdditionalInfo(Long userId, String nickname, String ProfileImage, Long organizationId, Long levelId, String certificateImageUrl) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
+    public Boolean setAdditionalInfo(Long userId, String nickname, String profileImage, Long organizationId, Long levelId, String certificateImageUrl) {
+        User user = getUserById(userId);
 
         updateNickname(user, nickname);
-        updateProfileImage(user.getUserProfile(), ProfileImage);
-        if(organizationId != null && levelId != null && certificateImageUrl != null){
+        updateProfileImage(user.getUserProfile(), profileImage);
+
+        if (organizationId != null && levelId != null && certificateImageUrl != null) {
             userCertificateService.createUserCertificate(userId, organizationId, levelId, certificateImageUrl);
         }
 
         return true;
     }
 
+    private User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
+    }
+
+    private void updateUserData(User user, ProfileEditRequest request) {
+        updateNickname(user, request.getNickname());
+        updateProfileImage(user.getUserProfile(), request.getProfileImageUrl());
+        updateProfileDetails(user.getUserProfile(), request);
+        updateEquipment(user.getUserProfile().getEquipment(), request);
+    }
+
     private void updateNickname(User user, String nickname) {
-        if (nickname != null) {
+        if (nickname != null && !nickname.equals(user.getNickname())) {
             if (userRepository.existsByNickname(nickname)) {
                 throw new IllegalArgumentException("Username already exists");
             }
@@ -125,9 +124,9 @@ public class ProfileService {
         }
     }
 
-    private void updateUserCertificate(Long userId, Long OrganizationId, Long levelId, String certificateImageUrl) {
-        if (OrganizationId != null && levelId != null && certificateImageUrl != null) {
-            userCertificateService.updateUserCertificate(userId, OrganizationId, levelId, certificateImageUrl);
+    private void updateUserCertificate(Long userId, Long organizationId, Long levelId, String certificateImageUrl) {
+        if (organizationId != null && levelId != null && certificateImageUrl != null) {
+            userCertificateService.updateUserCertificate(userId, organizationId, levelId, certificateImageUrl);
         }
     }
 
@@ -141,16 +140,7 @@ public class ProfileService {
         if (request.getAffiliation() != null) {
             profile.setAffiliation(request.getAffiliation());
         }
-        // 추가로 주석 처리된 부분도 필요 시 처리
-        if (request.getIsLogbookOpen() != null) {
-            // profile.setIsLogbookOpen(request.getIsLogbookOpen());
-        }
-        if (request.getIsLikeOpen() != null) {
-            // profile.setIsLikeOpen(request.getIsLikeOpen());
-        }
-        if (request.getIsEquipmentOpen() != null) {
-            // profile.setIsEquipmentOpen(request.getIsEquipmentOpen());
-        }
+        // 주석 처리된 부분에 대한 로직도 필요시 추가
     }
 
     private void updateEquipment(Equipment equipment, ProfileEditRequest request) {

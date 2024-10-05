@@ -53,12 +53,14 @@ public class ProfileController {
     }
 
     @GetMapping("/introduction/{userId}")
+    @Operation(summary = "유저 소개 조회", description = "유저ID로 유저 소개 조회", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<ApiResponse<UserIntroductionResponse>> getUserIntroduction(@PathVariable Long userId) {
         UserIntroductionResponse userIntroductionResponse = profileService.getUserIntroduction(userId);
         return ResponseEntity.ok(new ApiResponse<>(true, "User introduction retrieved successfully.", userIntroductionResponse));
     }
 
     @GetMapping("/equipment/{userId}")
+    @Operation(summary = "유저 장비 조회", description = "유저ID로 유저 장비 조회", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<ApiResponse<UserEquipmentResponse>> getUserEquipment(@PathVariable Long userId) {
         UserEquipmentResponse userEquipmentResponse = profileService.getUserEquipment(userId);
         return ResponseEntity.ok(new ApiResponse<>(true, "User equipment retrieved successfully.", userEquipmentResponse));
