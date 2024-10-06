@@ -168,11 +168,13 @@ public class MoimController {
                             moim.getMoimDetails(),
                             moim.getLimitPeople(),
                             moim.getExpense(),
+
                             moim.getLicenseLimit(),
                             moim.getLocationOne(),
                             moim.getLocationTwo(),
                             moim.getLocationThree(),
                             moim.getAge(),
+
                             moim.getMoodOne(),
                             moim.getMoodTwo()
                     ))
@@ -254,11 +256,13 @@ public class MoimController {
                             moim.getMoimDetails(),
                             moim.getLimitPeople(),
                             moim.getExpense(),
+
                             moim.getLicenseLimit(),
                             moim.getLocationOne(),
                             moim.getLocationTwo(),
-                            moim.getLocationThree(),
+                            moim.getLocationTwo(),
                             moim.getAge(),
+
                             moim.getMoodOne(),
                             moim.getMoodTwo()
                             ))
@@ -310,11 +314,13 @@ public class MoimController {
                     updatedMoim.getMoimDetails(),
                     updatedMoim.getLimitPeople(),
                     updatedMoim.getExpense(),
+
                     updatedMoim.getLicenseLimit(),
                     updatedMoim.getLocationOne(),
                     updatedMoim.getLocationTwo(),
                     updatedMoim.getLocationThree(),
                     updatedMoim.getAge(),
+
                     updatedMoim.getMoodOne(),
                     updatedMoim.getMoodTwo()
             );
@@ -353,11 +359,13 @@ public class MoimController {
                 updatedMoim.getMoimDetails(),
                 updatedMoim.getLimitPeople(),
                 updatedMoim.getExpense(),
+
                 updatedMoim.getLicenseLimit(),
                 updatedMoim.getLocationOne(),
                 updatedMoim.getLocationTwo(),
                 updatedMoim.getLocationThree(),
                 updatedMoim.getAge(),
+
                 updatedMoim.getMoodOne(),
                 updatedMoim.getMoodTwo()
         );
@@ -402,11 +410,13 @@ public class MoimController {
                 updatedMoim.getMoimDetails(),
                 updatedMoim.getLimitPeople(),
                 updatedMoim.getExpense(),
+
                 updatedMoim.getLicenseLimit(),
                 updatedMoim.getLocationOne(),
                 updatedMoim.getLocationTwo(),
                 updatedMoim.getLocationThree(),
                 updatedMoim.getAge(),
+
                 updatedMoim.getMoodOne(),
                 updatedMoim.getMoodTwo()
         );

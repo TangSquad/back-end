@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class LogListReadResponse {
-    private User user;
     private List<LogReadResponse> Logs;
     private int currentPage;
     private int totalItems;
