@@ -1,9 +1,5 @@
 package backend.tangsquad.common.entity;
 
-import backend.tangsquad.converter.LongListConverter;
-import backend.tangsquad.logbook.entity.Logbook;
-import backend.tangsquad.moim.entity.Moim;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +8,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
