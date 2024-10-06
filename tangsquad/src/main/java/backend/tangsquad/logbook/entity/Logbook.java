@@ -1,6 +1,7 @@
 package backend.tangsquad.logbook.entity;
 
 import backend.tangsquad.common.entity.User;
+import backend.tangsquad.logbook.dto.request.LogbookRequest;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -37,28 +38,24 @@ public class Logbook {
     private String title;
 
     @Column
-    private Long squadId;
-
-    @Column
     private String contents;
 
     @Column
     private String location;
 
-    @Column
-    private Long weather;
-
-    @Column
-    private Float surfTemp;
-
-    @Column
-    private Float underTemp;
+    public void update(LogbookRequest logbookRequest) {
+        if (logbookRequest.getDate() != null) this.date = logbookRequest.getDate();
+        if (logbookRequest.getTitle() != null) this.title = logbookRequest.getTitle();
+        if (logbookRequest.getContents() != null) this.contents = logbookRequest.getContents();
+        if (logbookRequest.getLocation() != null) this.location = logbookRequest.getLocation();
+    }
 
     @Builder
-    public Logbook(User user,  String location, String title, String contents) {
+    public Logbook(User user, LocalDateTime date,  String location, String title, String contents) {
         this.user = user;
-        this.location = location;
+        this.date = date;
         this.title = title;
         this.contents = contents;
+        this.location = location;
     }
 }
