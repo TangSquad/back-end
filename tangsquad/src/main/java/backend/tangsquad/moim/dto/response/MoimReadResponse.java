@@ -22,7 +22,7 @@ public class MoimReadResponse {
     private String locationOne;
     private String locationTwo;
     private String locationThree;
-    private Long age;
+    private String age;
     private String moodOne;
     private String moodTwo;
 }

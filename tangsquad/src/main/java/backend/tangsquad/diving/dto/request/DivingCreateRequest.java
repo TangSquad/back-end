@@ -26,7 +26,7 @@ public class DivingCreateRequest {
 
         private String location;
 
-        private Long age;
+        private String age;
 
         private String moodOne;
 

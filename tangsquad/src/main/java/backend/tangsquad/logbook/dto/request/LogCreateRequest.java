@@ -18,20 +18,20 @@ public class LogCreateRequest {
     // 제목
     private String title;
 
-//    // 글
+    //    // 글
     private String contents;
-//
+    //
 //    // 장소
     private String location;
-//
+    //
 //    // 날씨
     private Long weather;
-//
+    //
     private Float surfTemp;
     private Float underTemp;
     private String viewSight;
     private String tide;
-//
+    //
 //    // 시간
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startDiveTime;
@@ -39,11 +39,11 @@ public class LogCreateRequest {
     private LocalDateTime endDiveTime;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timeDiffDive;
-//
+    //
 //    // 수심 및 공기
     private Float avgDepDiff; // Changed to camelCase
     private Float maxDiff;
-//
+    //
     private Long startBar;
     private Long endBar;
     private Long diffBar;

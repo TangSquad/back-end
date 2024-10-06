@@ -1,6 +1,9 @@
 package backend.tangsquad.logbook.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.common.entity.User;
+import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
+import backend.tangsquad.logbook.dto.response.LogbookReadRequest;
 import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.dto.request.LogCreateRequest;
 import backend.tangsquad.logbook.dto.request.LogUpdateRequest;
@@ -55,89 +58,74 @@ public class LogbookController {
             @ApiResponse(responseCode = "201", description = "로그북 생성 성공", content = @Content(schema = @Schema(implementation = LogCreateResponse.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
     })
-    public ResponseEntity<LogCreateRequest> createLogbook(
-            @RequestBody LogCreateRequest logCreateRequest,
+    public ResponseEntity<LogbookCreateRequest> createLogbook(
+            @RequestBody LogbookCreateRequest logbookCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         System.out.println("PostMapping called");
 
-        Logbook savedLogbook = logbookService.save(logCreateRequest, userDetails);
+        Logbook savedLogbook = logbookService.save(logbookCreateRequest, userDetails);
 
         if (savedLogbook != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(logCreateRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(logbookCreateRequest);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
-
     @GetMapping("/{logId}")
     @Operation(summary = "내 로그북 불러오기", description = "내 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<LogReadResponse> getMyLog(@PathVariable("logId") Long logId) {
-        Logger logger = LoggerFactory.getLogger(LogbookController.class);
+    public ResponseEntity<LogbookReadRequest> getMyLogbook(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable("logId") Long logId) {
+        // Fetch the logbook for the authenticated user
+        Logbook logbook = logbookService.getLogbookByIdAndUserId(logId, userDetails.getId());
 
-        logger.debug("GetMapping called, log ID: {}", logId);
-        try {
-            Optional<Logbook> logbookOptional = logbookService.getLog(logId);
-            if (logbookOptional.isPresent()) {
-                Logbook logbook = logbookOptional.get();
-                logger.info("Logbook found: ID = {}, Title = {}", logbook.getId(), logbook.getTitle());
-
-                // Convert Logbook to LogReadResponse
-                LogReadResponse logReadResponse = new LogReadResponse(
-//                        logbook.getId(),
-//                        logbook.getUser(),
-//                        logbook.getDate(),
-//                        logbook.getTitle(),
-//                        logbook.getSquadId(),
-//                        logbook.getContents(),
-//                        logbook.getLocation(),
-//                        logbook.getWeather(),
-//                        logbook.getSurfTemp(),
-//                        logbook.getUnderTemp()
-                );
-
-                // Return the response entity with the log data
-                return ResponseEntity.ok(logReadResponse);
-            } else {
-                logger.warn("Logbook not found for ID: {}", logId);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-        } catch (Exception e) {
-            logger.error("Error retrieving logbook with ID: " + logId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        if (logbook != null) {
+            // Convert Logbook entity to LogbookReadRequest DTO
+            LogbookReadRequest logbookReadRequest = convertToLogbookReadRequest(logbook);
+            return ResponseEntity.ok(logbookReadRequest); // Return the logbook details
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Logbook not found
         }
     }
 
+    private LogbookReadRequest convertToLogbookReadRequest(Logbook logbook) {
+        return new LogbookReadRequest(
+                logbook.getId(),
+                logbook.getTitle(),
+                logbook.getContents(),
+                logbook.getDate(),
+                logbook.getLocation(),
+                logbook.getWeather(),
+                logbook.getSurfTemp(),
+                logbook.getUnderTemp()
+        );
+    }
 
     @GetMapping("")
     @Operation(summary = "내 로그북 불러오기", description = "나의 로그들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<List<LogReadResponse>> getMyLogs(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<List<LogbookReadRequest>> getMyLogbooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         // Retrieve the current authenticated user's ID
         Long userId = userDetails.getId();  // Use the authenticated user's ID
 
         try {
-
             // Retrieve the user's logs
             List<Logbook> logbooks = logbookService.getLogs(userId);
 
-            // Map Logbook entities to LogReadResponse DTOs
-            List<LogReadResponse> logReadResponses = logbooks.stream()
-                    .map(logbook -> new LogReadResponse(
-//                            logbook.getId(),
-//                            logbook.getUser(),  // Retrieve the actual user ID
-//                            logbook.getDate(),
-//                            logbook.getTitle(),
-//                            logbook.getSquadId(),
-//                            logbook.getContents(),
-//                            logbook.getLocation(),
-//                            logbook.getWeather(),
-//                            logbook.getSurfTemp(),
-//                            logbook.getUnderTemp()
+            // Map Logbook entities to LogbookReadRequest DTOs
+            List<LogbookReadRequest> logbookReadRequests = logbooks.stream()
+                    .map(logbook -> new LogbookReadRequest(
+                            logbook.getId(),
+                            logbook.getTitle(),
+                            logbook.getContents(),
+                            logbook.getDate(),
+                            logbook.getLocation(),
+                            logbook.getWeather(),
+                            logbook.getSurfTemp(),
+                            logbook.getUnderTemp()
                     ))
                     .collect(Collectors.toList());
 
-            // Return the list of LogReadResponse
-            return ResponseEntity.ok(logReadResponses);
+            // Return the list of LogbookReadRequest
+            return ResponseEntity.ok(logbookReadRequests);
 
         } catch (Exception e) {
             // Log the exception with details
@@ -146,9 +134,10 @@ public class LogbookController {
 
             // Return a generic error response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.singletonList(new LogReadResponse()));  // Adjust response as needed
+                    .body(Collections.emptyList()); // Return an empty list on error, adjust response as needed
         }
     }
+
 
 
 
