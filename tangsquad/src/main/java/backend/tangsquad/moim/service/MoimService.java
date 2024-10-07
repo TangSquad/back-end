@@ -13,6 +13,7 @@ import backend.tangsquad.moim.dto.request.MoimLeaderUpdateRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import backend.tangsquad.moim.repository.MoimRepository;
 import backend.tangsquad.common.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class MoimService  {
     final private MoimRepository moimRepository;
 
@@ -31,14 +33,6 @@ public class MoimService  {
     final private UserService userService;
 
     final private LikeMoimRepository likeMoimRepository;
-
-    @Autowired
-    public MoimService (MoimRepository moimRepository, UserRepository userRepository, UserService userService, LikeMoimRepository likeMoimRepository) {
-        this.moimRepository = moimRepository;
-        this.userRepository = userRepository;
-        this.userService = userService;
-        this.likeMoimRepository = likeMoimRepository;
-    }
 
     public Moim save(Moim moim) {
         return moimRepository.save(moim);
