@@ -1,6 +1,8 @@
 package backend.tangsquad.logbook.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.like.dto.request.LikeLogbookRequest;
+import backend.tangsquad.like.service.LikeLogbookService;
 import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
 import backend.tangsquad.logbook.dto.request.LogbookReadRequest;
 import backend.tangsquad.logbook.dto.request.LogbookRequest;
@@ -25,11 +27,12 @@ import java.util.List;
 public class LogbookController {
 
     private final LogbookService logbookService;
-    private final UserService userService;
+    private final LikeLogbookService likeLogbookService;
 
-    public LogbookController(LogbookService logbookService, UserService userService) {
+
+    public LogbookController(LogbookService logbookService, LikeLogbookService likeLogbookService) {
         this.logbookService = logbookService;
-        this.userService = userService;
+        this.likeLogbookService = likeLogbookService;
     }
 
     // Create a new Logbook
@@ -137,8 +140,6 @@ public class LogbookController {
         }
     }
 
-
-
     // Use @PathVariable for the ID since it's in the URL path
     @DeleteMapping("/{logId}")
     @Operation(summary = "로그북 삭제하기", description = "나의 로그를 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
@@ -147,5 +148,19 @@ public class LogbookController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return logbookService.deleteLog(logId, userDetails);
+    }
+
+    @PostMapping("like/{logbookId}")
+    @Operation(summary = "좋아요 로그북 추가", description = "로그북에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<LikeLogbookRequest> likeLogbook(@PathVariable Long logbookId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        LikeLogbookRequest likeLogbookRequest = likeLogbookService.createLike(logbookId, userDetails);
+        return ResponseEntity.ok(likeLogbookRequest);
+    }
+
+    @GetMapping("like/")
+    @Operation(summary = "좋아요한 로그북 가져오기", description = "좋아요한 로그북을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<List<LikeLogbookRequest>> getLikeLogbooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<LikeLogbookRequest> likeLogbooks = likeLogbookService.getLikeLogbooks(userDetails);
+        return ResponseEntity.ok(likeLogbooks);
     }
 }

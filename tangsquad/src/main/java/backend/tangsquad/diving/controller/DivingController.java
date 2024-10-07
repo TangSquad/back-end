@@ -8,6 +8,9 @@ import backend.tangsquad.diving.dto.response.DivingCreateResponse;
 import backend.tangsquad.diving.dto.response.DivingReadResponse;
 import backend.tangsquad.diving.service.DivingService;
 import backend.tangsquad.common.service.UserService;
+import backend.tangsquad.like.dto.request.LikeDivingRequest;
+import backend.tangsquad.like.dto.request.LikeLogbookRequest;
+import backend.tangsquad.like.service.LikeDivingService;
 import backend.tangsquad.swagger.global.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,12 +39,11 @@ import java.util.stream.Collectors;
 public class DivingController {
 
     private final DivingService divingService;
-    private final UserService userService; // Use UserService to handle user-related operations
+    private final LikeDivingService likeDivingService;
 
-    @Autowired
-    public DivingController(DivingService divingService, UserService userService) {
+    public DivingController(DivingService divingService, LikeDivingService likeDivingService) {
         this.divingService = divingService;
-        this.userService = userService;
+        this.likeDivingService = likeDivingService;
     }
 
     // Create a new diving
@@ -261,5 +263,20 @@ public class DivingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("like/{divingId}")
+    @Operation(summary = "좋아요 다이빙 추가", description = "다이빙에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<LikeDivingRequest> likeDiving(@PathVariable Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        LikeDivingRequest likeDivingRequest = likeDivingService.createLike(divingId, userDetails);
+        return ResponseEntity.ok(likeDivingRequest);
+    }
+
+    @GetMapping("like/")
+    @Operation(summary = "좋아요한 다이빙 가져오기", description = "좋아요한 로그북을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<List<LikeDivingRequest>> getLikeDivings(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<LikeDivingRequest> likeDivings = likeDivingService.getLikeDivings(userDetails);
+        return ResponseEntity.ok(likeDivings);
+    }
+
 
 }

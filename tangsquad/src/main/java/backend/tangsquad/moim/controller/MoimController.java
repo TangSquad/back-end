@@ -3,6 +3,11 @@ package backend.tangsquad.moim.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.entity.User;
+import backend.tangsquad.like.dto.request.LikeLogbookRequest;
+import backend.tangsquad.like.dto.request.LikeMoimRequest;
+import backend.tangsquad.like.entity.LikeMoim;
+import backend.tangsquad.like.repository.LikeMoimRepository;
+import backend.tangsquad.like.service.LikeMoimService;
 import backend.tangsquad.moim.dto.request.MoimLeaderUpdateByUsernameRequest;
 import backend.tangsquad.moim.entity.Moim;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
@@ -43,21 +48,15 @@ import java.util.stream.Collectors;
 public class MoimController {
 
     private final MoimService moimService;
+    private final UserService userService;
+    private final LikeMoimService likeMoimService;
 
-    private final MoimRepository moimRepository;
-
-    private final UserRepository userRepository;
-    private UserDetails userDetails;
-
-    private UserService userService;
-
-    @Autowired
-    public MoimController(MoimService moimService, MoimRepository moimRepository, UserRepository userRepository, UserService userService) {
+    public MoimController(MoimService moimService, UserService userService, LikeMoimService likeMoimService) {
         this.moimService = moimService;
-        this.moimRepository = moimRepository;
-        this.userRepository = userRepository;
         this.userService = userService;
+        this.likeMoimService = likeMoimService;
     }
+
 
     // Create a new moim
     @PostMapping
@@ -474,5 +473,21 @@ public class MoimController {
     }
 
 
+    @PostMapping("like/{moimId}")
+    @Operation(summary = "좋아요 모임 추가", description = "로그북에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<LikeMoimRequest> likeMoim(@PathVariable Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        LikeMoimRequest likeMoimRequest = likeMoimService.createLike(moimId, userDetails);
+        return ResponseEntity.ok(likeMoimRequest);
+    }
+
+    @GetMapping("like/")
+    @Operation(summary = "좋아요한 로그북 가져오기", description = "좋아요한 로그북을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<List<LikeMoimRequest>> getLikeMoims(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // Get the list of liked logbooks as LikeLogbookRequest DTOs
+        List<LikeMoimRequest> likeMoims = likeMoimService.getLikeMoims(userDetails);
+
+        // Return the list wrapped in ResponseEntity
+        return ResponseEntity.ok(likeMoims);
+    }
 
 }

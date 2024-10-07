@@ -1,6 +1,6 @@
-package backend.tangsquad.likes.repository;
+package backend.tangsquad.like.repository;
 
-import backend.tangsquad.likes.entity.LikeLogbook;
+import backend.tangsquad.like.entity.LikeLogbook;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
