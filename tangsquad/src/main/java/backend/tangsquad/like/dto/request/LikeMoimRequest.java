@@ -1,11 +1,12 @@
-package backend.tangsquad.likes.dto.request;
+package backend.tangsquad.like.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class LikeLogbookRequest {
+public class LikeMoimRequest {
     private Long userId;
-    private Long logbookid;
+    private Long moimId;
 }
+

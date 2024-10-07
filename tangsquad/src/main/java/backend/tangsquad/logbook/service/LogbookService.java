@@ -1,8 +1,11 @@
 package backend.tangsquad.logbook.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.common.repository.UserRepository;
+import backend.tangsquad.like.dto.request.LikeLogbookRequest;
+import backend.tangsquad.like.entity.LikeLogbook;
+import backend.tangsquad.like.repository.LikeLogbookRepository;
 import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
-import backend.tangsquad.logbook.dto.request.LogbookReadRequest;
 import backend.tangsquad.logbook.dto.request.LogbookRequest;
 import backend.tangsquad.logbook.dto.response.LogbookResponse;
 import backend.tangsquad.logbook.entity.Logbook;
@@ -22,9 +25,14 @@ import java.util.stream.Collectors;
 public class LogbookService {
 
     private final LogbookRepository logbookRepository;
+    private final UserRepository userRepository;
 
-    public LogbookService(LogbookRepository logbookRepository) {
+    private final LikeLogbookRepository likeLogbookRepository;
+
+    public LogbookService(LogbookRepository logbookRepository, UserRepository userRepository, LikeLogbookRepository likeLogbookRepository) {
         this.logbookRepository = logbookRepository;
+        this.userRepository = userRepository;
+        this.likeLogbookRepository = likeLogbookRepository;
     }
 
     public LogbookResponse save(LogbookCreateRequest logbookCreateRequest, UserDetailsImpl userDetails) {
@@ -145,4 +153,37 @@ public class LogbookService {
         }
     }
 
+    public LikeLogbookRequest createLike(Long logbookId, UserDetailsImpl userDetails) {
+        Long userId = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."))
+                .getId();
+
+        Long savedLogbookId = logbookRepository.findById(logbookId)
+                .orElseThrow(() -> new RuntimeException("로그북을 찾을 수 없습니다."))
+                .getId();
+
+        LikeLogbook like = new LikeLogbook(userId, savedLogbookId);
+        LikeLogbook savedLike = likeLogbookRepository.save(like);
+        LikeLogbookRequest likeLogbookRequest = new LikeLogbookRequest(
+                savedLike.getUserId(),
+                savedLike.getLogbookId()
+        );
+
+        return likeLogbookRequest;
+    }
+
+    public List<LikeLogbookRequest> getLikeLogbooks(UserDetailsImpl userDetails) {
+        Long userId = userDetails.getId();  // Get the authenticated user's ID
+
+        List<LikeLogbook> likedLogbooks = likeLogbookRepository.findAllByUserId(userId);
+
+        // Map LikeLogbook entities to DTOs (e.g., LikeLogbookRequest)
+        return likedLogbooks.stream()
+                .map(likeLogbook -> new LikeLogbookRequest(
+                        likeLogbook.getUserId(),  // Assuming Logbook has a reference
+                        likeLogbook.getLogbookId()      // Assuming User has a reference
+                ))
+                .collect(Collectors.toList());
+
+    }
 }

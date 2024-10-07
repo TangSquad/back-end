@@ -1,10 +1,10 @@
-package backend.tangsquad.likes.service;
+package backend.tangsquad.like.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.repository.UserRepository;
-import backend.tangsquad.likes.dto.request.LikeLogbookRequest;
-import backend.tangsquad.likes.entity.LikeLogbook;
-import backend.tangsquad.likes.repository.LikeLogbookRepository;
+import backend.tangsquad.like.dto.request.LikeLogbookRequest;
+import backend.tangsquad.like.entity.LikeLogbook;
+import backend.tangsquad.like.repository.LikeLogbookRepository;
 import backend.tangsquad.logbook.repository.LogbookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
