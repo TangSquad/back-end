@@ -14,6 +14,7 @@ import backend.tangsquad.swagger.global.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,17 +24,12 @@ import java.util.List;
 // 로그북 내비게이션 바 - 내 다이빙 (나의 로그 CRUD)
 @RequestMapping("/logbook")
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Logbook", description = "로그북 관련 API")
 public class LogbookController {
 
     private final LogbookService logbookService;
     private final LikeLogbookService likeLogbookService;
-
-
-    public LogbookController(LogbookService logbookService, LikeLogbookService likeLogbookService) {
-        this.logbookService = logbookService;
-        this.likeLogbookService = likeLogbookService;
-    }
 
     // Create a new Logbook
     @PostMapping

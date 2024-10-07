@@ -11,6 +11,7 @@ import backend.tangsquad.logbook.dto.response.LogbookResponse;
 import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.repository.LogbookRepository;
 import backend.tangsquad.swagger.global.CommonResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,18 +23,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class LogbookService {
 
     private final LogbookRepository logbookRepository;
     private final UserRepository userRepository;
 
     private final LikeLogbookRepository likeLogbookRepository;
-
-    public LogbookService(LogbookRepository logbookRepository, UserRepository userRepository, LikeLogbookRepository likeLogbookRepository) {
-        this.logbookRepository = logbookRepository;
-        this.userRepository = userRepository;
-        this.likeLogbookRepository = likeLogbookRepository;
-    }
 
     public LogbookResponse save(LogbookCreateRequest logbookCreateRequest, UserDetailsImpl userDetails) {
         try {
