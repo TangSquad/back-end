@@ -1,21 +1,30 @@
 package backend.tangsquad.moim.service;
 
+import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.service.UserService;
+import backend.tangsquad.like.dto.request.LikeLogbookRequest;
+import backend.tangsquad.like.dto.request.LikeMoimRequest;
+import backend.tangsquad.like.entity.LikeLogbook;
+import backend.tangsquad.like.entity.LikeMoim;
+import backend.tangsquad.like.repository.LikeMoimRepository;
 import backend.tangsquad.moim.entity.Moim;
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.moim.dto.request.MoimLeaderUpdateRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import backend.tangsquad.moim.repository.MoimRepository;
 import backend.tangsquad.common.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class MoimService  {
     final private MoimRepository moimRepository;
 
@@ -23,12 +32,7 @@ public class MoimService  {
 
     final private UserService userService;
 
-    @Autowired
-    public MoimService (MoimRepository moimRepository, UserRepository userRepository, UserService userService) {
-        this.moimRepository = moimRepository;
-        this.userRepository = userRepository;
-        this.userService = userService;
-    }
+    final private LikeMoimRepository likeMoimRepository;
 
     public Moim save(Moim moim) {
         return moimRepository.save(moim);
@@ -143,8 +147,42 @@ public class MoimService  {
         moimRepository.delete(moim);
     }
 
-
     public List<Moim> getAllMoims() {
         return moimRepository.findAll();
     }
+
+    public LikeMoimRequest createLike(Long moimId, UserDetailsImpl userDetails) {
+        Long userId = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."))
+                .getId();
+
+        Long savedLogbookId = moimRepository.findById(moimId)
+                .orElseThrow(() -> new RuntimeException("로그북을 찾을 수 없습니다."))
+                .getId();
+
+        LikeMoim like = new LikeMoim(userId, savedLogbookId);
+        LikeMoim savedLike = likeMoimRepository.save(like);
+        LikeMoimRequest likeMoimRequest = new LikeMoimRequest(
+                savedLike.getUserId(),
+                savedLike.getMoimId()
+        );
+
+        return likeMoimRequest;
+    }
+
+    public List<LikeMoimRequest> getLikeLogbooks(UserDetailsImpl userDetails) {
+        Long userId = userDetails.getId();  // Get the authenticated user's ID
+
+        List<LikeMoim> likedMoims = likeMoimRepository.findAllByUserId(userId);
+
+        // Map LikeLogbook entities to DTOs (e.g., LikeLogbookRequest)
+        return likedMoims.stream()
+                .map(likedMoim -> new LikeMoimRequest(
+                        likedMoim.getUserId(),  // Assuming Logbook has a reference
+                        likedMoim.getMoimId()      // Assuming User has a reference
+                ))
+                .collect(Collectors.toList());
+
+    }
+
 }

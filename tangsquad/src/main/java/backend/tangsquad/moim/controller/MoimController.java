@@ -3,6 +3,8 @@ package backend.tangsquad.moim.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.entity.User;
+import backend.tangsquad.like.dto.request.LikeMoimRequest;
+import backend.tangsquad.like.service.LikeMoimService;
 import backend.tangsquad.moim.dto.request.MoimLeaderUpdateByUsernameRequest;
 import backend.tangsquad.moim.entity.Moim;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
@@ -10,8 +12,6 @@ import backend.tangsquad.moim.dto.request.MoimLeaderUpdateRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import backend.tangsquad.moim.dto.response.MoimCreateResponse;
 import backend.tangsquad.moim.dto.response.MoimReadResponse;
-import backend.tangsquad.moim.repository.MoimRepository;
-import backend.tangsquad.common.repository.UserRepository;
 import backend.tangsquad.moim.service.MoimService;
 import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.swagger.global.CommonResponse;
@@ -22,14 +22,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -39,25 +38,13 @@ import java.util.stream.Collectors;
 
 @RequestMapping("/moim")
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Moim", description = "모임 관련 API")
 public class MoimController {
 
     private final MoimService moimService;
-
-    private final MoimRepository moimRepository;
-
-    private final UserRepository userRepository;
-    private UserDetails userDetails;
-
-    private UserService userService;
-
-    @Autowired
-    public MoimController(MoimService moimService, MoimRepository moimRepository, UserRepository userRepository, UserService userService) {
-        this.moimService = moimService;
-        this.moimRepository = moimRepository;
-        this.userRepository = userRepository;
-        this.userService = userService;
-    }
+    private final UserService userService;
+    private final LikeMoimService likeMoimService;
 
     // Create a new moim
     @PostMapping
@@ -474,5 +461,21 @@ public class MoimController {
     }
 
 
+    @PostMapping("like/{moimId}")
+    @Operation(summary = "좋아요 모임 추가", description = "로그북에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<LikeMoimRequest> likeMoim(@PathVariable Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        LikeMoimRequest likeMoimRequest = likeMoimService.createLike(moimId, userDetails);
+        return ResponseEntity.ok(likeMoimRequest);
+    }
+
+    @GetMapping("like/")
+    @Operation(summary = "좋아요한 로그북 가져오기", description = "좋아요한 로그북을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<List<LikeMoimRequest>> getLikeMoims(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // Get the list of liked logbooks as LikeLogbookRequest DTOs
+        List<LikeMoimRequest> likeMoims = likeMoimService.getLikeMoims(userDetails);
+
+        // Return the list wrapped in ResponseEntity
+        return ResponseEntity.ok(likeMoims);
+    }
 
 }

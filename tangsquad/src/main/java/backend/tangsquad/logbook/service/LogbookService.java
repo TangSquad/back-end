@@ -1,55 +1,67 @@
 package backend.tangsquad.logbook.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
-import backend.tangsquad.common.entity.User;
-import backend.tangsquad.logbook.dto.request.LogCreateRequest;
-import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
-import backend.tangsquad.logbook.entity.Log;
-import backend.tangsquad.logbook.entity.Logbook;
-import backend.tangsquad.logbook.dto.request.LogUpdateRequest;
-import backend.tangsquad.logbook.repository.LogbookRepository;
 import backend.tangsquad.common.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import backend.tangsquad.like.dto.request.LikeLogbookRequest;
+import backend.tangsquad.like.entity.LikeLogbook;
+import backend.tangsquad.like.repository.LikeLogbookRepository;
+import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
+import backend.tangsquad.logbook.dto.request.LogbookRequest;
+import backend.tangsquad.logbook.dto.response.LogbookResponse;
+import backend.tangsquad.logbook.entity.Logbook;
+import backend.tangsquad.logbook.repository.LogbookRepository;
+import backend.tangsquad.swagger.global.CommonResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class LogbookService {
 
     private final LogbookRepository logbookRepository;
-
     private final UserRepository userRepository;
 
-    public LogbookService(LogbookRepository logbookRepository, UserRepository userRepository) {
-        this.logbookRepository = logbookRepository;
-        this.userRepository = userRepository;
-    }
+    private final LikeLogbookRepository likeLogbookRepository;
 
-
-    public Logbook save(LogbookCreateRequest logbookCreateRequest, UserDetailsImpl userDetails) {
-
+    public LogbookResponse save(LogbookCreateRequest logbookCreateRequest, UserDetailsImpl userDetails) {
         try {
+            // Build the logbook entity from the request
             Logbook logbook = Logbook.builder()
-                    .user(userDetails.getUser())
-                    .location(logbookCreateRequest.getLocation())
-                    .title(logbookCreateRequest.getTitle())
-                    .contents(logbookCreateRequest.getContents())
+                    .user(userDetails.getUser())  // Set the user from authenticated user details
+                    .date(logbookCreateRequest.getDate())  // Set the date
+                    .location(logbookCreateRequest.getLocation())  // Set the location
+                    .title(logbookCreateRequest.getTitle())  // Set the title
+                    .contents(logbookCreateRequest.getContents())  // Set the contents
                     .build();
-            // Save logbook
-            return logbookRepository.save(logbook);
+
+            // Save the logbook entity
+            Logbook savedLogbook = logbookRepository.save(logbook);
+
+            // Convert the saved entity to LogbookReadRequest
+            LogbookResponse logbookResponse = LogbookResponse.builder()
+                    .logId(savedLogbook.getId())  // Set the ID of the saved logbook
+                    .userId(savedLogbook.getUser().getId())
+                    .title(savedLogbook.getTitle())// Get the userId from the user
+                    .contents(savedLogbook.getContents())
+                    .date(savedLogbook.getDate())
+                    .location(savedLogbook.getLocation())
+                    .build();
+
+            return logbookResponse;  // Return the read request
+
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("WRONG");
-            return null;
+            System.out.println("Error while saving logbook.");
+            return null;  // Handle the error and return null or throw a custom exception
         }
-
-        // Save the logbook to the database
     }
 
     public Logbook getLogbookByIdAndUserId(Long logId, Long userId) {
@@ -58,56 +70,116 @@ public class LogbookService {
                 .orElse(null); // Return null if not found
     }
 
+    public List<LogbookRequest> getLogbooks(Long userId) {
+        // Retrieve the logbooks for the authenticated user
+        try {
+            List<Logbook> logbooks = logbookRepository.findByUserId(userId);
+            // Convert each Logbook to a LogbookRequest
+            List<LogbookRequest> logbookRequests = logbooks.stream()
+                    .map(logbook -> LogbookRequest.builder()
+                            .userId(userId)  // Set the userId or user object
+                            .contents(logbook.getContents())  // Map the contents of the logbook
+                            .location(logbook.getLocation())  // Replace with actual location data if available in Logbook
+                            .title(logbook.getTitle())  // Add title from Logbook
+                            .build())
+                    .collect(Collectors.toList());  // Collect all LogbookRequest objects into a list
+            return logbookRequests;
 
-    public List<Logbook> getLogs(Long userId)
-    {
-
-        return logbookRepository.findByUserId(userId);
+        } catch (Exception e) {
+            return null;
+        }
     }
-
-
-
-    public Optional<Logbook> getLog(Long logId) {
-        return logbookRepository.findById(logId);
-    }
-
-//    public Optional<Logbook> getLog(Long userId, Long logId) {
-//        return logbookRepository.findByUserId(userId, logId);
-//    }
 
     // 수정 필요.
-    public Logbook updateLog(Long logId, LogUpdateRequest request) {
+    public LogbookResponse updateLog(LogbookRequest logbookRequest, UserDetailsImpl userDetails) {
         // Retrieve the existing Logbook by userId and logId
-        Optional<Logbook> logbookOptional = logbookRepository.findById(logId);
+        Optional<Logbook> logbookOptional = logbookRepository.findById(logbookRequest.getId());
 
         if (!logbookOptional.isPresent()) {
-            throw new NoSuchElementException(", logId: " + logId);
+            throw new NoSuchElementException();
         }
 
         // Get the existing logbook
         Logbook logbook = logbookOptional.get();
+        // Update the logbook using the new update method
+        logbook.update(logbookRequest);
 
-        // Update fields from the request if they are not null
-        if (request.getTitle() != null) logbook.setTitle(request.getTitle());
-        if (request.getId() != null) logbook.setId(request.getId());
-        if (request.getDate() != null) logbook.setDate(request.getDate());
-        if (request.getContents() != null) logbook.setContents(request.getContents());
-        if (request.getLocation() != null) logbook.setLocation(request.getLocation());
-        if (request.getWeather() != null) logbook.setWeather(request.getWeather());
-        if (request.getSurfTemp() != null) logbook.setSurfTemp(request.getSurfTemp());
-        if (request.getUnderTemp() != null) logbook.setUnderTemp(request.getUnderTemp());
+        Logbook savedLogbook = logbookRepository.save(logbook);
+        LogbookResponse logbookResponse = LogbookResponse.builder()
+                .logId(savedLogbook.getId())
+                .userId(savedLogbook.getUser().getId())
+                .date(savedLogbook.getDate())
+                .title(savedLogbook.getTitle())
+                .contents(savedLogbook.getContents())
+                .location(savedLogbook.getLocation())
+                .build();
 
         // Save and return the updated logbook
-        return logbookRepository.save(logbook);
+        return logbookResponse;
     }
 
-    public void deleteLog(Long logId) {
-        // Retrieve the logbook based on logId
-        Logbook logbook = logbookRepository.findById(logId)
-                .orElseThrow(() -> new NoSuchElementException("Logbook not found for logId: " + logId));
+    public ResponseEntity<CommonResponse> deleteLog(Long logId, UserDetailsImpl userDetails) {
 
-        // Delete the logbook
-        logbookRepository.delete(logbook);
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            // Retrieve the logbook from the service
+            Optional<Logbook> logbookOptional = logbookRepository.findByIdAndUserId(logId, userDetails.getId());
+
+            if (!logbookOptional.isPresent()) {
+                // Log not found
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+            }
+            Logbook logbook = logbookOptional.get();
+            Long logOwnerId = logbook.getUser().getId();
+
+            if (!userDetails.getId().equals(logOwnerId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            logbookRepository.delete(logbook);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
+    public LikeLogbookRequest createLike(Long logbookId, UserDetailsImpl userDetails) {
+        Long userId = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."))
+                .getId();
+
+        Long savedLogbookId = logbookRepository.findById(logbookId)
+                .orElseThrow(() -> new RuntimeException("로그북을 찾을 수 없습니다."))
+                .getId();
+
+        LikeLogbook like = new LikeLogbook(userId, savedLogbookId);
+        LikeLogbook savedLike = likeLogbookRepository.save(like);
+        LikeLogbookRequest likeLogbookRequest = new LikeLogbookRequest(
+                savedLike.getUserId(),
+                savedLike.getLogbookId()
+        );
+
+        return likeLogbookRequest;
+    }
+
+    public List<LikeLogbookRequest> getLikeLogbooks(UserDetailsImpl userDetails) {
+        Long userId = userDetails.getId();  // Get the authenticated user's ID
+
+        List<LikeLogbook> likedLogbooks = likeLogbookRepository.findAllByUserId(userId);
+
+        // Map LikeLogbook entities to DTOs (e.g., LikeLogbookRequest)
+        return likedLogbooks.stream()
+                .map(likeLogbook -> new LikeLogbookRequest(
+                        likeLogbook.getUserId(),  // Assuming Logbook has a reference
+                        likeLogbook.getLogbookId()      // Assuming User has a reference
+                ))
+                .collect(Collectors.toList());
+
+    }
 }
