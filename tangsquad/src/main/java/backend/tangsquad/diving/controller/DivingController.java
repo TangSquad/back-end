@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,16 +36,12 @@ import java.util.stream.Collectors;
 
 @RequestMapping("/diving")
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Diving", description = "다이빙 관련 API")
 public class DivingController {
 
     private final DivingService divingService;
     private final LikeDivingService likeDivingService;
-
-    public DivingController(DivingService divingService, LikeDivingService likeDivingService) {
-        this.divingService = divingService;
-        this.likeDivingService = likeDivingService;
-    }
 
     // Create a new diving
     @PostMapping

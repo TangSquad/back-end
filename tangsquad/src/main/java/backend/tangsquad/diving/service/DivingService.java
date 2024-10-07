@@ -4,6 +4,7 @@ import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.dto.request.DivingUpdateRequest;
 import backend.tangsquad.diving.repository.DivingRepository;
 import backend.tangsquad.common.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +13,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class DivingService {
     private final DivingRepository divingRepository;
-
-    private UserService userService;
-
-    @Autowired
-    public DivingService(DivingRepository divingRepository) {
-        this.divingRepository = divingRepository;
-    }
 
     public Diving save(Diving diving) {
         return divingRepository.save(diving);
