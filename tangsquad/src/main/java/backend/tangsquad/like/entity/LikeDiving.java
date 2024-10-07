@@ -1,4 +1,4 @@
-package backend.tangsquad.likes.entity;
+package backend.tangsquad.like.entity;
 
 
 import jakarta.persistence.*;
@@ -7,8 +7,8 @@ import lombok.*;
 @Getter
 @Entity
 @RequiredArgsConstructor
-@Table(name = "like_logbook")
-public class LikeLogbook {
+@Table(name = "like_diving")
+public class LikeDiving {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,11 +17,11 @@ public class LikeLogbook {
     private Long userId;
 
     @Column
-    private Long logbookId;
+    private Long divingId;
 
     @Builder
-    public LikeLogbook(Long userId, Long logbookId) {
+    public LikeDiving(Long userId, Long divingId) {
         this.userId = userId;
-        this.logbookId = logbookId;
+        this.divingId = divingId;
     }
 }
