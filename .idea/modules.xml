@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/backend.tangsquad.main.iml" filepath="$PROJECT_DIR$/.idea/modules/backend.tangsquad.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/tangsquad.iml" filepath="$PROJECT_DIR$/.idea/tangsquad.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/back-end.iml" filepath="$PROJECT_DIR$/.idea/back-end.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tangsquad.main.iml" filepath="$PROJECT_DIR$/.idea/modules/tangsquad.main.iml" />
     </modules>
   </component>
 </project>

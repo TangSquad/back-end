@@ -1,9 +1,6 @@
 package backend.tangsquad.chat.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,17 +17,18 @@ public class ChatRoom {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String roomId;
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
     private String name;
     private RoomType type;
+    private Long organizationId;
 
-    public static ChatRoom create(String name, RoomType type) {
+    public static ChatRoom create(String name, RoomType type, Long organizationId) {
         ChatRoom chatRoom = new ChatRoom();
-        chatRoom.roomId = UUID.randomUUID().toString();
+        chatRoom.id = UUID.randomUUID();
         chatRoom.name = name;
         chatRoom.type = type;
+        chatRoom.organizationId = organizationId;
         return chatRoom;
     }
 }
