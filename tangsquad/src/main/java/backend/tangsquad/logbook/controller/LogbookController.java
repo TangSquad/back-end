@@ -6,7 +6,6 @@ import backend.tangsquad.like.service.LikeLogbookService;
 import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
 import backend.tangsquad.logbook.dto.request.LogbookRequest;
 import backend.tangsquad.logbook.dto.response.LogbookResponse;
-import backend.tangsquad.logbook.entity.Log;
 import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.service.LogbookService;
 import backend.tangsquad.swagger.global.CommonResponse;
@@ -19,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 // 로그북 내비게이션 바 - 내 다이빙 (나의 로그 CRUD)
 @RequestMapping("/logbook")
