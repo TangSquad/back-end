@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface LogbookRepository extends JpaRepository<Logbook, Long> {
     List<Logbook> findByUserId(Long userId);
     Optional<Logbook> findByIdAndUserId(Long logId, Long userId);
+//    Optional<Logbook> findById(Long logId);
 }
