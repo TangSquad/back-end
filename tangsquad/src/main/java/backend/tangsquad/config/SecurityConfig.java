@@ -48,6 +48,8 @@ public class SecurityConfig {
 
                 // 권한에 따른 접근 설정
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/chat/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/upload/**").permitAll()
                         .requestMatchers("/logbook/**").permitAll()
