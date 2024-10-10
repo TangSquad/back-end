@@ -5,6 +5,9 @@ import backend.tangsquad.common.repository.UserRepository;
 import backend.tangsquad.like.dto.request.LikeLogbookRequest;
 import backend.tangsquad.like.entity.LikeLogbook;
 import backend.tangsquad.like.repository.LikeLogbookRepository;
+import backend.tangsquad.logbook.dto.request.LogbookRequest;
+import backend.tangsquad.logbook.dto.response.LogbookResponse;
+import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.repository.LogbookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,18 +42,25 @@ public class LikeLogbookService {
         return likeLogbookRequest;
     }
 
-    public List<LikeLogbookRequest> getLikeLogbooks(UserDetailsImpl userDetails) {
-        Long userId = userDetails.getId();  // Get the authenticated user's ID
+    public List<LogbookResponse> getLikeLogbooks(UserDetailsImpl userDetails) {
 
-        List<LikeLogbook> likedLogbooks = likeLogbookRepository.findAllByUserId(userId);
+        try {
+            List<LikeLogbook> likedLogbooks = likeLogbookRepository.findAllByUserId(userDetails.getId());
 
-        // Map LikeLogbook entities to DTOs (e.g., LikeLogbookRequest)
-        return likedLogbooks.stream()
-                .map(likeLogbook -> new LikeLogbookRequest(
-                        likeLogbook.getUserId(),  // Assuming Logbook has a reference
-                        likeLogbook.getLogbookId()      // Assuming User has a reference
-                ))
-                .collect(Collectors.toList());
+            List<Long> likeLogbookIds = likedLogbooks.stream()
+                    .map(likeLogbook -> likeLogbook.getLogbookId())
+                    .collect(Collectors.toList());
 
+            List<Logbook> logbooks = logbookRepository.findAllById(likeLogbookIds);
+
+            return logbooks.stream().map(logbook -> LogbookResponse.builder()
+                            .userId(logbook.getUser().getId())
+                            .date(logbook.getDate())
+                            .title(logbook.getTitle())
+                            .build())
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
