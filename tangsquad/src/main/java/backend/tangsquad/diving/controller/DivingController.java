@@ -1,15 +1,11 @@
 package backend.tangsquad.diving.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.diving.dto.request.DivingRequest;
+import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
-import backend.tangsquad.diving.dto.request.DivingCreateRequest;
-import backend.tangsquad.diving.dto.request.DivingUpdateRequest;
-import backend.tangsquad.diving.dto.response.DivingCreateResponse;
-import backend.tangsquad.diving.dto.response.DivingReadResponse;
 import backend.tangsquad.diving.service.DivingService;
-import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.like.dto.request.LikeDivingRequest;
-import backend.tangsquad.like.dto.request.LikeLogbookRequest;
 import backend.tangsquad.like.service.LikeDivingService;
 import backend.tangsquad.swagger.global.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,10 +18,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,30 +48,27 @@ public class DivingController {
             @ApiResponse(responseCode = "201", description = "다이빙 생성 성공", content = @Content(schema = @Schema(implementation = DivingCreateResponse.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
     })
-    public ResponseEntity<DivingCreateRequest> createDiving(
-            @RequestBody DivingCreateRequest divingCreateRequest,
+    public ResponseEntity<DivingResponse> createDiving(
+            @RequestBody DivingRequest divingRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         try {
-            Diving diving = new Diving();
-
-            diving.builder()
+            Diving diving = Diving.builder()
                     .user(userDetails.getUser())
-                    .divingName(divingCreateRequest.getDivingName())
-                    .divingIntro(divingCreateRequest.getDivingIntro())
-                    .age(divingCreateRequest.getAge())
-                    .moodOne(divingCreateRequest.getMoodOne())
-                    .moodTwo(divingCreateRequest.getMoodTwo())
-                    .limitPeople(divingCreateRequest.getLimitPeople())
-                    .limitLicense(divingCreateRequest.getLimitLicense())
-                    .startDate(divingCreateRequest.getStartDate())
-                    .endDate(divingCreateRequest.getEndDate())
-                    .location(divingCreateRequest.getLocation())
+                    .divingName(divingRequest.getDivingName())
+                    .divingIntro(divingRequest.getDivingIntro())
+                    .age(divingRequest.getAge())
+                    .moods(divingRequest.getMoods())
+                    .limitPeople(divingRequest.getLimitPeople())
+                    .limitLicense(divingRequest.getLimitLicense())
+                    .startDate(divingRequest.getStartDate())
+                    .endDate(divingRequest.getEndDate())
+                    .location(divingRequest.getLocation())
                     .build();
 
             // Save diving
             Diving savedDiving = divingService.save(diving);
-            return ResponseEntity.status(HttpStatus.CREATED).body(divingCreateRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(divingRequest);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("WRONG");
@@ -171,48 +162,10 @@ public class DivingController {
 
     @PutMapping("")
     @Operation(summary = "다이빙 수정하기", description = "나의 다이빙 수정합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<List<DivingReadResponse>> updateDiving(
-            @RequestBody DivingUpdateRequest request,
+    public ResponseEntity<List<DivingResponse>> updateDiving(
+            @RequestBody DivingRequest divingRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
 
-        // Extract the logId from the request (assuming LogUpdateRequest contains logId)
-        Long divingId = request.getDivingId();
-
-        // Call the service to update the diving
-        Optional<Diving> updatedDivingOptional = Optional.ofNullable(divingService.updateDiving(divingId, request));
-        // If the diving was updated successfully
-        if (updatedDivingOptional.isPresent()) {
-            Diving updatedDiving = updatedDivingOptional.get();
-
-            // Check if the user IDs match
-            if (updatedDiving.getUser() == null) {
-                throw new IllegalStateException("User associated with diving is null");
-            }
-            if (!userDetailsImpl.getId().equals(updatedDiving.getUser().getId())) {
-                throw new AccessDeniedException("User is not authorized to update this ");
-            }
-
-            // Convert the updated diving to a LogReadResponse
-            DivingReadResponse divingReadResponse = new DivingReadResponse(
-                    updatedDiving.getDivingId(),
-                    updatedDiving.getUser().getId(),  // Corrected to retrieve the actual user ID
-                    updatedDiving.getDivingName(),
-                    updatedDiving.getDivingIntro(),
-                    updatedDiving.getAge(),
-                    updatedDiving.getMoodOne(),
-                    updatedDiving.getMoodTwo(),
-                    updatedDiving.getLimitPeople(),
-                    updatedDiving.getLimitLicense(),
-                    updatedDiving.getStartDate(),
-                    updatedDiving.getEndDate(),
-                    updatedDiving.getLocation()
-            );
-            // Return the updated LogReadResponse in a list (to maintain consistency with previous GET mapping)
-            return ResponseEntity.ok(Collections.singletonList(divingReadResponse));
-        } else {
-            // Return a NOT_FOUND status if the diving could not be found or updated
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
     }
 
 
@@ -268,12 +221,16 @@ public class DivingController {
         return ResponseEntity.ok(likeDivingRequest);
     }
 
-    @GetMapping("like/")
+    @GetMapping("like")
     @Operation(summary = "좋아요한 다이빙 가져오기", description = "좋아요한 로그북을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<List<LikeDivingRequest>> getLikeDivings(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<LikeDivingRequest> likeDivings = likeDivingService.getLikeDivings(userDetails);
-        return ResponseEntity.ok(likeDivings);
-    }
+    public ResponseEntity<List<DivingRequest>> getLikeDivings(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<DivingRequest> divingRequests = likeDivingService.getLikeDivings(userDetails);
 
+        if (divingRequests != null) {
+            return ResponseEntity.ok(divingRequests);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 
 }
