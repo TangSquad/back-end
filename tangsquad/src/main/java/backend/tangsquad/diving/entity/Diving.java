@@ -59,7 +59,6 @@ public class Diving {
         if (divingRequest.getLocation() != null) this.location = divingRequest.getLocation();
     }
 
-
     public Diving(User user, String divingName, String divingIntro, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
         this.user = user;
         this.divingName = divingName;
