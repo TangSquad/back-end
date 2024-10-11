@@ -4,13 +4,13 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class LikeLogbookResponse {
+public class LikeDivingResponse {
     private Long userId;
-    private Long logbookid;
+    private Long divingId;
 
     @Builder
-    public LikeLogbookResponse(Long userId, Long logbookid) {
+    public LikeDivingResponse (Long userId, Long divingId){
         this.userId = userId;
-        this.logbookid = logbookid;
+        this.divingId = divingId;
     }
 }
