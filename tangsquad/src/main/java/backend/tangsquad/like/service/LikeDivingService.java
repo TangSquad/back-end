@@ -2,12 +2,12 @@ package backend.tangsquad.like.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.repository.UserRepository;
-import backend.tangsquad.like.dto.request.LikeDivingRequest;
-import backend.tangsquad.like.dto.request.LikeLogbookRequest;
+import backend.tangsquad.diving.dto.response.DivingResponse;
+import backend.tangsquad.diving.entity.Diving;
+import backend.tangsquad.diving.repository.DivingRepository;
+import backend.tangsquad.like.dto.response.LikeDivingResponse;
 import backend.tangsquad.like.entity.LikeDiving;
-import backend.tangsquad.like.entity.LikeLogbook;
 import backend.tangsquad.like.repository.LikeDivingRepository;
-import backend.tangsquad.like.repository.LikeLogbookRepository;
 import backend.tangsquad.logbook.repository.LogbookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,8 +25,10 @@ public class LikeDivingService {
 
     private final LikeDivingRepository likeDivingRepository;
 
+    private final DivingRepository divingRepository;
 
-    public LikeDivingRequest createLike(Long divingId, UserDetailsImpl userDetails) {
+
+    public LikeDivingResponse createLike(Long divingId, UserDetailsImpl userDetails) {
         Long userId = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."))
                 .getId();
@@ -37,27 +39,39 @@ public class LikeDivingService {
 
         LikeDiving like = new LikeDiving(userId, savedLogbookId);
         LikeDiving savedLike = likeDivingRepository.save(like);
-        LikeDivingRequest likeDivingRequest = new LikeDivingRequest(
-                savedLike.getUserId(),
-                savedLike.getDivingId()
-        );
+        LikeDivingResponse likeDivingResponse = LikeDivingResponse.builder()
+                .userId(savedLike.getUserId())
+                .divingId(savedLike.getDivingId())
+                .build();
 
-        return likeDivingRequest;
+        return likeDivingResponse;
     }
 
-    public List<LikeDivingRequest> getLikeDivings(UserDetailsImpl userDetails) {
-        Long userId = userDetails.getId();  // Get the authenticated user's ID
+    public List<DivingResponse> getLikeDivings(UserDetailsImpl userDetails) {
 
-        List<LikeDiving> likedDivings = likeDivingRepository.findAllByUserId(userId);
+        try {
+            Long userId = userDetails.getId();  // Get the authenticated user's ID
 
-        // Map LikeLogbook entities to DTOs (e.g., LikeLogbookRequest)
-        return likedDivings.stream()
-                .map(likeDiving -> new LikeDivingRequest(
-                        likeDiving.getUserId(),  // Assuming Logbook has a reference
-                        likeDiving.getDivingId()      // Assuming User has a reference
-                ))
-                .collect(Collectors.toList());
+            List<LikeDiving> likedDivings = likeDivingRepository.findAllByUserId(userId);
 
+            List<Long> divingIds = likedDivings.stream()
+                    .map(likeDiving -> likeDiving.getDivingId())
+                    .collect(Collectors.toList());
+
+            List<Diving> divings = divingRepository.findAllById(divingIds);
+            return divings.stream().map(diving -> DivingResponse.builder()
+                    .divingName(diving.getDivingName())
+                    .divingIntro(diving.getDivingIntro())
+                    .age(diving.getAge())
+                    .moods(diving.getMoods())
+                    .limitPeople(diving.getLimitPeople())
+                    .limitLicense(diving.getLimitLicense())
+                    .build()
+            ).collect(Collectors.toList());
+
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }
