@@ -2,10 +2,10 @@ package backend.tangsquad.like.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.repository.UserRepository;
-import backend.tangsquad.diving.dto.request.DivingRequest;
+import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.repository.DivingRepository;
-import backend.tangsquad.like.dto.request.LikeDivingRequest;
+import backend.tangsquad.like.dto.response.LikeDivingResponse;
 import backend.tangsquad.like.entity.LikeDiving;
 import backend.tangsquad.like.repository.LikeDivingRepository;
 import backend.tangsquad.logbook.repository.LogbookRepository;
@@ -28,7 +28,7 @@ public class LikeDivingService {
     private final DivingRepository divingRepository;
 
 
-    public LikeDivingRequest createLike(Long divingId, UserDetailsImpl userDetails) {
+    public LikeDivingResponse createLike(Long divingId, UserDetailsImpl userDetails) {
         Long userId = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."))
                 .getId();
@@ -39,15 +39,15 @@ public class LikeDivingService {
 
         LikeDiving like = new LikeDiving(userId, savedLogbookId);
         LikeDiving savedLike = likeDivingRepository.save(like);
-        LikeDivingRequest likeDivingRequest = new LikeDivingRequest(
-                savedLike.getUserId(),
-                savedLike.getDivingId()
-        );
+        LikeDivingResponse likeDivingResponse = LikeDivingResponse.builder()
+                .userId(savedLike.getUserId())
+                .divingId(savedLike.getDivingId())
+                .build();
 
-        return likeDivingRequest;
+        return likeDivingResponse;
     }
 
-    public List<DivingRequest> getLikeDivings(UserDetailsImpl userDetails) {
+    public List<DivingResponse> getLikeDivings(UserDetailsImpl userDetails) {
 
         try {
             Long userId = userDetails.getId();  // Get the authenticated user's ID
@@ -59,7 +59,7 @@ public class LikeDivingService {
                     .collect(Collectors.toList());
 
             List<Diving> divings = divingRepository.findAllById(divingIds);
-            return divings.stream().map(diving -> DivingRequest.builder()
+            return divings.stream().map(diving -> DivingResponse.builder()
                     .divingName(diving.getDivingName())
                     .divingIntro(diving.getDivingIntro())
                     .age(diving.getAge())
