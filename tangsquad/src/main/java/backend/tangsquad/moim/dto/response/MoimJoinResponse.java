@@ -1,24 +1,15 @@
 package backend.tangsquad.moim.dto.response;
 
 import backend.tangsquad.common.entity.User;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class MoimJoinResponse {
-
-    private List<User> registeredUsers; // List of registered users
-
-    @Builder
-    public MoimJoinResponse(List<User> registeredUsers) {
-        this.registeredUsers = registeredUsers;
-    }
-
+    public List<User> registeredUsers;
 }

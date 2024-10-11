@@ -2,7 +2,6 @@ package backend.tangsquad.moim.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.service.UserService;
-import backend.tangsquad.like.repository.LikeMoimRepository;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
 import backend.tangsquad.moim.dto.request.MoimLeaderUsernameRequest;
 import backend.tangsquad.moim.dto.response.*;
@@ -11,14 +10,9 @@ import backend.tangsquad.common.entity.User;
 import backend.tangsquad.moim.dto.request.MoimLeaderRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import backend.tangsquad.moim.repository.MoimRepository;
-import backend.tangsquad.common.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -32,7 +26,7 @@ public class MoimService  {
     final private MoimRepository moimRepository;
     final private UserService userService;
 
-    public MoimCreateResponse createMoim(MoimCreateRequest moimCreateRequest, UserDetailsImpl userDetails) {
+    public MoimResponse createMoim(MoimCreateRequest moimCreateRequest, UserDetailsImpl userDetails) {
         try {
             Moim moim = Moim.builder()
                     .user(userDetails.getUser())
@@ -50,7 +44,7 @@ public class MoimService  {
 
             // Save moim
             Moim savedMoim = moimRepository.save(moim);
-            return MoimCreateResponse.builder()
+            return MoimResponse.builder()
                     .anonymous(savedMoim.getAnonymous())
                     .moimName(savedMoim.getMoimName())
                     .moimIntro(savedMoim.getMoimIntro())
@@ -58,9 +52,6 @@ public class MoimService  {
                     .limitPeople(savedMoim.getLimitPeople())
                     .expense(savedMoim.getExpense())
                     .licenseLimit(savedMoim.getLicenseLimit())
-                    .locations(savedMoim.getLocations())
-                    .age(savedMoim.getAge())
-                    .moods(savedMoim.getMoods())
                     .build();
         } catch (Exception e) {
             return null;
@@ -69,21 +60,16 @@ public class MoimService  {
 
     public MoimJoinResponse joinMoim(Long moimId, UserDetailsImpl userDetails) {
         try {
-            // Find the Moim by ID
             Optional<Moim> moimOptional = moimRepository.findById(moimId);
             Moim moim = moimOptional.get();
 
-            // Check if the user is already joined
             if (moim.getRegisteredUsers().contains(userDetails.getUser())) {
                 return null;
             }
-            // Register the user
             moim.getRegisteredUsers().add(userDetails.getUser());
             moimRepository.save(moim);
 
-            MoimJoinResponse moimJoinResponse = MoimJoinResponse.builder()
-                    .registeredUsers(moim.getRegisteredUsers())
-                    .build();
+            MoimJoinResponse moimJoinResponse = new MoimJoinResponse(moim.getRegisteredUsers());
 
             return moimJoinResponse;
         } catch (Exception e) {
@@ -111,7 +97,7 @@ public class MoimService  {
 
 
     // 수정 필요
-    public MoimReadResponse updateMoim(MoimUpdateRequest moimUpdateRequest, UserDetailsImpl userDetails) {
+    public MoimResponse updateMoim(MoimUpdateRequest moimUpdateRequest, UserDetailsImpl userDetails) {
 
         try {
             Optional<Moim> moimOptional = moimRepository.findById(moimUpdateRequest.getMoimId());
@@ -130,8 +116,7 @@ public class MoimService  {
             moim.update(moimUpdateRequest);
 
             Moim savedMoim = moimRepository.save(moim);
-            MoimReadResponse moimReadResponse = MoimReadResponse.builder()
-                    .moimId(savedMoim.getId())
+            MoimResponse moimReadResponse = MoimResponse.builder()
                     .userId(savedMoim.getUser().getId())
                     .anonymous(savedMoim.getAnonymous())
                     .moimName(savedMoim.getMoimName())
@@ -140,10 +125,6 @@ public class MoimService  {
                     .limitPeople(savedMoim.getLimitPeople())
                     .expense(savedMoim.getExpense())
                     .licenseLimit(savedMoim.getLicenseLimit())
-                    .locations(savedMoim.getLocations())
-                    .age(savedMoim.getAge())
-                    .moods(savedMoim.getMoods())
-                    .registeredUsers(savedMoim.getRegisteredUsers())
                     .build();
 
             // Save and return the updated logbook
@@ -157,29 +138,24 @@ public class MoimService  {
         return moimRepository.findById(moimId);
     }
 
-    public List<MoimReadResponse> getRegisteredMoims(UserDetailsImpl userDetails) {
+    public List<MoimResponse> getRegisteredMoims(UserDetailsImpl userDetails) {
         try {
             List<Moim> moims = moimRepository.findByRegisteredUsersContaining(userDetails.getUser());
 
-            List<MoimReadResponse> moimReadResponses = moims.stream()
-                    .map(moim -> new MoimReadResponse(
-                            moim.getId(),
-                            moim.getUser().getId(),
-                            moim.getAnonymous(),
-                            moim.getMoimName(),
-                            moim.getMoimIntro(),
-                            moim.getMoimDetails(),
-                            moim.getLimitPeople(),
-                            moim.getExpense(),
-                            moim.getLicenseLimit(),
-                            moim.getLocations(),
-                            moim.getAge(),
-                            moim.getMoods(),
-                            moim.getRegisteredUsers()
-                    ))
-                    .collect(Collectors.toList());
+            List<MoimResponse> moimResponses = moims.stream()
+                    .map(moim -> MoimResponse.builder()
+                            .userId(moim.getUser().getId())
+                            .anonymous(moim.getAnonymous())
+                            .moimName(moim.getMoimName())
+                            .moimIntro(moim.getMoimIntro())
+                            .moimDetails(moim.getMoimDetails())
+                            .limitPeople(moim.getLimitPeople())
+                            .expense(moim.getExpense())
+                            .licenseLimit(moim.getLicenseLimit())
+                            .build()
+                    ).collect(Collectors.toList());
 
-            return moimReadResponses;
+            return moimResponses;
         } catch (Exception e) {
             return null;
         }
@@ -243,33 +219,26 @@ public class MoimService  {
                 .orElse(false);
     }
 
-    public List<MoimReadResponse> getMoims(UserDetailsImpl userDetails)
+    public List<MoimResponse> getMoims(UserDetailsImpl userDetails)
     {
         try {
             // Retrieve the user's logs
             List<Moim> moims = moimRepository.findByUserId(userDetails.getId());
 
-            // Map Diving entities to DivingReadResponse DTOs
-            List<MoimReadResponse> moimReadResponses = moims.stream()
-                    .map(moim -> new MoimReadResponse(
-                            moim.getId(),
-                            moim.getUser().getId(),
-                            moim.getAnonymous(),
-                            moim.getMoimName(),
-                            moim.getMoimIntro(),
-                            moim.getMoimDetails(),
-                            moim.getLimitPeople(),
-                            moim.getExpense(),
-                            moim.getLicenseLimit(),
-                            moim.getLocations(),
-                            moim.getAge(),
-                            moim.getMoods(),
-                            moim.getRegisteredUsers()
-                    ))
-                    .collect(Collectors.toList());
+            List<MoimResponse> moimResponses = moims.stream()
+                    .map(moim -> MoimResponse.builder()
+                            .userId(moim.getUser().getId())
+                            .anonymous(moim.getAnonymous())
+                            .moimName(moim.getMoimName())
+                            .moimIntro(moim.getMoimIntro())
+                            .moimDetails(moim.getMoimDetails())
+                            .limitPeople(moim.getLimitPeople())
+                            .expense(moim.getExpense())
+                            .licenseLimit(moim.getLicenseLimit())
+                            .build()
+                    ).collect(Collectors.toList());
 
-            // Return the list of DivingReadResponse
-            return moimReadResponses;
+            return moimResponses;
 
         } catch (Exception e) {
             return null;
@@ -304,28 +273,22 @@ public class MoimService  {
         }
     }
 
-    public List<MoimReadResponse> getAllMoims() {
+    public List<MoimResponse> getAllMoims() {
         try {
             List<Moim> moims = moimRepository.findAll();
-            List<MoimReadResponse> moimReadResponses = moims.stream()
-                    .map(moim -> new MoimReadResponse(
-                            moim.getId(),
-                            moim.getUser().getId(),
-                            moim.getAnonymous(),
-                            moim.getMoimName(),
-                            moim.getMoimIntro(),
-                            moim.getMoimDetails(),
-                            moim.getLimitPeople(),
-                            moim.getExpense(),
-                            moim.getLicenseLimit(),
-                            moim.getLocations(),
-                            moim.getAge(),
-                            moim.getMoods(),
-                            moim.getRegisteredUsers()
-                    ))
-                    .collect(Collectors.toList());
-
-            return moimReadResponses;
+            List<MoimResponse> moimResponses = moims.stream()
+                    .map(moim -> MoimResponse.builder()
+                            .userId(moim.getUser().getId())
+                            .anonymous(moim.getAnonymous())
+                            .moimName(moim.getMoimName())
+                            .moimIntro(moim.getMoimIntro())
+                            .moimDetails(moim.getMoimDetails())
+                            .limitPeople(moim.getLimitPeople())
+                            .expense(moim.getExpense())
+                            .licenseLimit(moim.getLicenseLimit())
+                            .build()
+                    ).collect(Collectors.toList());
+            return moimResponses;
         } catch (Exception e) {
             return null;
         }

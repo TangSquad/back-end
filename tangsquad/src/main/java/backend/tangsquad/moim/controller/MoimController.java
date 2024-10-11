@@ -43,14 +43,14 @@ public class MoimController {
             security = @SecurityRequirement(name = "AccessToken")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "모임 생성 성공", content = @Content(schema = @Schema(implementation = MoimCreateResponse.class))),
+            @ApiResponse(responseCode = "201", description = "모임 생성 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
     })
-    public ResponseEntity<MoimCreateResponse> createMoim(
+    public ResponseEntity<MoimResponse> createMoim(
             @RequestBody MoimCreateRequest moimCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        MoimCreateResponse moimCreateResponse = moimService.createMoim(moimCreateRequest, userDetails);
+        MoimResponse moimCreateResponse = moimService.createMoim(moimCreateRequest, userDetails);
 
         if (moimCreateResponse != null) {
             return ResponseEntity.ok(moimCreateResponse);
@@ -89,15 +89,15 @@ public class MoimController {
             security = @SecurityRequirement(name = "AccessToken")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "모임 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimReadResponse.class))),
+            @ApiResponse(responseCode = "200", description = "모임 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    public ResponseEntity<List<MoimReadResponse>> getAllMoims() {
+    public ResponseEntity<List<MoimResponse>> getAllMoims() {
 
-        List<MoimReadResponse> moimReadResponses = moimService.getAllMoims();
+        List<MoimResponse> moimResponses = moimService.getAllMoims();
 
-        if (moimReadResponses != null) {
-            return ResponseEntity.ok(moimReadResponses);
+        if (moimResponses != null) {
+            return ResponseEntity.ok(moimResponses);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -111,14 +111,14 @@ public class MoimController {
             security = @SecurityRequirement(name = "AccessToken")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "등록한 모임 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimReadResponse.class))),
+            @ApiResponse(responseCode = "200", description = "등록한 모임 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
             @ApiResponse(responseCode = "404", description = "등록한 모임이 없음", content = @Content),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    public ResponseEntity<List<MoimReadResponse>> getRegisteredMoims(
+    public ResponseEntity<List<MoimResponse>> getRegisteredMoims(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        List<MoimReadResponse> moimReadResponses = moimService.getRegisteredMoims(userDetails);
+        List<MoimResponse> moimReadResponses = moimService.getRegisteredMoims(userDetails);
 
         if (moimReadResponses != null) {
             return ResponseEntity.ok(moimReadResponses);
@@ -131,9 +131,9 @@ public class MoimController {
 
     @GetMapping("")
     @Operation(summary = "사용자가 생성한 모임 불러오기", description = "사용자가 생성한 모임들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<List<MoimReadResponse>> getMyMoims(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<List<MoimResponse>> getMyMoims(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        List<MoimReadResponse> moimReadResponses = moimService.getMoims(userDetails);
+        List<MoimResponse> moimReadResponses = moimService.getMoims(userDetails);
 
         if (moimReadResponses != null) {
             return ResponseEntity.ok(moimReadResponses);
@@ -144,14 +144,14 @@ public class MoimController {
 
     @PutMapping("")
     @Operation(summary = "모임 수정하기", description = "사용자의 모임을 수정합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<MoimReadResponse> updateMoim(
+    public ResponseEntity<MoimResponse> updateMoim(
             @RequestBody MoimUpdateRequest moimUpdateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        MoimReadResponse moimReadResponse = moimService.updateMoim(moimUpdateRequest, userDetails);
+        MoimResponse moimResponse = moimService.updateMoim(moimUpdateRequest, userDetails);
 
-        if (moimReadResponse != null) {
-            return ResponseEntity.ok(moimReadResponse);
+        if (moimResponse != null) {
+            return ResponseEntity.ok(moimResponse);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -217,12 +217,12 @@ public class MoimController {
 
     @GetMapping("like")
     @Operation(summary = "좋아요한 모임 가져오기", description = "좋아요한 모임을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<List<LikeMoimRequest>> getLikeMoims(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<List<MoimResponse>> getLikeMoims(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        List<LikeMoimRequest> likeMoimRequests = likeMoimService.getLikeMoims(userDetails);
+        List<MoimResponse> moimResponses = likeMoimService.getLikeMoims(userDetails);
 
-        if (likeMoimRequests != null) {
-            return ResponseEntity.ok(likeMoimRequests);
+        if (moimResponses != null) {
+            return ResponseEntity.ok(moimResponses);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
