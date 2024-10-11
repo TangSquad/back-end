@@ -91,7 +91,7 @@ public class Moim {
     }
 
     public void update(MoimLeaderUsernameRequest moimUserLeaderRequest) {
-        if (moimUserLeaderRequest.getNewUsername() != null) this.getUser() = ;
+        if (moimUserLeaderRequest.getUser() != null) this.user = moimUserLeaderRequest.getUser();
     }
 
 
