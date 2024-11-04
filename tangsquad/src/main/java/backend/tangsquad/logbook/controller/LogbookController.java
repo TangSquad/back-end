@@ -157,4 +157,15 @@ public class LogbookController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
+    @DeleteMapping("like/{logId}")
+    @Operation(summary = "좋아요한 로그북 취소하기", description = "좋아요한 로그북을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<LogbookResponse> cancelLikeLogbooks(@PathVariable("logId") Long logId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        LogbookResponse logbookResponse = likeLogbookService.cancelLike(logId, userDetails);
+        if (logbookResponse != null) {
+            return ResponseEntity.ok(logbookResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 }
