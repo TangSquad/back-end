@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,4 +75,28 @@ public class LikeDivingService {
         }
     }
 
+    public DivingResponse cancelLike(Long divingId, UserDetailsImpl userDetails) {
+        Optional<Diving> optionalDiving = divingRepository.findById(divingId);
+        Diving diving;
+
+
+        if (optionalDiving.isPresent()) diving = optionalDiving.get();
+        else return null;
+
+        DivingResponse divingResponse = DivingResponse.builder()
+                .divingIntro(diving.getDivingIntro())
+                .divingName(diving.getDivingName())
+                .endDate(diving.getEndDate())
+                .moods(diving.getMoods())
+                .location(diving.getLocation())
+                .startDate(diving.getStartDate())
+                .limitLicense(diving.getLimitLicense())
+                .age(diving.getAge())
+                .build();
+
+        if (diving.getUser() != userDetails.getUser()) return null;
+
+        divingRepository.delete(diving);
+        return divingResponse;
+    }
 }

@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,5 +75,28 @@ public class LikeMoimService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public MoimResponse cancelLike(Long moimId, UserDetailsImpl userDetails) {
+        Optional<Moim> moimOptional = moimRepository.findById(moimId);
+        Moim moim;
+
+        if (moimOptional.isPresent()) moim = moimOptional.get();
+        else return null;
+
+        MoimResponse moimResponse = MoimResponse.builder()
+                .moimName(moim.getMoimName())
+                .moimIntro(moim.getMoimIntro())
+                .limitPeople(moim.getLimitPeople())
+                .anonymous(moim.getAnonymous())
+                .expense(moim.getExpense())
+                .licenseLimit(moim.getLicenseLimit())
+                .moimDetails(moim.getMoimDetails())
+                .build();
+
+        if (moim.getUser() != userDetails.getUser()) return null;
+
+        moimRepository.delete(moim);
+        return moimResponse;
     }
 }

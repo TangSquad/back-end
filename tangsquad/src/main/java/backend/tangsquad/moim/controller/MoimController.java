@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Path;
 import java.util.List;
 
 @RequestMapping("/moim")
@@ -228,4 +229,15 @@ public class MoimController {
         }
     }
 
+    @DeleteMapping("like/{moimId}")
+    @Operation(summary = "좋아요한 모임 취소하기", description = "좋아요한 모임을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<MoimResponse> cancelLikeMoims(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        MoimResponse moimResponse = likeMoimService.cancelLike(moimId, userDetails);
+
+        if (moimResponse != null) {
+            return ResponseEntity.ok(moimResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 }

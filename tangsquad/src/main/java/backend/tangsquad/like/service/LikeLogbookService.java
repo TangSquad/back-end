@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,4 +64,31 @@ public class LikeLogbookService {
             return null;
         }
     }
+
+    public LogbookResponse cancelLike(Long logId, UserDetailsImpl userDetails) {
+        Optional<Logbook> optionalLogbook = logbookRepository.findById(logId);
+        Logbook logbook;
+        if (optionalLogbook.isPresent())
+            logbook = optionalLogbook.get();
+        else return null;
+
+        LogbookResponse logbookResponse = LogbookResponse.builder()
+                .logId(logId)
+                .location(logbook.getLocation())
+                        .contents(logbook.getContents())
+                                .userId(logbook.getUser().getId())
+                                        .date(logbook.getDate())
+                                                .title(logbook.getTitle())
+
+                .build();
+
+
+        if (logbook.getUser() != userDetails.getUser()) {
+            return null;
+        }
+
+        logbookRepository.delete(logbook);
+        return logbookResponse;
+    }
+
 }
