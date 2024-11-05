@@ -1,12 +1,12 @@
 package backend.tangsquad.diving.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
-import backend.tangsquad.common.entity.User;
-import backend.tangsquad.diving.controller.DivingController;
 import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.repository.DivingRepository;
+import backend.tangsquad.moim.dto.response.MoimResponse;
+import backend.tangsquad.moim.entity.Moim;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -26,30 +26,35 @@ public class DivingService {
     public DivingResponse createDiving(DivingRequest divingRequest, UserDetailsImpl userDetails) {
         try {
             Diving diving = Diving.builder()
-                    .user(userDetails.getUser())
+                    .isPublic(divingRequest.getIsPublic())
                     .divingName(divingRequest.getDivingName())
                     .divingIntro(divingRequest.getDivingIntro())
                     .age(divingRequest.getAge())
                     .moods(divingRequest.getMoods())
-                    .limitPeople(divingRequest.getLimitPeople())
-                    .limitLicense(divingRequest.getLimitLicense())
                     .startDate(divingRequest.getStartDate())
                     .endDate(divingRequest.getEndDate())
+                    .thumbnailUrl(divingRequest.getThumbnailUrl())
                     .location(divingRequest.getLocation())
+                    .limitLicense(divingRequest.getLimitLicense())
+                    .currentPeople(divingRequest.getCurrentPeople())
+                    .limitPeople(divingRequest.getLimitPeople())
                     .build();
 
             // Save diving
             Diving savedDiving = divingRepository.save(diving);
             return DivingResponse.builder()
-                    .divingName(savedDiving.getDivingName())
-                    .divingIntro(savedDiving.getDivingIntro())
-                    .age(savedDiving.getAge())
-                    .moods(savedDiving.getMoods())
-                    .limitPeople(savedDiving.getLimitPeople())
-                    .limitLicense(savedDiving.getLimitLicense())
-                    .startDate(savedDiving.getStartDate())
-                    .endDate(savedDiving.getEndDate())
-                    .location(savedDiving.getLocation())
+                    .isPublic(diving.getIsPublic())
+                    .divingName(diving.getDivingName())
+                    .divingIntro(diving.getDivingIntro())
+                    .age(diving.getAge())
+                    .moods(diving.getMoods())
+                    .startDate(diving.getStartDate())
+                    .endDate(diving.getEndDate())
+                    .thumbnailUrl(diving.getThumbnailUrl())
+                    .location(diving.getLocation())
+                    .limitLicense(diving.getLimitLicense())
+                    .currentPeople(diving.getCurrentPeople())
+                    .limitPeople(diving.getLimitPeople())
                     .build();
         } catch (Exception e) {
             return null;
@@ -62,19 +67,48 @@ public class DivingService {
 
             return divings.stream()
                     .map(diving -> DivingResponse.builder()
+                            .isPublic(diving.getIsPublic())
                             .divingName(diving.getDivingName())
                             .divingIntro(diving.getDivingIntro())
                             .age(diving.getAge())
                             .moods(diving.getMoods())
-                            .limitPeople(diving.getLimitPeople())
-                            .limitLicense(diving.getLimitLicense())
                             .startDate(diving.getStartDate())
                             .endDate(diving.getEndDate())
+                            .thumbnailUrl(diving.getThumbnailUrl())
                             .location(diving.getLocation())
+                            .limitLicense(diving.getLimitLicense())
+                            .currentPeople(diving.getCurrentPeople())
+                            .limitPeople(diving.getLimitPeople())
                             .build()
                     )
                     .collect(Collectors.toList());
 
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<DivingResponse> getAllDivings() {
+        try {
+            List<Diving> divings = divingRepository.findAll();
+            List<DivingResponse> divingResponses = divings.stream()
+                    .map(diving -> DivingResponse.builder()
+                            .isPublic(diving.getIsPublic())
+                            .divingName(diving.getDivingName())
+                            .divingIntro(diving.getDivingIntro())
+                            .limitPeople(diving.getLimitPeople())
+                            .moods(diving.getMoods())
+                            .startDate(diving.getStartDate())
+                            .age(diving.getAge())
+                            .currentPeople(diving.getCurrentPeople())
+                            .endDate(diving.getEndDate())
+                            .limitPeople(diving.getLimitPeople())
+                            .location(diving.getLocation())
+                            .thumbnailUrl(diving.getThumbnailUrl())
+                            .limitLicense(diving.getLimitLicense())
+                            .build()
+                    ).collect(Collectors.toList());
+            return divingResponses;
         } catch (Exception e) {
             return null;
         }
@@ -86,21 +120,50 @@ public class DivingService {
             if (divingOptional.isPresent()) {
                 Diving diving = divingOptional.get();
 
-                // Convert diving to LogReadResponse
                 return DivingResponse.builder()
+                        .isPublic(diving.getIsPublic())
                         .divingName(diving.getDivingName())
                         .divingIntro(diving.getDivingIntro())
                         .age(diving.getAge())
                         .moods(diving.getMoods())
-                        .limitPeople(diving.getLimitPeople())
-                        .limitLicense(diving.getLimitLicense())
                         .startDate(diving.getStartDate())
                         .endDate(diving.getEndDate())
+                        .thumbnailUrl(diving.getThumbnailUrl())
                         .location(diving.getLocation())
+                        .limitLicense(diving.getLimitLicense())
+                        .currentPeople(diving.getCurrentPeople())
+                        .limitPeople(diving.getLimitPeople())
                         .build();
             } else {
                 return null;
             }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<DivingResponse> getRegisteredDivings(UserDetailsImpl userDetails) {
+        try {
+            List<Diving> divings = divingRepository.findByRegisteredUsersContaining(userDetails.getUser());
+
+            List<DivingResponse> divingResponses = divings.stream()
+                    .map(diving -> DivingResponse.builder()
+                            .isPublic(diving.getIsPublic())
+                            .divingName(diving.getDivingName())
+                            .divingIntro(diving.getDivingIntro())
+                            .age(diving.getAge())
+                            .moods(diving.getMoods())
+                            .startDate(diving.getStartDate())
+                            .endDate(diving.getEndDate())
+                            .thumbnailUrl(diving.getThumbnailUrl())
+                            .location(diving.getLocation())
+                            .limitLicense(diving.getLimitLicense())
+                            .currentPeople(diving.getCurrentPeople())
+                            .limitPeople(diving.getLimitPeople())
+                            .build()
+                    ).collect(Collectors.toList());
+
+            return divingResponses;
         } catch (Exception e) {
             return null;
         }
@@ -121,15 +184,18 @@ public class DivingService {
 
             Diving savedDiving = divingRepository.save(diving);
             DivingResponse divingResponse = DivingResponse.builder()
-                    .divingName(savedDiving.getDivingName())
-                    .divingIntro(savedDiving.getDivingIntro())
-                    .age(savedDiving.getAge())
-                    .moods(savedDiving.getMoods())
-                    .limitPeople(savedDiving.getLimitPeople())
-                    .limitLicense(savedDiving.getLimitLicense())
-                    .startDate(savedDiving.getStartDate())
-                    .endDate(savedDiving.getEndDate())
-                    .location(savedDiving.getLocation())
+                    .isPublic(diving.getIsPublic())
+                    .divingName(diving.getDivingName())
+                    .divingIntro(diving.getDivingIntro())
+                    .age(diving.getAge())
+                    .moods(diving.getMoods())
+                    .startDate(diving.getStartDate())
+                    .endDate(diving.getEndDate())
+                    .thumbnailUrl(diving.getThumbnailUrl())
+                    .location(diving.getLocation())
+                    .limitLicense(diving.getLimitLicense())
+                    .currentPeople(diving.getCurrentPeople())
+                    .limitPeople(diving.getLimitPeople())
                     .build();
 
             return divingResponse;

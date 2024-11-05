@@ -4,6 +4,7 @@ import backend.tangsquad.common.entity.User;
 import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -64,6 +65,16 @@ public class Diving {
 
     @Column
     private String location;
+
+    @ManyToMany
+    @JoinTable(
+            name = "diving_user",
+            joinColumns = @JoinColumn(name = "diving_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @JsonManagedReference
+    private List<User> registeredUsers; // List of registered users
+
 
     public void update(DivingRequest divingRequest) {
         if (divingRequest.getDivingName() != null) this.divingName = divingRequest.getDivingName();
