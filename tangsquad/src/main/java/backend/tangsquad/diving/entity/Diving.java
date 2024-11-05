@@ -28,17 +28,29 @@ public class Diving {
     @JoinColumn(name = "user_id", nullable = false)  // Ensure the join column matches the foreign key column in the database
     private User user;
 
+    @Column
+    private String thumbnailUrl;
+
+    @Column
     private Boolean isPublic;
 
+    @Column
     private String divingName;
+
+    @Column
     private String divingIntro;
+
+    @Column
     private String age;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Column(name = "moods")
     private List<String> moods;
 
+    @Column
     private Long limitPeople;
+
+    @Column
     private String limitLicense;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -47,12 +59,14 @@ public class Diving {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
+    @Column
     private String location;
 
     public void update(DivingRequest divingRequest) {
         if (divingRequest.getDivingName() != null) this.divingName = divingRequest.getDivingName();
         if (divingRequest.getDivingIntro() != null) this.divingIntro = divingRequest.getDivingIntro();
         if (divingRequest.getIsPublic() != null) this.isPublic = divingRequest.getIsPublic();
+        if (divingRequest.getThumbnailUrl() != null) this.thumbnailUrl = divingRequest.getThumbnailUrl();
         if (divingRequest.getAge() != null) this.age = divingRequest.getAge();
         if (divingRequest.getMoods() != null) this.moods = divingRequest.getMoods();
         if (divingRequest.getLimitPeople() != null) this.limitPeople = divingRequest.getLimitPeople();
@@ -62,10 +76,11 @@ public class Diving {
         if (divingRequest.getLocation() != null) this.location = divingRequest.getLocation();
     }
 
-    public Diving(User user, String divingName, String divingIntro, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+    public Diving(User user, String divingName, String divingIntro, String thumbnailUrl, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
         this.user = user;
         this.divingName = divingName;
         this.divingIntro = divingIntro;
+        this.thumbnailUrl = thumbnailUrl;
         this.age = age;
         this.moods = moods;
         this.limitPeople = limitPeople;
