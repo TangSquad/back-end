@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class MoimResponse {
     private Long userId;
-    private Boolean anonymous;
+    private Boolean isPublic;
     private String moimName;
     private String moimIntro;
     private String moimDetails;
@@ -15,9 +15,9 @@ public class MoimResponse {
     private String licenseLimit;
 
     @Builder
-    public MoimResponse(Long userId, Boolean anonymous, String moimName, String moimIntro, String moimDetails, Long limitPeople, Long expense, String licenseLimit) {
+    public MoimResponse(Long userId, Boolean isPublic, String moimName, String moimIntro, String moimDetails, Long limitPeople, Long expense, String licenseLimit) {
         this.userId = userId;
-        this.anonymous = anonymous;
+        this.isPublic = isPublic;
         this.moimName = moimName;
         this.moimIntro = moimIntro;
         this.moimDetails = moimDetails;

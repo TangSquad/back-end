@@ -30,7 +30,7 @@ public class Moim {
     private User user;
 
     @Column
-    private Boolean anonymous;
+    private Boolean isPublic;
 
     @Column
     private String moimName;
@@ -73,7 +73,7 @@ public class Moim {
     private List<User> registeredUsers; // List of registered users
 
     public void update(MoimUpdateRequest moimUpdateRequest) {
-        if (moimUpdateRequest.getAnonymous() != null) this.anonymous = moimUpdateRequest.getAnonymous();
+        if (moimUpdateRequest.getIsPublic() != null) this.isPublic = moimUpdateRequest.getIsPublic();
         if (moimUpdateRequest.getMoimName() != null) this.moimName = moimUpdateRequest.getMoimName();
         if (moimUpdateRequest.getMoimIntro() != null) this.moimIntro = moimUpdateRequest.getMoimIntro();
         if (moimUpdateRequest.getMoimDetails() != null) this.moimDetails = moimUpdateRequest.getMoimDetails();
@@ -97,9 +97,9 @@ public class Moim {
 
 
     @Builder
-    public Moim(User user, Boolean anonymous, String moimName, String moimIntro, String moimDetails, Long limitPeople, Long expense, String licenseLimit, List<String> locations, String age, List<String> moods, List<User> registeredUsers) {
+    public Moim(User user, Boolean isPublic, String moimName, String moimIntro, String moimDetails, Long limitPeople, Long expense, String licenseLimit, List<String> locations, String age, List<String> moods, List<User> registeredUsers) {
         this.user = user;
-        this.anonymous = anonymous;
+        this.isPublic = isPublic;
         this.moimName = moimName;
         this.moimIntro = moimIntro;
         this.moimDetails = moimDetails;

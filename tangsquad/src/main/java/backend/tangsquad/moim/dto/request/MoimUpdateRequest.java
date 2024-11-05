@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class MoimUpdateRequest {
     private Long moimId;
-    private Boolean anonymous;
+    private Boolean isPublic;
     private String moimName;
     private String moimIntro;
     private String moimDetails;
