@@ -7,6 +7,7 @@ import lombok.Data;
 public class MoimResponse {
     private Long userId;
     private Boolean isPublic;
+    private String thumbnailurl;
     private String moimName;
     private String moimIntro;
     private String moimDetails;

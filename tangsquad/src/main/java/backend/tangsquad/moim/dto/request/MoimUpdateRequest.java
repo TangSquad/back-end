@@ -15,6 +15,7 @@ import java.util.List;
 public class MoimUpdateRequest {
     private Long moimId;
     private Boolean isPublic;
+    private String thumbnailUrl;
     private String moimName;
     private String moimIntro;
     private String moimDetails;

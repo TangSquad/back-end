@@ -15,6 +15,7 @@ import java.util.List;
 @Builder
 public class MoimCreateResponse {
     private Boolean isPublic;
+    private String thumbnailurl;
     private String moimName;
     private String moimIntro;
     private String moimDetails;
