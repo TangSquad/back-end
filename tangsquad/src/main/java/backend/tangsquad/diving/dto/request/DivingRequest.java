@@ -11,6 +11,7 @@ import java.util.List;
 public class DivingRequest {
     private String divingName;
     private String divingIntro;
+    private Boolean isPublic;
     private String age;
     private List<String> moods;
     private Long limitPeople;
@@ -20,9 +21,10 @@ public class DivingRequest {
     private String location;
 
     @Builder
-    public DivingRequest(String divingName, String divingIntro, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+    public DivingRequest(String divingName, String divingIntro, Boolean isPublic,String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
         this.divingName = divingName;
         this.divingIntro = divingIntro;
+        this.isPublic = isPublic;
         this.age = age;
         this.moods = moods;
         this.limitPeople = limitPeople;

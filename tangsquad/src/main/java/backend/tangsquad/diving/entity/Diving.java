@@ -28,6 +28,8 @@ public class Diving {
     @JoinColumn(name = "user_id", nullable = false)  // Ensure the join column matches the foreign key column in the database
     private User user;
 
+    private Boolean isPublic;
+
     private String divingName;
     private String divingIntro;
     private String age;
@@ -50,6 +52,7 @@ public class Diving {
     public void update(DivingRequest divingRequest) {
         if (divingRequest.getDivingName() != null) this.divingName = divingRequest.getDivingName();
         if (divingRequest.getDivingIntro() != null) this.divingIntro = divingRequest.getDivingIntro();
+        if (divingRequest.getIsPublic() != null) this.isPublic = divingRequest.getIsPublic();
         if (divingRequest.getAge() != null) this.age = divingRequest.getAge();
         if (divingRequest.getMoods() != null) this.moods = divingRequest.getMoods();
         if (divingRequest.getLimitPeople() != null) this.limitPeople = divingRequest.getLimitPeople();
