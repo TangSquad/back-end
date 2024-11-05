@@ -32,6 +32,9 @@ public class Diving {
     private String thumbnailUrl;
 
     @Column
+    private Long currentPeople;
+
+    @Column
     private Boolean isPublic;
 
     @Column
@@ -67,6 +70,7 @@ public class Diving {
         if (divingRequest.getDivingIntro() != null) this.divingIntro = divingRequest.getDivingIntro();
         if (divingRequest.getIsPublic() != null) this.isPublic = divingRequest.getIsPublic();
         if (divingRequest.getThumbnailUrl() != null) this.thumbnailUrl = divingRequest.getThumbnailUrl();
+        if (divingRequest.getCurrentPeople() != null) this.currentPeople = divingRequest.getCurrentPeople();
         if (divingRequest.getAge() != null) this.age = divingRequest.getAge();
         if (divingRequest.getMoods() != null) this.moods = divingRequest.getMoods();
         if (divingRequest.getLimitPeople() != null) this.limitPeople = divingRequest.getLimitPeople();
@@ -76,11 +80,12 @@ public class Diving {
         if (divingRequest.getLocation() != null) this.location = divingRequest.getLocation();
     }
 
-    public Diving(User user, String divingName, String divingIntro, String thumbnailUrl, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+    public Diving(User user, String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
         this.user = user;
         this.divingName = divingName;
         this.divingIntro = divingIntro;
         this.thumbnailUrl = thumbnailUrl;
+        this.currentPeople = currentPeople;
         this.age = age;
         this.moods = moods;
         this.limitPeople = limitPeople;

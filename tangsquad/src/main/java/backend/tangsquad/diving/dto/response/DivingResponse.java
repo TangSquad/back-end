@@ -12,6 +12,7 @@ public class DivingResponse {
     private String divingIntro;
     private Boolean isPublic;
     private String thumbnailUrl;
+    private Long currentPeople;
     private String age;
     private List<String> moods;
     private Long limitPeople;
@@ -21,10 +22,11 @@ public class DivingResponse {
     private String location;
 
     @Builder
-    public DivingResponse(String divingName, String divingIntro, String thumbnailUrl,Boolean isPublic, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+    public DivingResponse(String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
         this.divingName = divingName;
         this.divingIntro = divingIntro;
         this.thumbnailUrl = thumbnailUrl;
+        this.currentPeople = currentPeople;
         this.isPublic = isPublic;
         this.age = age;
         this.moods = moods;

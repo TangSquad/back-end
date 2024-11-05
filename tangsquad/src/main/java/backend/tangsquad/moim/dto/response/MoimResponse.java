@@ -8,6 +8,7 @@ public class MoimResponse {
     private Long userId;
     private Boolean isPublic;
     private String thumbnailurl;
+    private Long currentPeople;
     private String moimName;
     private String moimIntro;
     private String moimDetails;
@@ -16,10 +17,11 @@ public class MoimResponse {
     private String licenseLimit;
 
     @Builder
-    public MoimResponse(Long userId, Boolean isPublic, String moimName, String moimIntro, String moimDetails, Long limitPeople, Long expense, String licenseLimit) {
+    public MoimResponse(Long userId, Boolean isPublic, String moimName, String moimIntro, Long currentPeople, String moimDetails, Long limitPeople, Long expense, String licenseLimit) {
         this.userId = userId;
         this.isPublic = isPublic;
         this.moimName = moimName;
+        this.currentPeople = currentPeople;
         this.moimIntro = moimIntro;
         this.moimDetails = moimDetails;
         this.limitPeople = limitPeople;

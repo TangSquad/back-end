@@ -32,6 +32,8 @@ public class Moim {
     @Column
     private String thumbnailUrl;
 
+    @Column
+    private Long currentPeople;
 
     @Column
     private Boolean isPublic;
@@ -80,6 +82,7 @@ public class Moim {
         if (moimUpdateRequest.getIsPublic() != null) this.isPublic = moimUpdateRequest.getIsPublic();
         if (moimUpdateRequest.getMoimName() != null) this.moimName = moimUpdateRequest.getMoimName();
         if (moimUpdateRequest.getMoimIntro() != null) this.moimIntro = moimUpdateRequest.getMoimIntro();
+        if (moimUpdateRequest.getCurrentPeople() != null) this.currentPeople = moimUpdateRequest.getCurrentPeople();
         if (moimUpdateRequest.getMoimDetails() != null) this.moimDetails = moimUpdateRequest.getMoimDetails();
         if (moimUpdateRequest.getLimitPeople() != null) this.limitPeople = moimUpdateRequest.getLimitPeople();
         if (moimUpdateRequest.getThumbnailUrl() != null) this.thumbnailUrl = moimUpdateRequest.getThumbnailUrl();
@@ -99,13 +102,12 @@ public class Moim {
         if (moimUserLeaderRequest.getUser() != null) this.user = moimUserLeaderRequest.getUser();
     }
 
-
-
     @Builder
-    public Moim(User user, Boolean isPublic, String thumbnailUrl, String moimName, String moimIntro, String moimDetails, Long limitPeople, Long expense, String licenseLimit, List<String> locations, String age, List<String> moods, List<User> registeredUsers) {
+    public Moim(User user, Boolean isPublic, String thumbnailUrl, Long currentPeople, String moimName, String moimIntro, String moimDetails, Long limitPeople, Long expense, String licenseLimit, List<String> locations, String age, List<String> moods, List<User> registeredUsers) {
         this.user = user;
         this.isPublic = isPublic;
         this.thumbnailUrl = thumbnailUrl;
+        this.currentPeople = currentPeople;
         this.moimName = moimName;
         this.moimIntro = moimIntro;
         this.moimDetails = moimDetails;
