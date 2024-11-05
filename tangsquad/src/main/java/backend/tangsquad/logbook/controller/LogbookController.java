@@ -81,6 +81,7 @@ public class LogbookController {
     private LogbookResponse convertToLogbookResponse(Logbook logbook) {
         return new LogbookResponse(
                 logbook.getId(),
+                logbook.getIsPublic(),
                 logbook.getUser().getId(),
                 logbook.getTitle(),
                 logbook.getContents(),

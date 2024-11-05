@@ -11,13 +11,15 @@ import java.time.LocalDateTime;
 public class LogbookRequest {
     private Long id;
     private LocalDateTime date;
+    private Boolean isPublic;
     private String title;
     private String contents;
     private String location;
 
     @Builder
-    public LogbookRequest(Long id, Long userId, LocalDateTime date, String title, String contents, String location, Long weather) {
+    public LogbookRequest(Long id, Boolean isPublic, LocalDateTime date, String title, String contents, String location, Long weather) {
         this.id = id;
+        this.isPublic = isPublic;
         this.date = date;
         this.title = title;
         this.contents = contents;
