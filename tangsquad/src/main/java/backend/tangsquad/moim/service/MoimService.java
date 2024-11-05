@@ -30,7 +30,7 @@ public class MoimService  {
         try {
             Moim moim = Moim.builder()
                     .user(userDetails.getUser())
-                    .anonymous(moimCreateRequest.getAnonymous())
+                    .isPublic(moimCreateRequest.getIsPublic())
                     .moimName(moimCreateRequest.getMoimName())
                     .moimIntro(moimCreateRequest.getMoimIntro())
                     .moimDetails(moimCreateRequest.getMoimDetails())
@@ -45,7 +45,7 @@ public class MoimService  {
             // Save moim
             Moim savedMoim = moimRepository.save(moim);
             return MoimResponse.builder()
-                    .anonymous(savedMoim.getAnonymous())
+                    .isPublic(savedMoim.getIsPublic())
                     .moimName(savedMoim.getMoimName())
                     .moimIntro(savedMoim.getMoimIntro())
                     .moimDetails(savedMoim.getMoimDetails())
@@ -118,7 +118,7 @@ public class MoimService  {
             Moim savedMoim = moimRepository.save(moim);
             MoimResponse moimReadResponse = MoimResponse.builder()
                     .userId(savedMoim.getUser().getId())
-                    .anonymous(savedMoim.getAnonymous())
+                    .isPublic(savedMoim.getIsPublic())
                     .moimName(savedMoim.getMoimName())
                     .moimIntro(savedMoim.getMoimIntro())
                     .moimDetails(savedMoim.getMoimDetails())
@@ -145,7 +145,7 @@ public class MoimService  {
             List<MoimResponse> moimResponses = moims.stream()
                     .map(moim -> MoimResponse.builder()
                             .userId(moim.getUser().getId())
-                            .anonymous(moim.getAnonymous())
+                            .isPublic(moim.getIsPublic())
                             .moimName(moim.getMoimName())
                             .moimIntro(moim.getMoimIntro())
                             .moimDetails(moim.getMoimDetails())
@@ -219,6 +219,26 @@ public class MoimService  {
                 .orElse(false);
     }
 
+    public MoimCreateResponse getMoim(Long moimId, UserDetailsImpl userDetails) {
+        Optional<Moim> optionalMoim = moimRepository.findById(moimId);
+        if (optionalMoim.isEmpty()) return null;
+
+        Moim moim = optionalMoim.get();
+
+        return MoimCreateResponse.builder()
+                .age(moim.getAge())
+                .locations(moim.getLocations())
+                .moods(moim.getMoods())
+                .isPublic(moim.getIsPublic())
+                .moimName(moim.getMoimName())
+                .moimIntro(moim.getMoimIntro())
+                .moimDetails(moim.getMoimDetails())
+                .licenseLimit(moim.getLicenseLimit())
+                .limitPeople(moim.getLimitPeople())
+                .expense(moim.getExpense())
+                .build();
+    }
+
     public List<MoimResponse> getMoims(UserDetailsImpl userDetails)
     {
         try {
@@ -228,7 +248,7 @@ public class MoimService  {
             List<MoimResponse> moimResponses = moims.stream()
                     .map(moim -> MoimResponse.builder()
                             .userId(moim.getUser().getId())
-                            .anonymous(moim.getAnonymous())
+                            .isPublic(moim.getIsPublic())
                             .moimName(moim.getMoimName())
                             .moimIntro(moim.getMoimIntro())
                             .moimDetails(moim.getMoimDetails())
@@ -279,7 +299,7 @@ public class MoimService  {
             List<MoimResponse> moimResponses = moims.stream()
                     .map(moim -> MoimResponse.builder()
                             .userId(moim.getUser().getId())
-                            .anonymous(moim.getAnonymous())
+                            .isPublic(moim.getIsPublic())
                             .moimName(moim.getMoimName())
                             .moimIntro(moim.getMoimIntro())
                             .moimDetails(moim.getMoimDetails())
