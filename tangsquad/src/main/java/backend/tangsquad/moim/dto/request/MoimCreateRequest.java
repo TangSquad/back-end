@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MoimCreateRequest {
-    private Boolean anonymous;
+    private Boolean isPublic;
     private String moimName;
     private String moimIntro;
     private String moimDetails;

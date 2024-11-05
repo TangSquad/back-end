@@ -8,7 +8,6 @@ import backend.tangsquad.moim.dto.request.MoimCreateRequest;
 import backend.tangsquad.moim.dto.request.MoimLeaderRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import backend.tangsquad.moim.service.MoimService;
-import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.swagger.global.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,8 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.Path;
 import java.util.List;
 
 @RequestMapping("/moim")
@@ -33,7 +30,6 @@ import java.util.List;
 public class MoimController {
 
     private final MoimService moimService;
-    private final UserService userService;
     private final LikeMoimService likeMoimService;
 
     // Create a new moim
