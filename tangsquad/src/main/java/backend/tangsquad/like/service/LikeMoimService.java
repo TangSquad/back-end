@@ -2,18 +2,24 @@ package backend.tangsquad.like.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.repository.UserRepository;
+import backend.tangsquad.diving.dto.response.DivingResponse;
+import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.like.dto.request.LikeLogbookRequest;
 import backend.tangsquad.like.dto.request.LikeMoimRequest;
+import backend.tangsquad.like.entity.LikeDiving;
 import backend.tangsquad.like.entity.LikeLogbook;
 import backend.tangsquad.like.entity.LikeMoim;
 import backend.tangsquad.like.repository.LikeLogbookRepository;
 import backend.tangsquad.like.repository.LikeMoimRepository;
 import backend.tangsquad.logbook.repository.LogbookRepository;
+import backend.tangsquad.moim.dto.response.MoimResponse;
+import backend.tangsquad.moim.entity.Moim;
 import backend.tangsquad.moim.repository.MoimRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,18 +49,54 @@ public class LikeMoimService {
         return likeMoimRequest;
     }
 
-    public List<LikeMoimRequest> getLikeMoims(UserDetailsImpl userDetails) {
-        Long userId = userDetails.getId();  // Get the authenticated user's ID
+    public List<MoimResponse> getLikeMoims(UserDetailsImpl userDetails) {
+        try {
+            Long userId = userDetails.getId();  // Get the authenticated user's ID
 
-        List<LikeMoim> likedMoims = likeMoimRepository.findAllByUserId(userId);
+            List<LikeMoim> likeMoims = likeMoimRepository.findAllByUserId(userId);
 
-        // Map LikeLogbook entities to DTOs (e.g., LikeLogbookRequest)
-        return likedMoims.stream()
-                .map(likeMoim -> new LikeMoimRequest(
-                        likeMoim.getUserId(),  // Assuming Logbook has a reference
-                        likeMoim.getMoimId()      // Assuming User has a reference
-                ))
-                .collect(Collectors.toList());
+            List<Long> moimIds = likeMoims.stream()
+                    .map(likeMoim -> likeMoim.getMoimId())
+                    .collect(Collectors.toList());
 
+            List<Moim> moims = moimRepository.findAllById(moimIds);
+            return moims.stream().map(moim -> MoimResponse.builder()
+                    .userId(moim.getUser().getId())
+                    .anonymous(moim.getAnonymous())
+                    .moimName(moim.getMoimName())
+                    .moimIntro(moim.getMoimIntro())
+                    .moimDetails(moim.getMoimDetails())
+                    .limitPeople(moim.getLimitPeople())
+                    .expense(moim.getExpense())
+                    .licenseLimit(moim.getLicenseLimit())
+                    .build()
+            ).collect(Collectors.toList());
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public MoimResponse cancelLike(Long moimId, UserDetailsImpl userDetails) {
+        Optional<Moim> moimOptional = moimRepository.findById(moimId);
+        Moim moim;
+
+        if (moimOptional.isPresent()) moim = moimOptional.get();
+        else return null;
+
+        MoimResponse moimResponse = MoimResponse.builder()
+                .moimName(moim.getMoimName())
+                .moimIntro(moim.getMoimIntro())
+                .limitPeople(moim.getLimitPeople())
+                .anonymous(moim.getAnonymous())
+                .expense(moim.getExpense())
+                .licenseLimit(moim.getLicenseLimit())
+                .moimDetails(moim.getMoimDetails())
+                .build();
+
+        if (moim.getUser() != userDetails.getUser()) return null;
+
+        moimRepository.delete(moim);
+        return moimResponse;
     }
 }

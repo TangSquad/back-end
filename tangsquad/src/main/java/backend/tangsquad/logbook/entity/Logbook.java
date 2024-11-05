@@ -30,6 +30,9 @@ public class Logbook {
     @JsonManagedReference
     private User user;
 
+    @Column
+    private Boolean isPublic;
+
 
     @Column
     private LocalDateTime date;
@@ -45,6 +48,7 @@ public class Logbook {
 
     public void update(LogbookRequest logbookRequest) {
         if (logbookRequest.getDate() != null) this.date = logbookRequest.getDate();
+        if (logbookRequest.getIsPublic() != null) this.isPublic = logbookRequest.getIsPublic();
         if (logbookRequest.getTitle() != null) this.title = logbookRequest.getTitle();
         if (logbookRequest.getContents() != null) this.contents = logbookRequest.getContents();
         if (logbookRequest.getLocation() != null) this.location = logbookRequest.getLocation();

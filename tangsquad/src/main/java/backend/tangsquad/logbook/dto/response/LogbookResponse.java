@@ -9,14 +9,16 @@ import java.time.LocalDateTime;
 public class LogbookResponse {
     private Long logId; // Assuming you want the log ID
     private Long userId;
+    private Boolean isPublic;
     private String title;
     private String contents;
     private LocalDateTime date;
     private String location;
 
     @Builder
-    public LogbookResponse(Long logId, Long userId, String title, String contents, LocalDateTime date, String location) {
+    public LogbookResponse(Long logId, Boolean isPublic, Long userId, String title, String contents, LocalDateTime date, String location) {
         this.logId = logId;
+        this.isPublic = isPublic;
         this.userId = userId;
         this.title = title;
         this.contents = contents;
