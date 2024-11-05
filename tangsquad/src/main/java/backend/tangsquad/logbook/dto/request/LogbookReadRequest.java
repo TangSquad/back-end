@@ -8,15 +8,18 @@ public class LogbookReadRequest {
 
     private Long logId;
     private Long userId;
+
+    private Boolean isPublic;
     private LocalDateTime date;
     private String title;
     private String contents;
     private String location;
 
     @Builder
-    public LogbookReadRequest(Long logId, Long userId, LocalDateTime date, String title, String contents, String location, Long weather) {
+    public LogbookReadRequest(Long logId, Boolean isPublic, Long userId, LocalDateTime date, String title, String contents, String location, Long weather) {
         this.logId = logId;
         this.userId = userId;
+        this.isPublic = isPublic;
         this.date = date;
         this.title = title;
         this.contents = contents;
