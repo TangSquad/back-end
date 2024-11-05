@@ -34,7 +34,7 @@ public class DivingService {
                     .endDate(divingRequest.getEndDate())
                     .thumbnailUrl(divingRequest.getThumbnailUrl())
                     .location(divingRequest.getLocation())
-                    .limitLicense(divingRequest.getLimitLicense())
+                    .licenseLimit(divingRequest.getLicenseLimit())
                     .currentPeople(divingRequest.getCurrentPeople())
                     .limitPeople(divingRequest.getLimitPeople())
                     .build();
@@ -53,7 +53,7 @@ public class DivingService {
                     .endDate(diving.getEndDate())
                     .thumbnailUrl(diving.getThumbnailUrl())
                     .location(diving.getLocation())
-                    .limitLicense(diving.getLimitLicense())
+                    .licenseLimit(diving.getLicenseLimit())
                     .currentPeople(diving.getCurrentPeople())
                     .limitPeople(diving.getLimitPeople())
                     .build();
@@ -79,7 +79,7 @@ public class DivingService {
                             .endDate(diving.getEndDate())
                             .thumbnailUrl(diving.getThumbnailUrl())
                             .location(diving.getLocation())
-                            .limitLicense(diving.getLimitLicense())
+                            .licenseLimit(diving.getLicenseLimit())
                             .currentPeople(diving.getCurrentPeople())
                             .limitPeople(diving.getLimitPeople())
                             .build()
@@ -110,7 +110,7 @@ public class DivingService {
                             .limitPeople(diving.getLimitPeople())
                             .location(diving.getLocation())
                             .thumbnailUrl(diving.getThumbnailUrl())
-                            .limitLicense(diving.getLimitLicense())
+                            .licenseLimit(diving.getLicenseLimit())
                             .build()
                     ).collect(Collectors.toList());
             return divingResponses;
@@ -137,7 +137,7 @@ public class DivingService {
                         .endDate(diving.getEndDate())
                         .thumbnailUrl(diving.getThumbnailUrl())
                         .location(diving.getLocation())
-                        .limitLicense(diving.getLimitLicense())
+                        .licenseLimit(diving.getLicenseLimit())
                         .currentPeople(diving.getCurrentPeople())
                         .limitPeople(diving.getLimitPeople())
                         .build();
@@ -166,7 +166,7 @@ public class DivingService {
                             .endDate(diving.getEndDate())
                             .thumbnailUrl(diving.getThumbnailUrl())
                             .location(diving.getLocation())
-                            .limitLicense(diving.getLimitLicense())
+                            .licenseLimit(diving.getLicenseLimit())
                             .currentPeople(diving.getCurrentPeople())
                             .limitPeople(diving.getLimitPeople())
                             .build()
@@ -204,7 +204,7 @@ public class DivingService {
                     .endDate(diving.getEndDate())
                     .thumbnailUrl(diving.getThumbnailUrl())
                     .location(diving.getLocation())
-                    .limitLicense(diving.getLimitLicense())
+                    .licenseLimit(diving.getLicenseLimit())
                     .currentPeople(diving.getCurrentPeople())
                     .limitPeople(diving.getLimitPeople())
                     .build();

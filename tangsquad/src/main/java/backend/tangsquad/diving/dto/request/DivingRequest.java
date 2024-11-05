@@ -18,13 +18,13 @@ public class DivingRequest {
     private String age;
     private List<String> moods;
     private Long limitPeople;
-    private String limitLicense;
+    private String licenseLimit;
     private LocalDate startDate;
     private LocalDate endDate;
     private String location;
 
     @Builder
-    public DivingRequest(String divingName, Long userId, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic,String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+    public DivingRequest(String divingName, Long userId, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic,String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, String location) {
         this.divingName = divingName;
         this.userId = userId;
         this.divingIntro = divingIntro;
@@ -34,7 +34,7 @@ public class DivingRequest {
         this.age = age;
         this.moods = moods;
         this.limitPeople = limitPeople;
-        this.limitLicense = limitLicense;
+        this.licenseLimit = licenseLimit;
         this.startDate = startDate;
         this.endDate = endDate;
         this.location = location;

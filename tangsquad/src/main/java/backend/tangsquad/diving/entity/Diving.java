@@ -55,7 +55,7 @@ public class Diving {
     private Long limitPeople;
 
     @Column
-    private String limitLicense;
+    private String licenseLimit;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
@@ -85,7 +85,7 @@ public class Diving {
         if (divingRequest.getAge() != null) this.age = divingRequest.getAge();
         if (divingRequest.getMoods() != null) this.moods = divingRequest.getMoods();
         if (divingRequest.getLimitPeople() != null) this.limitPeople = divingRequest.getLimitPeople();
-        if (divingRequest.getLimitLicense() != null) this.limitLicense = divingRequest.getLimitLicense();
+        if (divingRequest.getLicenseLimit() != null) this.licenseLimit = divingRequest.getLicenseLimit();
         if (divingRequest.getStartDate() != null) this.startDate = divingRequest.getStartDate();
         if (divingRequest.getEndDate() != null) this.endDate = divingRequest.getEndDate();
         if (divingRequest.getLocation() != null) this.location = divingRequest.getLocation();
@@ -100,7 +100,7 @@ public class Diving {
         this.age = age;
         this.moods = moods;
         this.limitPeople = limitPeople;
-        this.limitLicense = limitLicense;
+        this.licenseLimit = licenseLimit;
         this.startDate = startDate;
         this.endDate = endDate;
         this.location = location;

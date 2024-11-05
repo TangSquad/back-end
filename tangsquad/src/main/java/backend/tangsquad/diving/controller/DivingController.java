@@ -71,7 +71,7 @@ public class DivingController {
             security = @SecurityRequirement(name = "AccessToken")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "모임 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
+            @ApiResponse(responseCode = "200", description = "다이빙 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
     public ResponseEntity<List<DivingResponse>> getAllDivings() {
@@ -93,8 +93,8 @@ public class DivingController {
             security = @SecurityRequirement(name = "AccessToken")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "등록한 모임 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
-            @ApiResponse(responseCode = "404", description = "등록한 모임이 없음", content = @Content),
+            @ApiResponse(responseCode = "200", description = "등록한 다이빙 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
+            @ApiResponse(responseCode = "404", description = "등록한 다이빙이 없음", content = @Content),
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
     public ResponseEntity<List<DivingResponse>> getRegisteredDivings(
@@ -183,7 +183,7 @@ public class DivingController {
     }
 
     @GetMapping("like/{divingId}")
-    @Operation(summary = "좋아요한 다이빙 취소하기", description = "좋아요한 로그북을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    @Operation(summary = "좋아요한 다이빙 취소하기", description = "좋아요한 다이빙을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<DivingResponse> cancelLikeDivings(@PathVariable("divingId") Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         DivingResponse divingResponse = likeDivingService.cancelLike(divingId, userDetails);
 
