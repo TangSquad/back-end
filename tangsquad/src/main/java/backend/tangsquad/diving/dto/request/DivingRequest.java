@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 public class DivingRequest {
     private String divingName;
+    private Long userId;
     private String divingIntro;
     private String thumbnailUrl;
     private Long currentPeople;
@@ -23,8 +24,9 @@ public class DivingRequest {
     private String location;
 
     @Builder
-    public DivingRequest(String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic,String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+    public DivingRequest(String divingName, Long userId, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic,String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
         this.divingName = divingName;
+        this.userId = userId;
         this.divingIntro = divingIntro;
         this.thumbnailUrl = thumbnailUrl;
         this.currentPeople = currentPeople;

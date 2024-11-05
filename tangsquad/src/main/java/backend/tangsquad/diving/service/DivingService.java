@@ -5,8 +5,6 @@ import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.repository.DivingRepository;
-import backend.tangsquad.moim.dto.response.MoimResponse;
-import backend.tangsquad.moim.entity.Moim;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -26,6 +24,7 @@ public class DivingService {
     public DivingResponse createDiving(DivingRequest divingRequest, UserDetailsImpl userDetails) {
         try {
             Diving diving = Diving.builder()
+                    .user(userDetails.getUser())
                     .isPublic(divingRequest.getIsPublic())
                     .divingName(divingRequest.getDivingName())
                     .divingIntro(divingRequest.getDivingIntro())
@@ -43,6 +42,8 @@ public class DivingService {
             // Save diving
             Diving savedDiving = divingRepository.save(diving);
             return DivingResponse.builder()
+                    .id(diving.getDivingId())
+                    .userId(diving.getUser().getId())
                     .isPublic(diving.getIsPublic())
                     .divingName(diving.getDivingName())
                     .divingIntro(diving.getDivingIntro())
@@ -67,6 +68,8 @@ public class DivingService {
 
             return divings.stream()
                     .map(diving -> DivingResponse.builder()
+                            .id(diving.getDivingId())
+                            .userId(diving.getUser().getId())
                             .isPublic(diving.getIsPublic())
                             .divingName(diving.getDivingName())
                             .divingIntro(diving.getDivingIntro())
@@ -93,6 +96,8 @@ public class DivingService {
             List<Diving> divings = divingRepository.findAll();
             List<DivingResponse> divingResponses = divings.stream()
                     .map(diving -> DivingResponse.builder()
+                            .id(diving.getDivingId())
+                            .userId(diving.getUser().getId())
                             .isPublic(diving.getIsPublic())
                             .divingName(diving.getDivingName())
                             .divingIntro(diving.getDivingIntro())
@@ -121,6 +126,8 @@ public class DivingService {
                 Diving diving = divingOptional.get();
 
                 return DivingResponse.builder()
+                        .id(divingId)
+                        .userId(diving.getUser().getId())
                         .isPublic(diving.getIsPublic())
                         .divingName(diving.getDivingName())
                         .divingIntro(diving.getDivingIntro())
@@ -148,6 +155,8 @@ public class DivingService {
 
             List<DivingResponse> divingResponses = divings.stream()
                     .map(diving -> DivingResponse.builder()
+                            .id(diving.getDivingId())
+                            .userId(diving.getUser().getId())
                             .isPublic(diving.getIsPublic())
                             .divingName(diving.getDivingName())
                             .divingIntro(diving.getDivingIntro())
@@ -184,6 +193,8 @@ public class DivingService {
 
             Diving savedDiving = divingRepository.save(diving);
             DivingResponse divingResponse = DivingResponse.builder()
+                    .id(divingId)
+                    .userId(diving.getUser().getId())
                     .isPublic(diving.getIsPublic())
                     .divingName(diving.getDivingName())
                     .divingIntro(diving.getDivingIntro())

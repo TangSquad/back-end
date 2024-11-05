@@ -8,13 +8,15 @@ import java.util.List;
 
 @Data
 public class DivingResponse {
-    private String divingName;
-    private String divingIntro;
+    private Long id;
+    private Long userId;
     private Boolean isPublic;
     private String thumbnailUrl;
-    private Long currentPeople;
+    private String divingName;
+    private String divingIntro;
     private String age;
     private List<String> moods;
+    private Long currentPeople;
     private Long limitPeople;
     private String limitLicense;
     private LocalDate startDate;
@@ -22,7 +24,9 @@ public class DivingResponse {
     private String location;
 
     @Builder
-    public DivingResponse(String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+    public DivingResponse(Long id, Long userId, String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+        this.id = id;
+        this.userId = userId;
         this.divingName = divingName;
         this.divingIntro = divingIntro;
         this.thumbnailUrl = thumbnailUrl;
