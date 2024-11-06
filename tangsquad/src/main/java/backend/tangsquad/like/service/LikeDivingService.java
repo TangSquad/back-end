@@ -66,7 +66,7 @@ public class LikeDivingService {
                     .age(diving.getAge())
                     .moods(diving.getMoods())
                     .limitPeople(diving.getLimitPeople())
-                    .limitLicense(diving.getLimitLicense())
+                    .licenseLimit(diving.getLicenseLimit())
                     .build()
             ).collect(Collectors.toList());
 
@@ -90,7 +90,7 @@ public class LikeDivingService {
                 .moods(diving.getMoods())
                 .location(diving.getLocation())
                 .startDate(diving.getStartDate())
-                .limitLicense(diving.getLimitLicense())
+                .licenseLimit(diving.getLicenseLimit())
                 .age(diving.getAge())
                 .build();
 

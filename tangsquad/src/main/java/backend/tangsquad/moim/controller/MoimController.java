@@ -139,6 +139,21 @@ public class MoimController {
         }
     }
 
+    @GetMapping("/{moimId}")
+    @Operation(summary = "모임 아이디로 모임 불러오기", description = "모임 아이디로 모임을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<MoimResponse> getMyMoim(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        MoimResponse moimResponse = moimService.getMoim(moimId, userDetails);
+
+        if (moimResponse != null) {
+            return ResponseEntity.ok(moimResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+
+
     @PutMapping("")
     @Operation(summary = "모임 수정하기", description = "사용자의 모임을 수정합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<MoimResponse> updateMoim(

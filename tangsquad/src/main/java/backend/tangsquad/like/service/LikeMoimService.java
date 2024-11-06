@@ -62,7 +62,7 @@ public class LikeMoimService {
             List<Moim> moims = moimRepository.findAllById(moimIds);
             return moims.stream().map(moim -> MoimResponse.builder()
                     .userId(moim.getUser().getId())
-                    .anonymous(moim.getAnonymous())
+                    .isPublic(moim.getIsPublic())
                     .moimName(moim.getMoimName())
                     .moimIntro(moim.getMoimIntro())
                     .moimDetails(moim.getMoimDetails())
@@ -88,7 +88,7 @@ public class LikeMoimService {
                 .moimName(moim.getMoimName())
                 .moimIntro(moim.getMoimIntro())
                 .limitPeople(moim.getLimitPeople())
-                .anonymous(moim.getAnonymous())
+                .isPublic(moim.getIsPublic())
                 .expense(moim.getExpense())
                 .licenseLimit(moim.getLicenseLimit())
                 .moimDetails(moim.getMoimDetails())

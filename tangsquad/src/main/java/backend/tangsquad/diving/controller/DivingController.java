@@ -8,6 +8,7 @@ import backend.tangsquad.diving.service.DivingService;
 import backend.tangsquad.like.dto.request.LikeDivingRequest;
 import backend.tangsquad.like.dto.response.LikeDivingResponse;
 import backend.tangsquad.like.service.LikeDivingService;
+import backend.tangsquad.moim.dto.response.MoimResponse;
 import backend.tangsquad.swagger.global.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -58,6 +59,51 @@ public class DivingController {
 
         if (divingResponse != null ) {
             return ResponseEntity.ok(divingResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @GetMapping("/all")
+    @Operation(
+            summary = "다이빙 목록 조회",
+            description = "모든 다이빙의 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다이빙 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    public ResponseEntity<List<DivingResponse>> getAllDivings() {
+
+        List<DivingResponse> divingResponses = divingService.getAllDivings();
+
+        if (divingResponses != null) {
+            return ResponseEntity.ok(divingResponses);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+
+    @GetMapping("/joined")
+    @Operation(
+            summary = "가입한 diving 목록 조회",
+            description = "사용자가 가입한 다이빙 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "등록한 다이빙 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
+            @ApiResponse(responseCode = "404", description = "등록한 다이빙이 없음", content = @Content),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    public ResponseEntity<List<DivingResponse>> getRegisteredDivings(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        List<DivingResponse> divingResponses = divingService.getRegisteredDivings(userDetails);
+
+        if (divingResponses != null) {
+            return ResponseEntity.ok(divingResponses);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -137,7 +183,7 @@ public class DivingController {
     }
 
     @GetMapping("like/{divingId}")
-    @Operation(summary = "좋아요한 다이빙 가져오기", description = "좋아요한 로그북을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    @Operation(summary = "좋아요한 다이빙 취소하기", description = "좋아요한 다이빙을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<DivingResponse> cancelLikeDivings(@PathVariable("divingId") Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         DivingResponse divingResponse = likeDivingService.cancelLike(divingId, userDetails);
 

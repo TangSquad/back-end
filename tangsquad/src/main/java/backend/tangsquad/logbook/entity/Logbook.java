@@ -33,6 +33,9 @@ public class Logbook {
     @Column
     private Boolean isPublic;
 
+    @Column
+    private String thumbnailUrl;
+
 
     @Column
     private LocalDateTime date;
@@ -49,15 +52,17 @@ public class Logbook {
     public void update(LogbookRequest logbookRequest) {
         if (logbookRequest.getDate() != null) this.date = logbookRequest.getDate();
         if (logbookRequest.getIsPublic() != null) this.isPublic = logbookRequest.getIsPublic();
+        if (logbookRequest.getThumbnailUrl() != null) this.thumbnailUrl = thumbnailUrl;
         if (logbookRequest.getTitle() != null) this.title = logbookRequest.getTitle();
         if (logbookRequest.getContents() != null) this.contents = logbookRequest.getContents();
         if (logbookRequest.getLocation() != null) this.location = logbookRequest.getLocation();
     }
 
     @Builder
-    public Logbook(User user, LocalDateTime date,  String location, String title, String contents) {
+    public Logbook(User user, LocalDateTime date, String thumbnailUrl, String location, String title, String contents) {
         this.user = user;
         this.date = date;
+        this.thumbnailUrl = thumbnailUrl;
         this.title = title;
         this.contents = contents;
         this.location = location;

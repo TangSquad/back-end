@@ -79,15 +79,25 @@ public class LogbookController {
     }
 
     private LogbookResponse convertToLogbookResponse(Logbook logbook) {
-        return new LogbookResponse(
-                logbook.getId(),
-                logbook.getIsPublic(),
-                logbook.getUser().getId(),
-                logbook.getTitle(),
-                logbook.getContents(),
-                logbook.getDate(),
-                logbook.getLocation()
-        );
+
+        return LogbookResponse.builder()
+                .logId(logbook.getId())
+                .userId(logbook.getUser().getId())
+                .title(logbook.getTitle())
+                .date(logbook.getDate())
+                .contents(logbook.getContents())
+                .location(logbook.getLocation())
+                .isPublic(logbook.getIsPublic())
+                .build();
+//        return new LogbookResponse(
+//                logbook.getId(),
+//                logbook.getIsPublic(),
+//                logbook.getUser().getId(),
+//                logbook.getTitle(),
+//                logbook.getContents(),
+//                logbook.getDate(),
+//                logbook.getLocation()
+//        );
     }
 
     @GetMapping("")
