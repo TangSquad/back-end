@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,8 +47,9 @@ public class Logbook {
     @Column
     private String location;
 
-    @OneToMany
-    private List<Log> logs;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column(name = "logs")
+    private List<String> logs = new ArrayList<>();
 
     public void update(LogbookRequest logbookRequest) {
         if (logbookRequest.getDate() != null) this.date = logbookRequest.getDate();

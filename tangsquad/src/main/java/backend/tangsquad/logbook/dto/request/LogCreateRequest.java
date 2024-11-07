@@ -1,4 +1,4 @@
-package backend.tangsquad.logbook.dto.response;
+package backend.tangsquad.logbook.dto.request;
 
 import lombok.Builder;
 import lombok.Data;
@@ -6,9 +6,7 @@ import lombok.Data;
 import java.time.LocalTime;
 
 @Data
-public class LogResponse {
-    private Long id;
-    private Long userId;
+public class LogCreateRequest {
     private String viewSight;
     private String tide;
     private LocalTime startDiveTime;
@@ -22,11 +20,9 @@ public class LogResponse {
     private Long logbookId;
 
     @Builder
-    public LogResponse(Long id, Long userId, String viewSight, String tide, LocalTime startDiveTime,
-                       LocalTime endDiveTime, LocalTime timeDiffDive, Long avgDepDiff, Long maxDiff,
-                       Long startBar, Long endBar, Long diffBar, Long logbookId) {
-        this.id = id;
-        this.userId = userId;
+    public LogCreateRequest(String viewSight, String tide, LocalTime startDiveTime, LocalTime endDiveTime,
+                            LocalTime timeDiffDive, Long avgDepDiff, Long maxDiff, Long startBar,
+                            Long endBar, Long diffBar, Long logbookId) {
         this.viewSight = viewSight;
         this.tide = tide;
         this.startDiveTime = startDiveTime;
