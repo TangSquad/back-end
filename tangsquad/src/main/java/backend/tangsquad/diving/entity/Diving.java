@@ -57,13 +57,16 @@ public class Diving {
     @Column
     private String licenseLimit;
 
+    @Column
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
+    @Column
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     @Column
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private String location;
 
     @ManyToMany

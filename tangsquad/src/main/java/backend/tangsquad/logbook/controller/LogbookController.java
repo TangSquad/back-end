@@ -19,7 +19,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-// 로그북 내비게이션 바 - 내 다이빙 (나의 로그 CRUD)
 @RequestMapping("/logbook")
 @RestController
 @RequiredArgsConstructor
@@ -61,13 +60,13 @@ public class LogbookController {
         }
     }
 
-    @GetMapping("/user/{logId}")
+    @GetMapping("/user/{logbookId}")
     @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<LogbookResponse> getUserLog(
-            @PathVariable("logId") Long logId) {
+            @PathVariable("logbookId") Long logbookId) {
 
         // Retrieve the logbook entry by ID
-        Logbook logbook = logbookService.getLogbookByLogbookId(logId);
+        Logbook logbook = logbookService.getLogbookByLogbookId(logbookId);
 
         if (logbook != null) {
             // Convert Logbook entity to LogbookReadRequest DTO
@@ -89,15 +88,6 @@ public class LogbookController {
                 .location(logbook.getLocation())
                 .isPublic(logbook.getIsPublic())
                 .build();
-//        return new LogbookResponse(
-//                logbook.getId(),
-//                logbook.getIsPublic(),
-//                logbook.getUser().getId(),
-//                logbook.getTitle(),
-//                logbook.getContents(),
-//                logbook.getDate(),
-//                logbook.getLocation()
-//        );
     }
 
     @GetMapping("")
@@ -129,7 +119,7 @@ public class LogbookController {
     public ResponseEntity<LogbookResponse> updateLog(
             @RequestBody LogbookRequest logbookRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
-        LogbookResponse logbookResponse = logbookService.updateLog(logbookRequest, userDetailsImpl);
+        LogbookResponse logbookResponse = logbookService.updateLogbook(logbookRequest, userDetailsImpl);
 
         if (logbookResponse == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -139,13 +129,13 @@ public class LogbookController {
     }
 
     // Use @PathVariable for the ID since it's in the URL path
-    @DeleteMapping("/{logId}")
+    @DeleteMapping("/{logbookId}")
     @Operation(summary = "로그북 삭제하기", description = "나의 로그를 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<CommonResponse> deleteLog(
-            @PathVariable("logId") Long logId,
+            @PathVariable("logId") Long logbookId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return logbookService.deleteLog(logId, userDetails);
+        return logbookService.deleteLog(logbookId, userDetails);
     }
 
 
@@ -169,10 +159,10 @@ public class LogbookController {
         }
     }
 
-    @DeleteMapping("like/{logId}")
+    @DeleteMapping("like/{logbookId}")
     @Operation(summary = "좋아요한 로그북 취소하기", description = "좋아요한 로그북을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<LogbookResponse> cancelLikeLogbooks(@PathVariable("logId") Long logId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        LogbookResponse logbookResponse = likeLogbookService.cancelLike(logId, userDetails);
+    public ResponseEntity<LogbookResponse> cancelLikeLogbooks(@PathVariable("logbookId") Long logbookId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        LogbookResponse logbookResponse = likeLogbookService.cancelLike(logbookId, userDetails);
         if (logbookResponse != null) {
             return ResponseEntity.ok(logbookResponse);
         } else {

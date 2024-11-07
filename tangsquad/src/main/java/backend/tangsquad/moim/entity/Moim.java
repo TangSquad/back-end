@@ -1,7 +1,8 @@
 package backend.tangsquad.moim.entity;
 
 import backend.tangsquad.common.entity.User;
-import backend.tangsquad.logbook.dto.request.LogbookRequest;
+import backend.tangsquad.logbook.entity.Log;
+import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.moim.dto.request.MoimLeaderRequest;
 import backend.tangsquad.moim.dto.request.MoimLeaderUsernameRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
@@ -64,7 +65,6 @@ public class Moim {
     @Column
     private String age;
 
-    // Basic type
     @ElementCollection(fetch = FetchType.LAZY)
     @Column(name = "moods")
     private List<String> moods = new ArrayList<String>();
@@ -77,6 +77,9 @@ public class Moim {
     )
     @JsonManagedReference
     private List<User> registeredUsers; // List of registered users
+
+    @OneToMany
+    private List<Logbook> logbooks = new ArrayList<>();
 
     public void update(MoimUpdateRequest moimUpdateRequest) {
         if (moimUpdateRequest.getIsPublic() != null) this.isPublic = moimUpdateRequest.getIsPublic();
