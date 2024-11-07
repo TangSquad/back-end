@@ -25,62 +25,59 @@ import java.util.stream.Collectors;
 public class LogbookService {
 
     private final LogbookRepository logbookRepository;
-    private final UserRepository userRepository;
-
-    private final LikeLogbookRepository likeLogbookRepository;
 
     public LogbookResponse save(LogbookCreateRequest logbookCreateRequest, UserDetailsImpl userDetails) {
         try {
-            // Build the logbook entity from the request
             Logbook logbook = Logbook.builder()
-                    .user(userDetails.getUser())  // Set the user from authenticated user details
-                    .date(logbookCreateRequest.getDate())  // Set the date
-                    .location(logbookCreateRequest.getLocation())  // Set the location
-                    .title(logbookCreateRequest.getTitle())  // Set the title
-                    .contents(logbookCreateRequest.getContents())  // Set the contents
+                    .user(userDetails.getUser())
+                    .date(logbookCreateRequest.getDate())
+                    .location(logbookCreateRequest.getLocation())
+                    .title(logbookCreateRequest.getTitle())
+                    .contents(logbookCreateRequest.getContents())
                     .build();
 
-            // Save the logbook entity
             Logbook savedLogbook = logbookRepository.save(logbook);
 
-            // Convert the saved entity to LogbookReadRequest
             LogbookResponse logbookResponse = LogbookResponse.builder()
-                    .logId(savedLogbook.getId())  // Set the ID of the saved logbook
+                    .logId(savedLogbook.getId())
                     .userId(savedLogbook.getUser().getId())
-                    .title(savedLogbook.getTitle())// Get the userId from the user
+                    .title(savedLogbook.getTitle())
                     .contents(savedLogbook.getContents())
                     .date(savedLogbook.getDate())
                     .location(savedLogbook.getLocation())
                     .build();
 
-            return logbookResponse;  // Return the read request
+            return logbookResponse;
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error while saving logbook.");
-            return null;  // Handle the error and return null or throw a custom exception
+            return null;
         }
     }
 
-    public Logbook getLogbookByIdAndUserId(Long logId, Long userId) {
-        // Fetch the logbook by ID and ensure it belongs to the authenticated user
-        return logbookRepository.findByIdAndUserId(logId, userId)
-                .orElse(null); // Return null if not found
+    public Logbook getLogbookByIdAndUserId(Long logbookId, Long userId) {
+
+        return logbookRepository.findByIdAndUserId(logbookId, userId)
+                .orElse(null);
     }
 
     public List<LogbookRequest> getLogbooksByUserId(Long userId) {
-        // Retrieve the logbooks for the authenticated user
+
         try {
             List<Logbook> logbooks = logbookRepository.findByUserId(userId);
-            // Convert each Logbook to a LogbookRequest
+
             List<LogbookRequest> logbookRequests = logbooks.stream()
                     .map(logbook -> LogbookRequest.builder()
-                            .userId(userId)  // Set the userId or user object
-                            .contents(logbook.getContents())  // Map the contents of the logbook
-                            .location(logbook.getLocation())  // Replace with actual location data if available in Logbook
-                            .title(logbook.getTitle())  // Add title from Logbook
+                            .id(logbook.getId())
+                            .isPublic(logbook.getIsPublic())
+                            .date(logbook.getDate())
+                            .thumbnailUrl(logbook.getThumbnailUrl())
+                            .contents(logbook.getContents())
+                            .location(logbook.getLocation())
+                            .title(logbook.getTitle())
                             .build())
-                    .collect(Collectors.toList());  // Collect all LogbookRequest objects into a list
+                    .collect(Collectors.toList());
             return logbookRequests;
 
         } catch (Exception e) {
@@ -89,18 +86,11 @@ public class LogbookService {
     }
 
     public Logbook getLogbookByLogbookId(Long logbookId) {
-        // Retrieve the logbooks for the authenticated user
+
         try {
             Optional<Logbook> logbookOptional = logbookRepository.findById(logbookId);
 
             Logbook logbook = logbookOptional.get();
-//            // Convert each Logbook to a LogbookRequest
-//            LogbookRequest logbookRequest =  LogbookRequest.builder()
-//                            .userId(logbook.getUser().getId())  // Set the userId or user object
-//                            .contents(logbook.getContents())  // Map the contents of the logbook
-//                            .location(logbook.getLocation())  // Replace with actual location data if available in Logbook
-//                            .title(logbook.getTitle())  // Add title from Logbook
-//                            .build();
 
             return logbook;
 
@@ -111,19 +101,20 @@ public class LogbookService {
 
 
     public List<LogbookRequest> getLogbooksByLogbookId(List<Long> logbookIds) {
-        // Retrieve the logbooks for the authenticated user
         try {
             List<Logbook> logbooks = logbookRepository.findAllById(logbookIds);
-            // Convert each Logbook to a LogbookRequest
-            List<LogbookRequest> logbookRequests = logbooks.stream()
+
+            return logbooks.stream()
                     .map(logbook -> LogbookRequest.builder()
-                            .userId(logbook.getUser().getId())  // Set the userId or user object
-                            .contents(logbook.getContents())  // Map the contents of the logbook
-                            .location(logbook.getLocation())  // Replace with actual location data if available in Logbook
-                            .title(logbook.getTitle())  // Add title from Logbook
+                            .id(logbook.getId())
+                            .isPublic(logbook.getIsPublic())
+                            .date(logbook.getDate())
+                            .thumbnailUrl(logbook.getThumbnailUrl())
+                            .contents(logbook.getContents())
+                            .location(logbook.getLocation())
+                            .title(logbook.getTitle())
                             .build())
-                    .collect(Collectors.toList());  // Collect all LogbookRequest objects into a list
-            return logbookRequests;
+                    .collect(Collectors.toList());
 
         } catch (Exception e) {
             return null;
@@ -132,22 +123,19 @@ public class LogbookService {
 
 
 
-    // 수정 필요.
-    public LogbookResponse updateLog(LogbookRequest logbookRequest, UserDetailsImpl userDetails) {
-        // Retrieve the existing Logbook by userId and logId
+    public LogbookResponse updateLogbook(LogbookRequest logbookRequest, UserDetailsImpl userDetails) {
+
         Optional<Logbook> logbookOptional = logbookRepository.findById(logbookRequest.getId());
 
         if (!logbookOptional.isPresent()) {
             throw new NoSuchElementException();
         }
 
-        // Get the existing logbook
         Logbook logbook = logbookOptional.get();
 
         if (userDetails.getUser() != logbook.getUser()) {
             return null;
         }
-        // Update the logbook using the new update method
         logbook.update(logbookRequest);
 
         Logbook savedLogbook = logbookRepository.save(logbook);
@@ -164,7 +152,7 @@ public class LogbookService {
         return logbookResponse;
     }
 
-    public ResponseEntity<CommonResponse> deleteLog(Long logId, UserDetailsImpl userDetails) {
+    public ResponseEntity<CommonResponse> deleteLog(Long logbookId, UserDetailsImpl userDetails) {
 
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -172,7 +160,7 @@ public class LogbookService {
 
         try {
             // Retrieve the logbook from the service
-            Optional<Logbook> logbookOptional = logbookRepository.findByIdAndUserId(logId, userDetails.getId());
+            Optional<Logbook> logbookOptional = logbookRepository.findByIdAndUserId(logbookId, userDetails.getId());
 
             if (!logbookOptional.isPresent()) {
                 // Log not found

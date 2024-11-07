@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,7 +23,6 @@ public class Logbook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // In Logbook class
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonManagedReference
@@ -35,7 +33,6 @@ public class Logbook {
 
     @Column
     private String thumbnailUrl;
-
 
     @Column
     private LocalDateTime date;
@@ -49,17 +46,20 @@ public class Logbook {
     @Column
     private String location;
 
+    @OneToMany
+    private List<Log> logs;
+
     public void update(LogbookRequest logbookRequest) {
         if (logbookRequest.getDate() != null) this.date = logbookRequest.getDate();
         if (logbookRequest.getIsPublic() != null) this.isPublic = logbookRequest.getIsPublic();
-        if (logbookRequest.getThumbnailUrl() != null) this.thumbnailUrl = thumbnailUrl;
+        if (logbookRequest.getThumbnailUrl() != null) this.thumbnailUrl = logbookRequest.getThumbnailUrl();
         if (logbookRequest.getTitle() != null) this.title = logbookRequest.getTitle();
         if (logbookRequest.getContents() != null) this.contents = logbookRequest.getContents();
         if (logbookRequest.getLocation() != null) this.location = logbookRequest.getLocation();
     }
 
     @Builder
-    public Logbook(User user, LocalDateTime date, String thumbnailUrl, String location, String title, String contents) {
+    public Logbook(User user, LocalDateTime date, Long currentPeople, String thumbnailUrl, String location, String title, String contents) {
         this.user = user;
         this.date = date;
         this.thumbnailUrl = thumbnailUrl;
