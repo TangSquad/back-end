@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface LogRepository extends JpaRepository<Log, Long> {
     List<Log> findByUserId(Long userId);
-    List<Log> findAllByLogbook(Logbook logbook);
+    List<Log> findAllByLogbookId(Long logbookId);
 }

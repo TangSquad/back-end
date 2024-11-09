@@ -2,6 +2,7 @@ package backend.tangsquad.logbook.entity;
 
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.logbook.dto.request.LogRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -34,19 +36,19 @@ public class Log {
     private String tide;
 
     @Column
-    private LocalDateTime startDiveTime;
+    private LocalTime startDiveTime;
 
     @Column
-    private LocalDateTime endDiveTime;
+    private LocalTime endDiveTime;
 
     @Column
-    private LocalDateTime timeDiffDive;
+    private LocalTime timeDiffDive;
 
     @Column
-    private Float avgDepDiff;
+    private Long avgDepDiff;
 
     @Column
-    private Float maxDiff;
+    private Long maxDiff;
 
     @Column
     private Long startBar;
@@ -57,9 +59,11 @@ public class Log {
     @Column
     private Long diffBar;
 
-    @ManyToOne
-    @JoinColumn(name = "logbook_id", referencedColumnName = "id")  // assuming the column is named logbook_id
-    private Logbook logbook;
+//    @ManyToOne
+//    @JoinColumn(name = "logbook_id", nullable = false)
+//    private Logbook logbook;
+    @Column
+    private Long logbookId;
 
     public void update(LogRequest logRequest) {
         if (logRequest.getViewSight() != null) this.viewSight = logRequest.getViewSight();
@@ -72,12 +76,13 @@ public class Log {
         if (logRequest.getStartBar() != null) this.startBar = logRequest.getStartBar();
         if (logRequest.getEndBar() != null) this.endBar = logRequest.getEndBar();
         if (logRequest.getDiffBar() != null) this.diffBar = logRequest.getDiffBar();
-        if (logRequest.getLogbook() != null) this.logbook = logRequest.getLogbook();
+        if (logRequest.getLogbookId() != null) this.logbookId = logRequest.getLogbookId();
+
+//        if (logRequest.getLogbook() != null) this.logbook = logRequest.getLogbook();
     }
 
     @Builder
-    public Log(Long id, User user, String viewSight, String tide, LocalDateTime startDiveTime, LocalDateTime endDiveTime, LocalDateTime timeDiffDive, Float avgDepDiff, Float maxDiff, Long startBar, Long endBar, Long diffBar, Logbook logbook) {
-        this.id = id;
+    public Log(User user, String viewSight, String tide, LocalTime startDiveTime, LocalTime endDiveTime, LocalTime timeDiffDive, Long avgDepDiff, Long maxDiff, Long startBar, Long endBar, Long diffBar, Long logbookId) {
         this.user = user;
         this.viewSight = viewSight;
         this.tide = tide;
@@ -89,6 +94,7 @@ public class Log {
         this.startBar = startBar;
         this.endBar = endBar;
         this.diffBar = diffBar;
-        this.logbook = logbook;
+        this.logbookId = logbookId;
+//        this.logbook = logbook;
     }
 }

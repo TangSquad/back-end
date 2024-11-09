@@ -1,6 +1,7 @@
 package backend.tangsquad.logbook.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.logbook.dto.request.LogCreateRequest;
 import backend.tangsquad.logbook.dto.request.LogRequest;
 import backend.tangsquad.logbook.dto.response.LogResponse;
 import backend.tangsquad.logbook.entity.Log;
@@ -8,6 +9,8 @@ import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.repository.LogRepository;
 import backend.tangsquad.logbook.repository.LogbookRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,95 +20,33 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class LogService {
+
+    private static final Logger logger = LoggerFactory.getLogger(LogService.class);
+
     private final LogRepository logRepository;
     private final LogbookRepository logbookRepository;
 
-    public LogResponse save(LogRequest logRequest, UserDetailsImpl userDetails) {
+    public LogResponse save(LogCreateRequest logCreateRequest, UserDetailsImpl userDetails) {
         try {
+            // Build the Log entity
             Log log = Log.builder()
                     .user(userDetails.getUser())
-                    .viewSight(logRequest.getViewSight())
-                    .tide(logRequest.getTide())
-                    .startDiveTime(logRequest.getStartDiveTime())
-                    .endDiveTime(logRequest.getEndDiveTime())
-                    .timeDiffDive(logRequest.getTimeDiffDive())
-                    .avgDepDiff(logRequest.getAvgDepDiff())
-                    .maxDiff(logRequest.getMaxDiff())
-                    .startBar(logRequest.getStartBar())
-                    .endBar(logRequest.getEndBar())
-                    .diffBar(logRequest.getDiffBar())
-                    .logbook(logRequest.getLogbook())
-                    .build();
-
-            LogResponse logResponse = LogResponse.builder()
-                    .id(log.getId())
-                    .userId(log.getUser().getId())
-                    .viewSight(log.getViewSight())
-                    .tide(log.getTide())
-                    .startDiveTime(log.getStartDiveTime())
-                    .endDiveTime(log.getEndDiveTime())
-                    .timeDiffDive(log.getTimeDiffDive())
-                    .avgDepDiff(log.getAvgDepDiff())
-                    .maxDiff(log.getMaxDiff())
-                    .startBar(log.getStartBar())
-                    .endBar(log.getEndBar())
-                    .diffBar(log.getDiffBar())
-                    .logbook(log.getLogbook())
+                    .viewSight(logCreateRequest.getViewSight())
+                    .tide(logCreateRequest.getTide())
+                    .startDiveTime(logCreateRequest.getStartDiveTime())
+                    .endDiveTime(logCreateRequest.getEndDiveTime())
+                    .timeDiffDive(logCreateRequest.getTimeDiffDive())
+                    .avgDepDiff(logCreateRequest.getAvgDepDiff())
+                    .maxDiff(logCreateRequest.getMaxDiff())
+                    .startBar(logCreateRequest.getStartBar())
+                    .endBar(logCreateRequest.getEndBar())
+                    .diffBar(logCreateRequest.getDiffBar())
+                    .logbookId(logCreateRequest.getLogbookId())
                     .build();
 
             logRepository.save(log);
-            return logResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error while saving log.");
-            return null;
-        }
-    }
 
-    public List<LogResponse> getLogsInLogbook(Long logbookId, UserDetailsImpl userDetails) {
-
-        try {
-            Optional<Logbook> optionalLogbook = logbookRepository.findById(logbookId);
-
-            if (optionalLogbook.isEmpty()) return null;
-
-            Logbook logbook = optionalLogbook.get();
-            List<Log> logs = logRepository.findAllByLogbook(logbook);
-
-            return logs.stream()
-                    .map(log -> LogResponse.builder()
-                            .id(log.getId())
-                            .userId(log.getUser().getId())
-                            .viewSight(log.getViewSight())
-                            .tide(log.getTide())
-                            .startDiveTime(log.getStartDiveTime())
-                            .endDiveTime(log.getEndDiveTime())
-                            .timeDiffDive(log.getTimeDiffDive())
-                            .avgDepDiff(log.getAvgDepDiff())
-                            .maxDiff(log.getMaxDiff())
-                            .startBar(log.getStartBar())
-                            .endBar(log.getEndBar())
-                            .diffBar(log.getDiffBar())
-                            .logbook(log.getLogbook())
-                            .build()
-                    )
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error while getting logs.");
-            return null;
-        }
-    }
-
-    public LogResponse getLog(Long logId, UserDetailsImpl userDetails) {
-
-        try {
-            Optional<Log> optionalLog = logRepository.findById(logId);
-
-            if (optionalLog.isEmpty()) return null;
-
-            Log log = optionalLog.get();
-
+            // Convert entity to response DTO
             return LogResponse.builder()
                     .id(log.getId())
                     .userId(log.getUser().getId())
@@ -119,86 +60,135 @@ public class LogService {
                     .startBar(log.getStartBar())
                     .endBar(log.getEndBar())
                     .diffBar(log.getDiffBar())
-                    .logbook(log.getLogbook())
+                    .logbookId(log.getLogbookId())
                     .build();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error while getting log.");
-            return null;
+            logger.error("Error while saving log.", e);
+            throw new RuntimeException("Error while saving log.");
         }
     }
 
-    public LogResponse updateLog(LogRequest logRequest, UserDetailsImpl userDetails) {
-        try {
-
-            Optional<Log> optionalLog = logRepository.findById(logRequest.getId());
-
-            if (optionalLog.isEmpty()) return null;
-
-            Log log = optionalLog.get();
-
-            if (log.getUser().getId() != userDetails.getUser().getId()) return null;
-
-
-            log.update(logRequest);
-
-            return LogResponse.builder()
-                    .id(log.getId())
-                    .userId(log.getUser().getId())
-                    .viewSight(log.getViewSight())
-                    .tide(log.getTide())
-                    .startDiveTime(log.getStartDiveTime())
-                    .endDiveTime(log.getEndDiveTime())
-                    .timeDiffDive(log.getTimeDiffDive())
-                    .avgDepDiff(log.getAvgDepDiff())
-                    .maxDiff(log.getMaxDiff())
-                    .startBar(log.getStartBar())
-                    .endBar(log.getEndBar())
-                    .diffBar(log.getDiffBar())
-                    .logbook(log.getLogbook())
-                    .build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error while updating log.");
-            return null;
-        }
-    }
-
-    public LogResponse delete(Long logId, UserDetailsImpl userDetails) {
-
-        try {
-            Optional<Log> optionalLog = logRepository.findById(logId);
-
-            if (optionalLog.isEmpty()) return null;
-
-            Log log = optionalLog.get();
-
-            if (log.getUser().getId() != userDetails.getUser().getId()) return null;
-
-            LogResponse logResponse = LogResponse.builder()
-                    .id(log.getId())
-                    .userId(log.getUser().getId())
-                    .viewSight(log.getViewSight())
-                    .tide(log.getTide())
-                    .startDiveTime(log.getStartDiveTime())
-                    .endDiveTime(log.getEndDiveTime())
-                    .timeDiffDive(log.getTimeDiffDive())
-                    .avgDepDiff(log.getAvgDepDiff())
-                    .maxDiff(log.getMaxDiff())
-                    .startBar(log.getStartBar())
-                    .endBar(log.getEndBar())
-                    .diffBar(log.getDiffBar())
-                    .logbook(log.getLogbook())
-                    .build();
-
-            logRepository.delete(log);
-
-            return logResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error while deleting log.");
-            return null;
-        }
-    }
+//    public List<LogResponse> getLogsInLogbook(Long logbookId, UserDetailsImpl userDetails) {
+//        try {
+//            // Retrieve Logbook
+//            Logbook logbook = logbookRepository.findById(logbookId)
+//                    .orElseThrow(() -> new RuntimeException("Logbook not found"));
+//
+//            // Retrieve Logs by logbookId
+//            List<Log> logs = logRepository.findAllByLogbookId(logbookId);
+//
+//            // Convert each log entity to a response DTO
+//            return logs.stream()
+//                    .map(log -> LogResponse.builder()
+//                            .id(log.getId())
+//                            .userId(log.getUser().getId())
+//                            .viewSight(log.getViewSight())
+//                            .tide(log.getTide())
+//                            .startDiveTime(log.getStartDiveTime())
+//                            .endDiveTime(log.getEndDiveTime())
+//                            .timeDiffDive(log.getTimeDiffDive())
+//                            .avgDepDiff(log.getAvgDepDiff())
+//                            .maxDiff(log.getMaxDiff())
+//                            .startBar(log.getStartBar())
+//                            .endBar(log.getEndBar())
+//                            .diffBar(log.getDiffBar())
+//                            .logbookId(log.getLogbookId())
+//                            .build())
+//                    .collect(Collectors.toList());
+//        } catch (Exception e) {
+//            logger.error("Error while getting logs for logbook ID: " + logbookId, e);
+//            throw new RuntimeException("Error while retrieving logs for logbook.");
+//        }
+//    }
+//
+//    public LogResponse getLog(Long logId) {
+//        try {
+//            Log log = logRepository.findById(logId)
+//                    .orElseThrow(() -> new RuntimeException("Log not found"));
+//
+//            return LogResponse.builder()
+//                    .id(log.getId())
+//                    .userId(log.getUser().getId())
+//                    .viewSight(log.getViewSight())
+//                    .tide(log.getTide())
+//                    .startDiveTime(log.getStartDiveTime())
+//                    .endDiveTime(log.getEndDiveTime())
+//                    .timeDiffDive(log.getTimeDiffDive())
+//                    .avgDepDiff(log.getAvgDepDiff())
+//                    .maxDiff(log.getMaxDiff())
+//                    .startBar(log.getStartBar())
+//                    .endBar(log.getEndBar())
+//                    .diffBar(log.getDiffBar())
+//                    .logbookId(log.getLogbookId())
+//                    .build();
+//        } catch (Exception e) {
+//            logger.error("Error while getting log ID: " + logId, e);
+//            throw new RuntimeException("Error while retrieving log.");
+//        }
+//    }
+//
+//    public LogResponse updateLog(LogRequest logRequest, UserDetailsImpl userDetails) {
+//        try {
+//            Log log = logRepository.findById(logRequest.getId())
+//                    .orElseThrow(() -> new RuntimeException("Log not found"));
+//
+//            if (!log.getUser().getId().equals(userDetails.getUser().getId())) {
+//                throw new RuntimeException("Unauthorized to update this log.");
+//            }
+//
+//            // Update log fields
+//            log.update(logRequest);
+//
+//            return LogResponse.builder()
+//                    .id(log.getId())
+//                    .userId(log.getUser().getId())
+//                    .viewSight(log.getViewSight())
+//                    .tide(log.getTide())
+//                    .startDiveTime(log.getStartDiveTime())
+//                    .endDiveTime(log.getEndDiveTime())
+//                    .timeDiffDive(log.getTimeDiffDive())
+//                    .avgDepDiff(log.getAvgDepDiff())
+//                    .maxDiff(log.getMaxDiff())
+//                    .startBar(log.getStartBar())
+//                    .endBar(log.getEndBar())
+//                    .diffBar(log.getDiffBar())
+//                    .logbookId(log.getLogbookId())
+//                    .build();
+//        } catch (Exception e) {
+//            logger.error("Error while updating log ID: " + logRequest.getId(), e);
+//            throw new RuntimeException("Error while updating log.");
+//        }
+//    }
+//
+//    public LogResponse delete(Long logId, UserDetailsImpl userDetails) {
+//        try {
+//            Log log = logRepository.findById(logId)
+//                    .orElseThrow(() -> new RuntimeException("Log not found"));
+//
+//            if (!log.getUser().getId().equals(userDetails.getUser().getId())) {
+//                throw new RuntimeException("Unauthorized to delete this log.");
+//            }
+//
+//            logRepository.delete(log);
+//
+//            return LogResponse.builder()
+//                    .id(log.getId())
+//                    .userId(log.getUser().getId())
+//                    .viewSight(log.getViewSight())
+//                    .tide(log.getTide())
+//                    .startDiveTime(log.getStartDiveTime())
+//                    .endDiveTime(log.getEndDiveTime())
+//                    .timeDiffDive(log.getTimeDiffDive())
+//                    .avgDepDiff(log.getAvgDepDiff())
+//                    .maxDiff(log.getMaxDiff())
+//                    .startBar(log.getStartBar())
+//                    .endBar(log.getEndBar())
+//                    .diffBar(log.getDiffBar())
+//                    .logbookId(log.getLogbookId())
+//                    .build();
+//        } catch (Exception e) {
+//            logger.error("Error while deleting log ID: " + logId, e);
+//            throw new RuntimeException("Error while deleting log.");
+//        }
+//    }
 }
-
