@@ -47,8 +47,9 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "카카오 로그인", description = "카카오의 Access Token을 이용하여 우리 서비스의 토큰을 발급합니다. Authorization 헤더에 <Access Token> 형식으로 전달되어야 합니다.")
     @PostMapping("/login/kakao")
-    public ResponseEntity<ApiResponse<JwtResponseDto>> loginOAuth(@RequestParam String accessToken) {
+    public ResponseEntity<ApiResponse<JwtResponseDto>> loginOAuth(@RequestHeader("Authorization") String accessToken) {
         try {
             JwtResponseDto jwtResponseDto = oAuthService.kakaoLogin(accessToken);
             return ResponseEntity.ok(new ApiResponse<>(true, "Login successful.", jwtResponseDto));
