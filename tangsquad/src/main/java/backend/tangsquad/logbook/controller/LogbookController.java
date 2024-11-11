@@ -90,6 +90,19 @@ public class LogbookController {
                 .build();
     }
 
+    @GetMapping("/all")
+    @Operation(summary = "모든 로그북 불러오기", description = "모든 로그북을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<List<LogbookResponse>> getAllLogbooks() {
+        List<LogbookResponse> logbookResponses = logbookService.getAllLogbooks();
+
+        if (logbookResponses != null) {
+            return ResponseEntity.ok(logbookResponses);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+    }
+
     @GetMapping("")
     @Operation(summary = "내 로그북 불러오기", description = "나의 로그들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<LogbookRequest>> getMyLogbooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {

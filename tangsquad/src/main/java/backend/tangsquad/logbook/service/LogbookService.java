@@ -56,6 +56,21 @@ public class LogbookService {
         }
     }
 
+    public List<LogbookResponse> getAllLogbooks() {
+        List<Logbook> logbooks = logbookRepository.findAll();
+
+        return logbooks.stream().map(logbook -> LogbookResponse.builder()
+                .logId(logbook.getId())
+                .userId(logbook.getUser().getId())
+                .title(logbook.getTitle())
+                .contents(logbook.getContents())
+                .date(logbook.getDate())
+                .location(logbook.getLocation())
+                .build()
+        ).collect(Collectors.toList());
+
+    }
+
     public Logbook getLogbookByIdAndUserId(Long logbookId, Long userId) {
 
         return logbookRepository.findByIdAndUserId(logbookId, userId)

@@ -4,6 +4,7 @@ import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.logbook.dto.request.LogCreateRequest;
 import backend.tangsquad.logbook.dto.request.LogRequest;
 import backend.tangsquad.logbook.dto.response.LogResponse;
+import backend.tangsquad.logbook.dto.response.LogbookResponse;
 import backend.tangsquad.logbook.entity.Log;
 import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.repository.LogRepository;
@@ -28,78 +29,94 @@ public class LogService {
 
     public LogResponse save(LogCreateRequest logCreateRequest, UserDetailsImpl userDetails) {
         try {
-            // Build the Log entity
-            Log log = Log.builder()
-                    .user(userDetails.getUser())
-                    .viewSight(logCreateRequest.getViewSight())
-                    .tide(logCreateRequest.getTide())
-                    .startDiveTime(logCreateRequest.getStartDiveTime())
-                    .endDiveTime(logCreateRequest.getEndDiveTime())
-                    .timeDiffDive(logCreateRequest.getTimeDiffDive())
-                    .avgDepDiff(logCreateRequest.getAvgDepDiff())
-                    .maxDiff(logCreateRequest.getMaxDiff())
-                    .startBar(logCreateRequest.getStartBar())
-                    .endBar(logCreateRequest.getEndBar())
-                    .diffBar(logCreateRequest.getDiffBar())
-                    .logbookId(logCreateRequest.getLogbookId())
-                    .build();
 
-            logRepository.save(log);
+                Log log = Log.builder()
+                        .user(userDetails.getUser())
+                        .viewSight(logCreateRequest.getViewSight())
+                        .tide(logCreateRequest.getTide())
+                        .startDiveTime(logCreateRequest.getStartDiveTime())
+                        .endDiveTime(logCreateRequest.getEndDiveTime())
+                        .timeDiffDive(logCreateRequest.getTimeDiffDive())
+                        .avgDepDiff(logCreateRequest.getAvgDepDiff())
+                        .maxDiff(logCreateRequest.getMaxDiff())
+                        .startBar(logCreateRequest.getStartBar())
+                        .endBar(logCreateRequest.getEndBar())
+                        .diffBar(logCreateRequest.getDiffBar())
+                        .logbookId(logCreateRequest.getLogbookId())
+                        .build();
 
-            // Convert entity to response DTO
-            return LogResponse.builder()
-                    .id(log.getId())
-                    .userId(log.getUser().getId())
-                    .viewSight(log.getViewSight())
-                    .tide(log.getTide())
-                    .startDiveTime(log.getStartDiveTime())
-                    .endDiveTime(log.getEndDiveTime())
-                    .timeDiffDive(log.getTimeDiffDive())
-                    .avgDepDiff(log.getAvgDepDiff())
-                    .maxDiff(log.getMaxDiff())
-                    .startBar(log.getStartBar())
-                    .endBar(log.getEndBar())
-                    .diffBar(log.getDiffBar())
-                    .logbookId(log.getLogbookId())
-                    .build();
+                logRepository.save(log);
+
+                // Convert entity to response DTO
+                return LogResponse.builder()
+                        .id(log.getId())
+                        .userId(log.getUser().getId())
+                        .viewSight(log.getViewSight())
+                        .tide(log.getTide())
+                        .startDiveTime(log.getStartDiveTime())
+                        .endDiveTime(log.getEndDiveTime())
+                        .timeDiffDive(log.getTimeDiffDive())
+                        .avgDepDiff(log.getAvgDepDiff())
+                        .maxDiff(log.getMaxDiff())
+                        .startBar(log.getStartBar())
+                        .endBar(log.getEndBar())
+                        .diffBar(log.getDiffBar())
+                        .logbookId(log.getLogbookId())
+                        .build();
+
+
         } catch (Exception e) {
             logger.error("Error while saving log.", e);
             throw new RuntimeException("Error while saving log.");
         }
     }
 
-//    public List<LogResponse> getLogsInLogbook(Long logbookId, UserDetailsImpl userDetails) {
-//        try {
-//            // Retrieve Logbook
-//            Logbook logbook = logbookRepository.findById(logbookId)
-//                    .orElseThrow(() -> new RuntimeException("Logbook not found"));
-//
-//            // Retrieve Logs by logbookId
-//            List<Log> logs = logRepository.findAllByLogbookId(logbookId);
-//
-//            // Convert each log entity to a response DTO
-//            return logs.stream()
-//                    .map(log -> LogResponse.builder()
-//                            .id(log.getId())
-//                            .userId(log.getUser().getId())
-//                            .viewSight(log.getViewSight())
-//                            .tide(log.getTide())
-//                            .startDiveTime(log.getStartDiveTime())
-//                            .endDiveTime(log.getEndDiveTime())
-//                            .timeDiffDive(log.getTimeDiffDive())
-//                            .avgDepDiff(log.getAvgDepDiff())
-//                            .maxDiff(log.getMaxDiff())
-//                            .startBar(log.getStartBar())
-//                            .endBar(log.getEndBar())
-//                            .diffBar(log.getDiffBar())
-//                            .logbookId(log.getLogbookId())
-//                            .build())
-//                    .collect(Collectors.toList());
-//        } catch (Exception e) {
-//            logger.error("Error while getting logs for logbook ID: " + logbookId, e);
-//            throw new RuntimeException("Error while retrieving logs for logbook.");
-//        }
-//    }
+
+
+
+    public List<LogResponse> getAllLogs() {
+        List<Log> logs = logRepository.findAll();
+
+        return logs.stream().map(log -> LogResponse.builder()
+                .id(log.getId())
+                .userId(log.getUser().getId())
+                .viewSight(log.getViewSight())
+                .tide(log.getTide())
+                .startDiveTime(log.getStartDiveTime())
+                .endDiveTime(log.getEndDiveTime())
+                .timeDiffDive(log.getTimeDiffDive())
+                .avgDepDiff(log.getAvgDepDiff())
+                .maxDiff(log.getMaxDiff())
+                .startBar(log.getStartBar())
+                .endBar(log.getEndBar())
+                .diffBar(log.getDiffBar())
+                .logbookId(log.getLogbookId())
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+    public List<LogResponse> getLogsInLogbook(Long logbookId) {
+       List<Log> logs = logRepository.findAll().stream()
+               .filter(log -> log.getLogbookId() == logbookId)
+               .collect(Collectors.toList());
+
+       return logs.stream().map(log -> LogResponse.builder()
+               .id(log.getId())
+               .userId(log.getUser().getId())
+               .viewSight(log.getViewSight())
+               .tide(log.getTide())
+               .startDiveTime(log.getStartDiveTime())
+               .endDiveTime(log.getEndDiveTime())
+               .timeDiffDive(log.getTimeDiffDive())
+               .avgDepDiff(log.getAvgDepDiff())
+               .maxDiff(log.getMaxDiff())
+               .startBar(log.getStartBar())
+               .endBar(log.getEndBar())
+               .diffBar(log.getDiffBar())
+               .logbookId(log.getLogbookId())
+               .build()
+       ).collect(Collectors.toList());
+    }
 //
 //    public LogResponse getLog(Long logId) {
 //        try {
