@@ -11,12 +11,12 @@ public class ChatRoomRequest {
 
     private final ChatRoom.RoomType type;
 
-    private final Long organizationId;
+    private final Long typeId;
 
     @Builder
-    public ChatRoomRequest(String name, ChatRoom.RoomType type, Long organizationId) {
+    public ChatRoomRequest(String name, ChatRoom.RoomType type, Long typeId) {
         this.name = name;
         this.type = type;
-        this.organizationId = organizationId;
+        this.typeId = typeId;
     }
 }

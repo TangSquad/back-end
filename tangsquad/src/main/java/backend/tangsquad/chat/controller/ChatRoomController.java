@@ -38,9 +38,9 @@ public class ChatRoomController {
     // 채팅방 생성
     @PostMapping("/room")
     @ResponseBody
-    @Operation(summary = "채팅방 생성", description = "채팅방을 생성합니다. type은 MOIM, DIVING 중 하나여야 합니다. organizationId는 해당 타입의 id여야 합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    @Operation(summary = "채팅방 생성", description = "채팅방을 생성합니다. type은 MOIM, DIVING 중 하나여야 합니다. typeId는 해당 타입의 id여야 합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ChatRoom createRoom(@RequestBody ChatRoomRequest chatRoomRequest, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return chatRoomService.createChatRoom(chatRoomRequest.getName(), chatRoomRequest.getType(), chatRoomRequest.getOrganizationId(), userDetails);
+        return chatRoomService.createChatRoom(chatRoomRequest.getName(), chatRoomRequest.getType(), chatRoomRequest.getTypeId(), userDetails);
     }
     // 채팅방 입장 화면
     @GetMapping("/room/enter/{roomId}")
