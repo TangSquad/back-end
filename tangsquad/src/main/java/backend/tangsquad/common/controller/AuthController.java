@@ -47,7 +47,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/login/oauth")
+    @PostMapping("/login/kakao")
     public ResponseEntity<ApiResponse<JwtResponseDto>> loginOAuth(@RequestParam String accessToken) {
         try {
             JwtResponseDto jwtResponseDto = oAuthService.kakaoLogin(accessToken);
