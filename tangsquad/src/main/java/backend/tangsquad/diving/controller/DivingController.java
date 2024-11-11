@@ -112,7 +112,7 @@ public class DivingController {
     @GetMapping("")
     @Operation(summary = "내 다이빙 불러오기", description = "나의 다이빙들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<DivingResponse>> getMyDivings(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<DivingResponse> divingResponses = divingService.getMyDivings(userDetails);
+        List<DivingResponse> divingResponses = divingService.getMyDivings(userDetails.getId());
 
         if (divingResponses != null) {
             return ResponseEntity.ok(divingResponses);

@@ -1,5 +1,6 @@
 package backend.tangsquad.common.dto.response;
 
+import backend.tangsquad.diving.dto.response.DivingResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,5 +14,5 @@ public class UserIntroductionResponse {
     private String introduction;
     private String link;
     private String affiliation;
-    private String prevDiving;
+    private DivingResponse prevDiving;
 }

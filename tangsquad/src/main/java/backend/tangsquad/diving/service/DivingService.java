@@ -62,9 +62,9 @@ public class DivingService {
         }
     }
 
-    public List<DivingResponse> getMyDivings(UserDetailsImpl userDetails) {
+    public List<DivingResponse> getMyDivings(Long userId) {
         try {
-            List<Diving> divings = divingRepository.findByUserId(userDetails.getId());
+            List<Diving> divings = divingRepository.findByUserId(userId);
 
             return divings.stream()
                     .map(diving -> DivingResponse.builder()

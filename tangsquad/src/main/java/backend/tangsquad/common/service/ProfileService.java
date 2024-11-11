@@ -12,12 +12,16 @@ import backend.tangsquad.common.dto.response.UserEquipmentResponse;
 import backend.tangsquad.common.dto.response.UserIntroductionResponse;
 import backend.tangsquad.common.dto.response.UserProfileResponse;
 import backend.tangsquad.common.repository.UserRepository;
+import backend.tangsquad.diving.dto.response.DivingResponse;
+import backend.tangsquad.diving.service.DivingService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final UserCertificateService userCertificateService;
     private final UserCertificateRepository userCertificateRepository;
+    private final DivingService divingService;
 
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfile(Long userId) {
@@ -51,11 +56,17 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public UserIntroductionResponse getUserIntroduction(Long userId) {
         UserProfile profile = getUserById(userId).getUserProfile();
+        List< DivingResponse> divingResponses = divingService.getMyDivings(userId);
+
+        // 마지막 객체 가져오기 (리스트가 비어있지 않을 경우)
+        DivingResponse lastDivingResponse =
+                divingResponses.isEmpty() ? null : divingResponses.get(divingResponses.size() - 1);
+
         return new UserIntroductionResponse(
                 profile.getIntroduction(),
                 profile.getUrl(),
                 profile.getAffiliation(),
-                "null"
+                lastDivingResponse
         );
     }
 
