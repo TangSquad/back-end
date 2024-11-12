@@ -33,28 +33,28 @@ public class ChatRoomService {
         return chatRoomRepository.findById(roomId).orElse(null);
     }
 
-    public ChatRoom createChatRoom(String name, ChatRoom.RoomType type, Long organizationId, UserDetailsImpl userDetails) {
+    public ChatRoom createChatRoom(String name, ChatRoom.RoomType type, Long typeId, UserDetailsImpl userDetails) {
         if(userDetails == null) {
             throw new IllegalArgumentException("UserDetails is null");
         }
 
         if(type == ChatRoom.RoomType.DIVING) {
-            if(divingRepository.findById(organizationId).isEmpty()) {
+            if(divingRepository.findById(typeId).isEmpty()) {
                 throw new IllegalArgumentException("Diving not found");
             }
         } else if(type == ChatRoom.RoomType.MOIM) {
-            if(moimRepository.findById(organizationId).isEmpty()) {
+            if(moimRepository.findById(typeId).isEmpty()) {
                 throw new IllegalArgumentException("Moim not found");
             }
         } else {
             throw new IllegalArgumentException("Invalid type");
         }
         // 이미 해당 organizationId로 생성된 채팅방이 있는지 확인
-        if(chatRoomRepository.findByOrganizationIdAndType(organizationId, type) != null) {
+        if(chatRoomRepository.findByTypeIdAndType(typeId, type) != null) {
             throw new IllegalArgumentException("ChatRoom already exists");
         }
 
-        ChatRoom chatRoom = ChatRoom.create(name, type, organizationId);
+        ChatRoom chatRoom = ChatRoom.create(name, type, typeId);
 
         chatRoomRepository.save(chatRoom);
 

@@ -21,14 +21,14 @@ public class ChatRoom {
     private UUID id;
     private String name;
     private RoomType type;
-    private Long organizationId;
+    private Long typeId;
 
-    public static ChatRoom create(String name, RoomType type, Long organizationId) {
+    public static ChatRoom create(String name, RoomType type, Long typeId) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.id = UUID.randomUUID();
         chatRoom.name = name;
         chatRoom.type = type;
-        chatRoom.organizationId = organizationId;
+        chatRoom.typeId = typeId;
         return chatRoom;
     }
 }

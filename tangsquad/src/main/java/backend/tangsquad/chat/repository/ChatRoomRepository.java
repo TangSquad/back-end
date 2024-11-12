@@ -11,5 +11,5 @@ import java.util.*;
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, UUID> {
     @NotNull
     Optional<ChatRoom> findById(@NotNull UUID id);
-    ChatRoom findByOrganizationIdAndType(Long organizationId, ChatRoom.RoomType type);
+    ChatRoom findByTypeIdAndType(Long typeId, ChatRoom.RoomType type);
 }
