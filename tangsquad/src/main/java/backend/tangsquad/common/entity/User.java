@@ -1,5 +1,9 @@
 package backend.tangsquad.common.entity;
 
+import backend.tangsquad.moim.entity.Moim;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,12 +12,15 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @Table(name="users")
 @EntityListeners(AuditingEntityListener.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
 
     @Id
@@ -52,5 +59,10 @@ public class User {
 
     // 역할
     @Column(nullable = false) private String role;
+
+    @ManyToMany(mappedBy = "registeredUsers")
+    @JsonBackReference // Add this annotation to break the recursion
+    private List<Moim> moims = new ArrayList<>();
+
 
 }

@@ -11,5 +11,5 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class MoimJoinResponse {
-    public List<User> registeredUsers;
+    public List<String> registeredUserIds;
 }

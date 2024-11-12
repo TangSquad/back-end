@@ -42,6 +42,7 @@ public class MoimService  {
                         .licenseLimit(moim.getLicenseLimit())
                         .age(moim.getAge())
                         .moods(moim.getMoods())
+                        .registeredUserIds(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
                         .build()
                 ).collect(Collectors.toList());
     }
@@ -61,6 +62,7 @@ public class MoimService  {
                 .licenseLimit(moim.getLicenseLimit())
                 .age(moim.getAge())
                 .moods(moim.getMoods())
+                .registeredUserIds(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
                 .build();
     }
 
@@ -82,8 +84,7 @@ public class MoimService  {
                     .moods(moimCreateRequest.getMoods())
                     .build();
 
-            // Save moim
-            Moim savedMoim = moimRepository.save(moim);
+            moimRepository.save(moim);
             return returnMoimResponse(moim);
         } catch (Exception e) {
             return null;
@@ -101,9 +102,23 @@ public class MoimService  {
             moim.getRegisteredUsers().add(userDetails.getUser());
             moimRepository.save(moim);
 
-            MoimJoinResponse moimJoinResponse = new MoimJoinResponse(moim.getRegisteredUsers());
+            MoimJoinResponse moimJoinResponse = new MoimJoinResponse(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()));
 
             return moimJoinResponse;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public MoimJoinResponse getRegisteredUsers(Long moimId) {
+        try {
+            Optional<Moim> optionalMoim = moimRepository.findById(moimId);
+
+            if (optionalMoim.isEmpty()) return null;
+
+            Moim moim = optionalMoim.get();
+
+            return new MoimJoinResponse(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()));
         } catch (Exception e) {
             return null;
         }
@@ -161,8 +176,6 @@ public class MoimService  {
             return null;
         }
     }
-
-
 
     public MoimLeaderResponse updateMoimLeader(UserDetailsImpl userDetails, MoimLeaderRequest moimLeaderRequest) {
 
