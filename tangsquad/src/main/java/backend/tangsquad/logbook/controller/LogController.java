@@ -99,7 +99,7 @@ public class LogController {
             security = @SecurityRequirement(name = "AccessToken")
     )
     public ResponseEntity<LogResponse> updateLog(
-            @RequestBody LogUp  dateRequest logUpdateRequest,
+            @RequestBody LogUpdateRequest logUpdateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     )
     {
