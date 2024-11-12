@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class LogbookResponse {
-    private Long logId; // Assuming you want the log ID
+    private Long logbookId;
     private Long userId;
     private String thumbnailUrl;
     private Boolean isPublic;
@@ -17,8 +17,8 @@ public class LogbookResponse {
     private String location;
 
     @Builder
-    public LogbookResponse(Long logId, Boolean isPublic, String thumbnailUrl, Long userId, String title, String contents, LocalDateTime date, String location) {
-        this.logId = logId;
+    public LogbookResponse(Long logbookId, Boolean isPublic, String thumbnailUrl, Long userId, String title, String contents, LocalDateTime date, String location) {
+        this.logbookId = logbookId;
         this.isPublic = isPublic;
         this.thumbnailUrl = thumbnailUrl;
         this.userId = userId;

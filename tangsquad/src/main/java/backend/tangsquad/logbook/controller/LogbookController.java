@@ -47,7 +47,7 @@ public class LogbookController {
         }
     }
 
-    @GetMapping("/{logId}")
+    @GetMapping("{logId}")
     @Operation(summary = "내 로그북 불러오기", description = "내 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<LogbookResponse> getMyLogbook(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable("logId") Long logId) {
         Logbook logbook = logbookService.getLogbookByIdAndUserId(logId, userDetails.getId());
@@ -60,7 +60,7 @@ public class LogbookController {
         }
     }
 
-    @GetMapping("/user/{logbookId}")
+    @GetMapping("user/{logbookId}")
     @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<LogbookResponse> getUserLog(
             @PathVariable("logbookId") Long logbookId) {
@@ -80,7 +80,7 @@ public class LogbookController {
     private LogbookResponse convertToLogbookResponse(Logbook logbook) {
 
         return LogbookResponse.builder()
-                .logId(logbook.getId())
+                .logbookId(logbook.getId())
                 .userId(logbook.getUser().getId())
                 .title(logbook.getTitle())
                 .date(logbook.getDate())
@@ -90,7 +90,7 @@ public class LogbookController {
                 .build();
     }
 
-    @GetMapping("/all")
+    @GetMapping("all")
     @Operation(summary = "모든 로그북 불러오기", description = "모든 로그북을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<LogbookResponse>> getAllLogbooks() {
         List<LogbookResponse> logbookResponses = logbookService.getAllLogbooks();
@@ -115,7 +115,7 @@ public class LogbookController {
         }
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("user/{userId}")
     @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그들을 불러옵니다.")
     public ResponseEntity<List<LogbookRequest>> getLogbooks(@PathVariable("userId") Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<LogbookRequest> logbookRequests = logbookService.getLogbooksByUserId(userId);
@@ -142,7 +142,7 @@ public class LogbookController {
     }
 
     // Use @PathVariable for the ID since it's in the URL path
-    @DeleteMapping("/{logbookId}")
+    @DeleteMapping("{logbookId}")
     @Operation(summary = "로그북 삭제하기", description = "나의 로그를 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<CommonResponse> deleteLog(
             @PathVariable("logId") Long logbookId,

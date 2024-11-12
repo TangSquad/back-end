@@ -39,7 +39,7 @@ public class LogbookService {
             Logbook savedLogbook = logbookRepository.save(logbook);
 
             LogbookResponse logbookResponse = LogbookResponse.builder()
-                    .logId(savedLogbook.getId())
+                    .logbookId(savedLogbook.getId())
                     .userId(savedLogbook.getUser().getId())
                     .title(savedLogbook.getTitle())
                     .contents(savedLogbook.getContents())
@@ -60,7 +60,7 @@ public class LogbookService {
         List<Logbook> logbooks = logbookRepository.findAll();
 
         return logbooks.stream().map(logbook -> LogbookResponse.builder()
-                .logId(logbook.getId())
+                .logbookId(logbook.getId())
                 .userId(logbook.getUser().getId())
                 .title(logbook.getTitle())
                 .contents(logbook.getContents())
@@ -155,7 +155,7 @@ public class LogbookService {
 
         Logbook savedLogbook = logbookRepository.save(logbook);
         LogbookResponse logbookResponse = LogbookResponse.builder()
-                .logId(savedLogbook.getId())
+                .logbookId(savedLogbook.getId())
                 .userId(savedLogbook.getUser().getId())
                 .date(savedLogbook.getDate())
                 .title(savedLogbook.getTitle())
