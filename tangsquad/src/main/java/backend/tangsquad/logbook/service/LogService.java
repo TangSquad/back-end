@@ -141,36 +141,21 @@ public class LogService {
             throw new RuntimeException("Error while updating log.");
         }
     }
-//
-//    public LogResponse delete(Long logId, UserDetailsImpl userDetails) {
-//        try {
-//            Log log = logRepository.findById(logId)
-//                    .orElseThrow(() -> new RuntimeException("Log not found"));
-//
-//            if (!log.getUser().getId().equals(userDetails.getUser().getId())) {
-//                throw new RuntimeException("Unauthorized to delete this log.");
-//            }
-//
-//            logRepository.delete(log);
-//
-//            return LogResponse.builder()
-//                    .id(log.getId())
-//                    .userId(log.getUser().getId())
-//                    .viewSight(log.getViewSight())
-//                    .tide(log.getTide())
-//                    .startDiveTime(log.getStartDiveTime())
-//                    .endDiveTime(log.getEndDiveTime())
-//                    .timeDiffDive(log.getTimeDiffDive())
-//                    .avgDepDiff(log.getAvgDepDiff())
-//                    .maxDiff(log.getMaxDiff())
-//                    .startBar(log.getStartBar())
-//                    .endBar(log.getEndBar())
-//                    .diffBar(log.getDiffBar())
-//                    .logbookId(log.getLogbookId())
-//                    .build();
-//        } catch (Exception e) {
-//            logger.error("Error while deleting log ID: " + logId, e);
-//            throw new RuntimeException("Error while deleting log.");
-//        }
-//    }
+    public LogResponse delete(Long logId, UserDetailsImpl userDetails) {
+        try {
+            Log log = logRepository.findById(logId)
+                    .orElseThrow(() -> new RuntimeException("Log not found"));
+
+            if (!log.getUser().getId().equals(userDetails.getUser().getId())) {
+                throw new RuntimeException("Unauthorized to delete this log.");
+            }
+
+            logRepository.delete(log);
+
+            return returnLogResponse(log);
+        } catch (Exception e) {
+            logger.error("Error while deleting log ID: " + logId, e);
+            throw new RuntimeException("Error while deleting log.");
+        }
+    }
 }

@@ -112,23 +112,23 @@ public class LogController {
         }
     }
 
-//    @DeleteMapping("/{lodId}")
-//    @Operation(
-//            summary = "로그 삭제하기",
-//            description = "로그를 삭제합니다.",
-//            security = @SecurityRequirement(name = "AccessToken")
-//    )
-//    public ResponseEntity<LogResponse> delteLog(
-//            @PathVariable("logId") Long logId,
-//            @AuthenticationPrincipal UserDetailsImpl userDetails
-//    )
-//    {
-//        LogResponse logResponse = logService.delete(logId, userDetails);
-//        if (logResponse != null) {
-//            return ResponseEntity.status(HttpStatus.CREATED).body(logResponse);
-//        } else {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-//        }
-//    }
+    @DeleteMapping("{logId}")
+    @Operation(
+            summary = "로그 삭제하기",
+            description = "로그를 삭제합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    public ResponseEntity<LogResponse> deleteLog(
+            @PathVariable("logId") Long logId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    )
+    {
+        LogResponse logResponse = logService.delete(logId, userDetails);
+        if (logResponse != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(logResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 
 }
