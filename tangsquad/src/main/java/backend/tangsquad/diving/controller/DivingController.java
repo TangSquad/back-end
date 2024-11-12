@@ -130,6 +130,27 @@ public class DivingController {
         }
     }
 
+    @GetMapping("users/{divingId}")
+    @Operation(
+            summary = "diving에 가입한 사용자 목록 조회",
+            description = "다이빙에 가입된 다이버 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "등록한 다이빙 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
+            @ApiResponse(responseCode = "404", description = "등록한 다이빙이 없음", content = @Content),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    public ResponseEntity<DivingJoinResponse> getRegisteredUsers(@PathVariable("divingId") Long divingId) {
+        DivingJoinResponse divingJoinResponse = divingService.getMemberList(divingId);
+
+        if (divingJoinResponse != null) {
+            return ResponseEntity.ok(divingJoinResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
     @GetMapping("")
     @Operation(summary = "내 다이빙 불러오기", description = "나의 다이빙들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<DivingResponse>> getMyDivings(@AuthenticationPrincipal UserDetailsImpl userDetails) {

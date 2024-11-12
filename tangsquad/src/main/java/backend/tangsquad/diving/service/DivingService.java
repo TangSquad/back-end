@@ -92,6 +92,20 @@ public class DivingService {
         }
     }
 
+    public DivingJoinResponse getMemberList(Long divingId) {
+        try {
+            Optional<Diving> divingOptional = divingRepository.findById(divingId);
+
+            if (divingOptional.isEmpty()) return null;
+
+            Diving diving = divingOptional.get();
+
+            return new DivingJoinResponse(divingId, diving.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public List<DivingResponse> getMyDivings(UserDetailsImpl userDetails) {
         try {
             List<Diving> divings = divingRepository.findByUserId(userDetails.getId());
