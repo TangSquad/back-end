@@ -2,6 +2,7 @@ package backend.tangsquad.diving.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.diving.dto.request.DivingRequest;
+import backend.tangsquad.diving.dto.response.DivingJoinResponse;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.repository.DivingRepository;
@@ -64,9 +65,28 @@ public class DivingService {
                     .limitPeople(divingRequest.getLimitPeople())
                     .build();
 
-            // Save diving
-            Diving savedDiving = divingRepository.save(diving);
+            divingRepository.save(diving);
             return returnDivingResponse(diving);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public DivingJoinResponse joinDiving(Long divingId, UserDetailsImpl userDetails) {
+
+        try {
+            Optional<Diving> optionalDiving = divingRepository.findById(divingId);
+            if (optionalDiving.isEmpty()) return null;
+            Diving diving = optionalDiving.get();
+
+            diving.join(userDetails);
+
+            divingRepository.save(diving);
+
+            return new DivingJoinResponse(
+                    divingId,
+                    diving.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList())
+            );
         } catch (Exception e) {
             return null;
         }

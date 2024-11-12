@@ -2,6 +2,7 @@ package backend.tangsquad.diving.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.diving.dto.request.DivingRequest;
+import backend.tangsquad.diving.dto.response.DivingJoinResponse;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.service.DivingService;
@@ -85,6 +86,26 @@ public class DivingController {
         }
     }
 
+    @PutMapping("/join/{divingId}")
+    @Operation(
+            summary = "diving 가입",
+            description = "다이빙에 가입합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "등록한 다이빙 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
+            @ApiResponse(responseCode = "404", description = "등록한 다이빙이 없음", content = @Content),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    public ResponseEntity<DivingJoinResponse> joinDiving(@PathVariable("divingId") Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        DivingJoinResponse divingjoinResponse = divingService.joinDiving(divingId, userDetails);
+
+        if (divingjoinResponse != null) {
+            return ResponseEntity.ok(divingjoinResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 
     @GetMapping("/joined")
     @Operation(

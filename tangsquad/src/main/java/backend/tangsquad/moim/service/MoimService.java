@@ -28,22 +28,7 @@ public class MoimService  {
 
     private List<MoimResponse> returnMoimResponses(List<Moim> moims) {
         return moims.stream()
-                .map(moim -> MoimResponse.builder()
-                        .id(moim.getId())
-                        .userId(moim.getUser().getId())
-                        .thumbnailurl(moim.getThumbnailUrl())
-                        .isPublic(moim.getIsPublic())
-                        .moimName(moim.getMoimName())
-                        .moimIntro(moim.getMoimIntro())
-                        .moimDetails(moim.getMoimDetails())
-                        .currentPeople(moim.getCurrentPeople())
-                        .limitPeople(moim.getLimitPeople())
-                        .locations(moim.getLocations())
-                        .licenseLimit(moim.getLicenseLimit())
-                        .age(moim.getAge())
-                        .moods(moim.getMoods())
-                        .registeredUserIds(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
-                        .build()
+                .map(moim -> returnMoimResponse(moim)
                 ).collect(Collectors.toList());
     }
 
@@ -192,7 +177,6 @@ public class MoimService  {
 
             moim.update(moimLeaderRequest);
 
-            // Return the updated MoimReadResponse in a list (to maintain consistency with previous GET mapping)
             return MoimLeaderResponse.builder()
                     .id(moimId)
                     .userId(changedUserId)

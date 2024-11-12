@@ -1,5 +1,6 @@
 package backend.tangsquad.diving.entity;
 
+import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
@@ -92,6 +93,10 @@ public class Diving {
         if (divingRequest.getStartDate() != null) this.startDate = divingRequest.getStartDate();
         if (divingRequest.getEndDate() != null) this.endDate = divingRequest.getEndDate();
         if (divingRequest.getLocation() != null) this.location = divingRequest.getLocation();
+    }
+
+    public void join(UserDetailsImpl userDetails) {
+        this.registeredUsers.add(userDetails.getUser());
     }
 
     public Diving(User user, String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
