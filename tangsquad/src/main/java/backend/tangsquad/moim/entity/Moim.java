@@ -6,7 +6,9 @@ import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.moim.dto.request.MoimLeaderRequest;
 import backend.tangsquad.moim.dto.request.MoimLeaderUsernameRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,6 +20,7 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 @Table(name="moim")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Moim {
 
     @Id
@@ -76,7 +79,7 @@ public class Moim {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @JsonManagedReference
-    private List<User> registeredUsers; // List of registered users
+    private List<User> registeredUsers;
 
     @OneToMany
     private List<Logbook> logbooks = new ArrayList<>();

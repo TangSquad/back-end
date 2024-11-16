@@ -61,12 +61,14 @@ public class Logbook {
     }
 
     @Builder
-    public Logbook(User user, LocalDateTime date, Long currentPeople, String thumbnailUrl, String location, String title, String contents) {
+    public Logbook(User user, LocalDateTime date, Long currentPeople, String thumbnailUrl, String location, String title, String contents, List<String> logs) {
         this.user = user;
         this.date = date;
         this.thumbnailUrl = thumbnailUrl;
         this.title = title;
         this.contents = contents;
         this.location = location;
+        this.logs = logs;
     }
+
 }

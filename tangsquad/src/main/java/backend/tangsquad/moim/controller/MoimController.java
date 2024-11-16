@@ -124,6 +124,22 @@ public class MoimController {
         }
     }
 
+    @GetMapping("users/{moimId}")
+    @Operation(
+            summary = "모임에 가입된 사용자 목록 조회",
+            description = "모임에 가입된 사용자의 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    public ResponseEntity<MoimJoinResponse> getRegisteredUsers(@PathVariable("moimId") Long moimId) {
+        MoimJoinResponse moimJoinResponse = moimService.getRegisteredUsers(moimId);
+
+        if (moimJoinResponse != null) {
+            return ResponseEntity.ok(moimJoinResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
 
 
     @GetMapping("")

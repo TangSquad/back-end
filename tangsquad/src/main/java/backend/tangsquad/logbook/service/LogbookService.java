@@ -39,7 +39,7 @@ public class LogbookService {
             Logbook savedLogbook = logbookRepository.save(logbook);
 
             LogbookResponse logbookResponse = LogbookResponse.builder()
-                    .logId(savedLogbook.getId())
+                    .logbookId(savedLogbook.getId())
                     .userId(savedLogbook.getUser().getId())
                     .title(savedLogbook.getTitle())
                     .contents(savedLogbook.getContents())
@@ -54,6 +54,21 @@ public class LogbookService {
             System.out.println("Error while saving logbook.");
             return null;
         }
+    }
+
+    public List<LogbookResponse> getAllLogbooks() {
+        List<Logbook> logbooks = logbookRepository.findAll();
+
+        return logbooks.stream().map(logbook -> LogbookResponse.builder()
+                .logbookId(logbook.getId())
+                .userId(logbook.getUser().getId())
+                .title(logbook.getTitle())
+                .contents(logbook.getContents())
+                .date(logbook.getDate())
+                .location(logbook.getLocation())
+                .build()
+        ).collect(Collectors.toList());
+
     }
 
     public Logbook getLogbookByIdAndUserId(Long logbookId, Long userId) {
@@ -140,7 +155,7 @@ public class LogbookService {
 
         Logbook savedLogbook = logbookRepository.save(logbook);
         LogbookResponse logbookResponse = LogbookResponse.builder()
-                .logId(savedLogbook.getId())
+                .logbookId(savedLogbook.getId())
                 .userId(savedLogbook.getUser().getId())
                 .date(savedLogbook.getDate())
                 .title(savedLogbook.getTitle())

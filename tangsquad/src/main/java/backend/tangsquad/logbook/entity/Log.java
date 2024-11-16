@@ -2,6 +2,7 @@ package backend.tangsquad.logbook.entity;
 
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.logbook.dto.request.LogRequest;
+import backend.tangsquad.logbook.dto.request.LogUpdateRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -65,20 +66,17 @@ public class Log {
     @Column
     private Long logbookId;
 
-    public void update(LogRequest logRequest) {
-        if (logRequest.getViewSight() != null) this.viewSight = logRequest.getViewSight();
-        if (logRequest.getTide() != null) this.tide = logRequest.getTide();
-        if (logRequest.getStartDiveTime() != null) this.startDiveTime = logRequest.getStartDiveTime();
-        if (logRequest.getEndDiveTime() != null) this.endDiveTime = logRequest.getEndDiveTime();
-        if (logRequest.getTimeDiffDive() != null) this.timeDiffDive = logRequest.getTimeDiffDive();
-        if (logRequest.getAvgDepDiff() != null) this.avgDepDiff = logRequest.getAvgDepDiff();
-        if (logRequest.getMaxDiff() != null) this.maxDiff = logRequest.getMaxDiff();
-        if (logRequest.getStartBar() != null) this.startBar = logRequest.getStartBar();
-        if (logRequest.getEndBar() != null) this.endBar = logRequest.getEndBar();
-        if (logRequest.getDiffBar() != null) this.diffBar = logRequest.getDiffBar();
-        if (logRequest.getLogbookId() != null) this.logbookId = logRequest.getLogbookId();
-
-//        if (logRequest.getLogbook() != null) this.logbook = logRequest.getLogbook();
+    public void update(LogUpdateRequest logUpdateRequest) {
+        if (logUpdateRequest.getViewSight() != null) this.viewSight = logUpdateRequest.getViewSight();
+        if (logUpdateRequest.getTide() != null) this.tide = logUpdateRequest.getTide();
+        if (logUpdateRequest.getStartDiveTime() != null) this.startDiveTime = logUpdateRequest.getStartDiveTime();
+        if (logUpdateRequest.getEndDiveTime() != null) this.endDiveTime = logUpdateRequest.getEndDiveTime();
+        if (logUpdateRequest.getTimeDiffDive() != null) this.timeDiffDive = logUpdateRequest.getTimeDiffDive();
+        if (logUpdateRequest.getAvgDepDiff() != null) this.avgDepDiff = logUpdateRequest.getAvgDepDiff();
+        if (logUpdateRequest.getMaxDiff() != null) this.maxDiff = logUpdateRequest.getMaxDiff();
+        if (logUpdateRequest.getStartBar() != null) this.startBar = logUpdateRequest.getStartBar();
+        if (logUpdateRequest.getEndBar() != null) this.endBar = logUpdateRequest.getEndBar();
+        if (logUpdateRequest.getDiffBar() != null) this.diffBar = logUpdateRequest.getDiffBar();
     }
 
     @Builder
@@ -95,6 +93,5 @@ public class Log {
         this.endBar = endBar;
         this.diffBar = diffBar;
         this.logbookId = logbookId;
-//        this.logbook = logbook;
     }
 }

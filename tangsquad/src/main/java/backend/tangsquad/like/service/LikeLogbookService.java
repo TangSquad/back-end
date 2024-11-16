@@ -73,7 +73,7 @@ public class LikeLogbookService {
         else return null;
 
         LogbookResponse logbookResponse = LogbookResponse.builder()
-                .logId(logId)
+                .logbookId(logbook.getId())
                 .location(logbook.getLocation())
                         .contents(logbook.getContents())
                                 .userId(logbook.getUser().getId())

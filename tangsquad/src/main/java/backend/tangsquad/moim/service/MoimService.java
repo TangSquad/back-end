@@ -26,6 +26,31 @@ public class MoimService  {
     final private MoimRepository moimRepository;
     final private UserService userService;
 
+    private List<MoimResponse> returnMoimResponses(List<Moim> moims) {
+        return moims.stream()
+                .map(moim -> returnMoimResponse(moim)
+                ).collect(Collectors.toList());
+    }
+
+    private MoimResponse returnMoimResponse(Moim moim) {
+        return MoimResponse.builder()
+                .id(moim.getId())
+                .userId(moim.getUser().getId())
+                .thumbnailurl(moim.getThumbnailUrl())
+                .isPublic(moim.getIsPublic())
+                .moimName(moim.getMoimName())
+                .moimIntro(moim.getMoimIntro())
+                .moimDetails(moim.getMoimDetails())
+                .currentPeople(moim.getCurrentPeople())
+                .limitPeople(moim.getLimitPeople())
+                .locations(moim.getLocations())
+                .licenseLimit(moim.getLicenseLimit())
+                .age(moim.getAge())
+                .moods(moim.getMoods())
+                .registeredUserIds(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
+                .build();
+    }
+
     public MoimResponse createMoim(MoimCreateRequest moimCreateRequest, UserDetailsImpl userDetails) {
         try {
             Moim moim = Moim.builder()
@@ -44,23 +69,8 @@ public class MoimService  {
                     .moods(moimCreateRequest.getMoods())
                     .build();
 
-            // Save moim
-            Moim savedMoim = moimRepository.save(moim);
-            return MoimResponse.builder()
-                    .id(moim.getId())
-                    .userId(moim.getUser().getId())
-                    .thumbnailurl(moim.getThumbnailUrl())
-                    .isPublic(moim.getIsPublic())
-                    .moimName(moim.getMoimName())
-                    .moimIntro(moim.getMoimIntro())
-                    .moimDetails(moim.getMoimDetails())
-                    .currentPeople(moim.getCurrentPeople())
-                    .limitPeople(moim.getLimitPeople())
-                    .locations(moim.getLocations())
-                    .licenseLimit(moim.getLicenseLimit())
-                    .age(moim.getAge())
-                    .moods(moim.getMoods())
-                    .build();
+            moimRepository.save(moim);
+            return returnMoimResponse(moim);
         } catch (Exception e) {
             return null;
         }
@@ -77,7 +87,7 @@ public class MoimService  {
             moim.getRegisteredUsers().add(userDetails.getUser());
             moimRepository.save(moim);
 
-            MoimJoinResponse moimJoinResponse = new MoimJoinResponse(moim.getRegisteredUsers());
+            MoimJoinResponse moimJoinResponse = new MoimJoinResponse(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()));
 
             return moimJoinResponse;
         } catch (Exception e) {
@@ -85,21 +95,29 @@ public class MoimService  {
         }
     }
 
+    public MoimJoinResponse getRegisteredUsers(Long moimId) {
+        try {
+            Optional<Moim> optionalMoim = moimRepository.findById(moimId);
 
+            if (optionalMoim.isEmpty()) return null;
 
+            Moim moim = optionalMoim.get();
+
+            return new MoimJoinResponse(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     public Moim updateMoimLeaderByName(Long moimId, Long newLeaderId) {
         Moim moim = moimRepository.findById(moimId)
                 .orElseThrow(() -> new IllegalArgumentException("Moim not found"));
 
-        // Find the new leader by ID, handle Optional
         User newLeader = userService.findById(newLeaderId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + newLeaderId));
 
-        // Set the new leader of the Moim
         moim.setUser(newLeader);
 
-        // Save the updated Moim
         return moimRepository.save(moim);
     }
 
@@ -124,24 +142,7 @@ public class MoimService  {
             moim.update(moimUpdateRequest);
 
             Moim savedMoim = moimRepository.save(moim);
-            MoimResponse moimReadResponse = MoimResponse.builder()
-                    .id(moim.getId())
-                    .userId(moim.getUser().getId())
-                    .thumbnailurl(moim.getThumbnailUrl())
-                    .isPublic(moim.getIsPublic())
-                    .moimName(moim.getMoimName())
-                    .moimIntro(moim.getMoimIntro())
-                    .moimDetails(moim.getMoimDetails())
-                    .currentPeople(moim.getCurrentPeople())
-                    .limitPeople(moim.getLimitPeople())
-                    .locations(moim.getLocations())
-                    .licenseLimit(moim.getLicenseLimit())
-                    .age(moim.getAge())
-                    .moods(moim.getMoods())
-                    .build();
-
-            // Save and return the updated logbook
-            return moimReadResponse;
+            return  returnMoimResponse(moim);
         } catch (Exception e) {
             return null;
         }
@@ -155,31 +156,11 @@ public class MoimService  {
         try {
             List<Moim> moims = moimRepository.findByRegisteredUsersContaining(userDetails.getUser());
 
-            List<MoimResponse> moimResponses = moims.stream()
-                    .map(moim -> MoimResponse.builder()
-                            .id(moim.getId())
-                            .userId(moim.getUser().getId())
-                            .thumbnailurl(moim.getThumbnailUrl())
-                            .isPublic(moim.getIsPublic())
-                            .moimName(moim.getMoimName())
-                            .moimIntro(moim.getMoimIntro())
-                            .moimDetails(moim.getMoimDetails())
-                            .currentPeople(moim.getCurrentPeople())
-                            .limitPeople(moim.getLimitPeople())
-                            .locations(moim.getLocations())
-                            .licenseLimit(moim.getLicenseLimit())
-                            .age(moim.getAge())
-                            .moods(moim.getMoods())
-                            .build()
-                    ).collect(Collectors.toList());
-
-            return moimResponses;
+            return returnMoimResponses(moims);
         } catch (Exception e) {
             return null;
         }
     }
-
-
 
     public MoimLeaderResponse updateMoimLeader(UserDetailsImpl userDetails, MoimLeaderRequest moimLeaderRequest) {
 
@@ -196,7 +177,6 @@ public class MoimService  {
 
             moim.update(moimLeaderRequest);
 
-            // Return the updated MoimReadResponse in a list (to maintain consistency with previous GET mapping)
             return MoimLeaderResponse.builder()
                     .id(moimId)
                     .userId(changedUserId)
@@ -243,21 +223,7 @@ public class MoimService  {
 
         Moim moim = optionalMoim.get();
 
-        return MoimResponse.builder()
-                .id(moim.getId())
-                .userId(moim.getUser().getId())
-                .thumbnailurl(moim.getThumbnailUrl())
-                .isPublic(moim.getIsPublic())
-                .moimName(moim.getMoimName())
-                .moimIntro(moim.getMoimIntro())
-                .moimDetails(moim.getMoimDetails())
-                .currentPeople(moim.getCurrentPeople())
-                .limitPeople(moim.getLimitPeople())
-                .locations(moim.getLocations())
-                .licenseLimit(moim.getLicenseLimit())
-                .age(moim.getAge())
-                .moods(moim.getMoods())
-                .build();
+        return returnMoimResponse(moim);
     }
 
     public List<MoimResponse> getMoims(UserDetailsImpl userDetails)
@@ -266,25 +232,7 @@ public class MoimService  {
             // Retrieve the user's logs
             List<Moim> moims = moimRepository.findByUserId(userDetails.getId());
 
-            List<MoimResponse> moimResponses = moims.stream()
-                    .map(moim -> MoimResponse.builder()
-                            .id(moim.getId())
-                            .userId(moim.getUser().getId())
-                            .thumbnailurl(moim.getThumbnailUrl())
-                            .isPublic(moim.getIsPublic())
-                            .moimName(moim.getMoimName())
-                            .moimIntro(moim.getMoimIntro())
-                            .moimDetails(moim.getMoimDetails())
-                            .currentPeople(moim.getCurrentPeople())
-                            .limitPeople(moim.getLimitPeople())
-                            .locations(moim.getLocations())
-                            .licenseLimit(moim.getLicenseLimit())
-                            .age(moim.getAge())
-                            .moods(moim.getMoods())
-                            .build()
-                    ).collect(Collectors.toList());
-
-            return moimResponses;
+            return returnMoimResponses(moims);
 
         } catch (Exception e) {
             return null;
@@ -322,24 +270,8 @@ public class MoimService  {
     public List<MoimResponse> getAllMoims() {
         try {
             List<Moim> moims = moimRepository.findAll();
-            List<MoimResponse> moimResponses = moims.stream()
-                    .map(moim -> MoimResponse.builder()
-                            .id(moim.getId())
-                            .userId(moim.getUser().getId())
-                            .thumbnailurl(moim.getThumbnailUrl())
-                            .isPublic(moim.getIsPublic())
-                            .moimName(moim.getMoimName())
-                            .moimIntro(moim.getMoimIntro())
-                            .moimDetails(moim.getMoimDetails())
-                            .currentPeople(moim.getCurrentPeople())
-                            .limitPeople(moim.getLimitPeople())
-                            .locations(moim.getLocations())
-                            .licenseLimit(moim.getLicenseLimit())
-                            .age(moim.getAge())
-                            .moods(moim.getMoods())
-                            .build()
-                    ).collect(Collectors.toList());
-            return moimResponses;
+
+            return returnMoimResponses(moims);
         } catch (Exception e) {
             return null;
         }
