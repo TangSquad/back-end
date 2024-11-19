@@ -1,11 +1,13 @@
 package backend.tangsquad.chat.controller;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.chat.config.WebSocketJwtInterceptor;
 import backend.tangsquad.chat.entity.ChatMessage;
 import backend.tangsquad.chat.service.ChatMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,13 +27,25 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
 
     @MessageMapping("/chat/message")
-    public void message(ChatMessage message) {
+    public void message(ChatMessage message, @Header("simpSessionId") String sessionId) {
+        // sessionId를 사용해 필요한 정보 불러오기
+        Long senderId = WebSocketJwtInterceptor.getUserId(sessionId);
+        String nickname = WebSocketJwtInterceptor.getNickname(sessionId);
+        UUID roomId = WebSocketJwtInterceptor.getChatRoomId(sessionId);
+
+        // 필요한 정보 채워넣기
+        message.setSenderId(senderId);
+        message.setSender(nickname);
+        message.setRoomId(String.valueOf(roomId));
+
         if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
-            message.setMessage(message.getSender() + "님이 입장했습니다.");
+            message.setMessage(nickname + "님이 입장했습니다.");
         }
         message.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+
+        // 메시지 전송
         chatMessageService.sendMessage(message);
-        messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+        messagingTemplate.convertAndSend("/sub/chat/room/" + roomId, message);
     }
 
     // 채팅 내역 조회

@@ -6,17 +6,13 @@ import backend.tangsquad.auth.jwt.UserDetailsServiceImpl;
 import backend.tangsquad.common.entity.User;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,6 +21,7 @@ public class WebSocketJwtInterceptor implements ChannelInterceptor {
 
     private static final ConcurrentHashMap<String, Long> sessionUserMap = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, UUID> sessionChatRoomMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, String> sessionNicknameMap = new ConcurrentHashMap<>();
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
@@ -51,6 +48,7 @@ public class WebSocketJwtInterceptor implements ChannelInterceptor {
                         User user = userDetails.getUser();
                         String sessionId = accessor.getSessionId();
                         sessionUserMap.put(sessionId, user.getId());
+                        sessionNicknameMap.put(sessionId, user.getNickname());
 
                         // Optional: handle any chatRoomId passed during CONNECT (usually handled in SUBSCRIBE)
                         String chatRoomId = accessor.getFirstNativeHeader("chatRoomId");
@@ -75,6 +73,10 @@ public class WebSocketJwtInterceptor implements ChannelInterceptor {
             }
         }
         return message;
+    }
+
+    public static String getNickname(String sessionId) {
+        return sessionNicknameMap.get(sessionId);
     }
 
     public static Long getUserId(String sessionId) {
