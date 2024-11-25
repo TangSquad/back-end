@@ -65,6 +65,27 @@ public class DivingController {
         }
     }
 
+    @GetMapping("/recent")
+    @Operation(
+            summary = "신규 다이빙 목록 조회",
+            description = "최근 다이빙의 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다이빙 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    public ResponseEntity<List<DivingResponse>> getRecentDivings() {
+        List<DivingResponse> recentDivingResponses = divingService.getRecentDivings();
+
+        if (recentDivingResponses != null) {
+            return ResponseEntity.ok(recentDivingResponses);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+
     @GetMapping("/all")
     @Operation(
             summary = "다이빙 목록 조회",

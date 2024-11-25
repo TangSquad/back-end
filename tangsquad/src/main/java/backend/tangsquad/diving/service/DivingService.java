@@ -41,6 +41,38 @@ public class DivingService {
                 .build();
     }
 
+    public List<DivingResponse> getRecentDivings() {
+
+        List<Diving> allDivings = divingRepository.findAll();
+
+        allDivings.sort((a, b) -> Long.compare(b.getDivingId(), a.getDivingId()));
+
+        return allDivings.stream()
+                .limit(3)
+                .map(this::convertToDivingResponse) // Map each Diving to DivingResponse
+                .collect(Collectors.toList());
+    }
+
+    private DivingResponse convertToDivingResponse(Diving diving) {
+        return DivingResponse.builder()
+                .id(diving.getDivingId())
+                .divingName(diving.getDivingName())
+                .divingIntro(diving.getDivingIntro())
+                .location(diving.getLocation())
+                .startDate(diving.getStartDate())
+                .endDate(diving.getEndDate())
+                .age(diving.getAge())
+                .userId(diving.getUser().getId())
+                .moods(diving.getMoods())
+                .thumbnailUrl(diving.getThumbnailUrl())
+                .isPublic(diving.getIsPublic())
+                .limitPeople(diving.getLimitPeople())
+                .currentPeople(diving.getCurrentPeople())
+                .registeredUserIds(diving.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
+                .build();
+    }
+
+
     private List<DivingResponse> returnDivingResponses(List<Diving> divings) {
         return divings.stream()
                 .map(diving -> returnDivingResponse(diving))
