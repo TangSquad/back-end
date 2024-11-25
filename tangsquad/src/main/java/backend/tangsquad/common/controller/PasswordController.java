@@ -1,5 +1,7 @@
 package backend.tangsquad.common.controller;
 
+import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.common.dto.request.PasswordChangeRequest;
 import backend.tangsquad.common.dto.request.PasswordResetCodeRequest;
 import backend.tangsquad.common.dto.request.PasswordResetEmailRequest;
 import backend.tangsquad.common.dto.request.PasswordResetRequest;
@@ -8,8 +10,10 @@ import backend.tangsquad.common.service.EmailService;
 import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.common.service.VerificationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -71,11 +75,22 @@ public class PasswordController {
             verificationService.deleteEmailCode(request.getEmail());
         }
 
-        boolean isUpdated = userService.updatePassword(request.getEmail(), request.getNewPassword());
+        boolean isUpdated = userService.updatePasswordByEmail(request.getEmail(), request.getNewPassword());
         if(!isUpdated) {
             return new ApiResponse<>(false, "Failed to reset password.");
         } else {
             return new ApiResponse<>(true, "Password reset successfully.");
+        }
+    }
+
+    @Operation(summary = "로그인된 사용자의 비밀번호 변경", description = "비밀번호를 변경합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    @PutMapping("/change")
+    public ApiResponse<Void> changePassword(@RequestBody PasswordChangeRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boolean isUpdated = userService.updatePassword(userDetails.getUser(), request.getNewPassword());
+        if(!isUpdated) {
+            return new ApiResponse<>(false, "Failed to change password.");
+        } else {
+            return new ApiResponse<>(true, "Password changed successfully.");
         }
     }
 }
