@@ -22,7 +22,7 @@ public class DivingService {
         return divingRepository.save(diving);
     }
 
-    private DivingResponse returnDivingResponse(Diving diving) {
+    private DivingResponse convertToDivingResponse(Diving diving) {
         return DivingResponse.builder()
                 .id(diving.getDivingId())
                 .userId(diving.getUser().getId())
@@ -53,29 +53,9 @@ public class DivingService {
                 .collect(Collectors.toList());
     }
 
-    private DivingResponse convertToDivingResponse(Diving diving) {
-        return DivingResponse.builder()
-                .id(diving.getDivingId())
-                .divingName(diving.getDivingName())
-                .divingIntro(diving.getDivingIntro())
-                .location(diving.getLocation())
-                .startDate(diving.getStartDate())
-                .endDate(diving.getEndDate())
-                .age(diving.getAge())
-                .userId(diving.getUser().getId())
-                .moods(diving.getMoods())
-                .thumbnailUrl(diving.getThumbnailUrl())
-                .isPublic(diving.getIsPublic())
-                .limitPeople(diving.getLimitPeople())
-                .currentPeople(diving.getCurrentPeople())
-                .registeredUserIds(diving.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
-                .build();
-    }
-
-
     private List<DivingResponse> returnDivingResponses(List<Diving> divings) {
         return divings.stream()
-                .map(diving -> returnDivingResponse(diving))
+                .map(diving -> convertToDivingResponse(diving))
                 .collect(Collectors.toList());
     }
 
@@ -98,7 +78,7 @@ public class DivingService {
                     .build();
 
             divingRepository.save(diving);
-            return returnDivingResponse(diving);
+            return convertToDivingResponse(diving);
         } catch (Exception e) {
             return null;
         }
@@ -165,7 +145,7 @@ public class DivingService {
             if (divingOptional.isPresent()) {
                 Diving diving = divingOptional.get();
 
-                return returnDivingResponse(diving);
+                return convertToDivingResponse(diving);
             } else {
                 return null;
             }
@@ -198,7 +178,7 @@ public class DivingService {
             diving.update(divingRequest);
 
             divingRepository.save(diving);
-            return returnDivingResponse(diving);
+            return convertToDivingResponse(diving);
         } catch (Exception e) {
             return null;
         }

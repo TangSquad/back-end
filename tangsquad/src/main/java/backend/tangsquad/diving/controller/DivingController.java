@@ -68,7 +68,7 @@ public class DivingController {
     @GetMapping("/recent")
     @Operation(
             summary = "신규 다이빙 목록 조회",
-            description = "최근 다이빙의 목록을 조회합니다.",
+            description = "최근 3개 다이빙의 목록을 조회합니다.",
             security = @SecurityRequirement(name = "AccessToken")
     )
     @ApiResponses({
@@ -84,7 +84,6 @@ public class DivingController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
-
 
     @GetMapping("/all")
     @Operation(
