@@ -93,16 +93,25 @@ public class UserService {
     }
 
     @Transactional
-    public boolean updatePassword(String email, String newPassword) {
+    public boolean updatePasswordByEmail(String email, String newPassword) {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-            return true;
+            return updatePassword(user, newPassword);
         } else {
-            return false;
+            throw new IllegalArgumentException("User not found with email: " + email);
         }
+    }
+
+    @Transactional
+    public boolean updatePassword(User user, String newPassword) {
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("New password must be different from the current password.");
+        }
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+        return true;
     }
 
     @Transactional(readOnly = true)
@@ -141,12 +150,6 @@ public class UserService {
         } else {
             throw new IllegalArgumentException("User not found with id: " + userId);
         }
-    }
-
-
-    public User findByName(String username) {
-        return userRepository.findByName(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
     }
 
     public Optional<User> findById(Long userId) {

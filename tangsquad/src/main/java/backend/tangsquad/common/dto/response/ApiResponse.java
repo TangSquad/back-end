@@ -13,7 +13,7 @@ public class ApiResponse<T> {
         this.message = message;
     }
 
-    public ApiResponse(boolean success, String message, T data) {
+    public ApiResponse(Boolean success, String message, T data) {
         this.success = success;
         this.message = message;
         this.data = data;
