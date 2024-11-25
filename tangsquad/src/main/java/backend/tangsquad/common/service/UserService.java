@@ -1,15 +1,16 @@
 package backend.tangsquad.common.service;
 
+import backend.tangsquad.certificate.repository.UserCertificateRepository;
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.common.entity.UserProfile;
 import backend.tangsquad.common.entity.Equipment;
 import backend.tangsquad.common.dto.request.RegisterRequestDto;
 import backend.tangsquad.common.dto.response.RegisterResponse;
-import backend.tangsquad.common.dto.response.WithdrawResponse;
 import backend.tangsquad.common.repository.UserRepository;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.repository.DivingRepository;
 import backend.tangsquad.moim.entity.Moim;
+import backend.tangsquad.moim.repository.MoimRepository;
 import backend.tangsquad.util.RandomNickname;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RandomNickname randomNickname;
     private final DivingRepository divingRepository;
+    private final MoimRepository moimRepository;
+    private final UserCertificateRepository userCertificateRepository;
 
     @Transactional
     public RegisterResponse registerUser(@Valid RegisterRequestDto registerRequestDto) {
@@ -88,9 +91,10 @@ public class UserService {
     }
 
     @Transactional
-    public WithdrawResponse deleteUser(User user) {
+    public void deleteUser(User user) {
         try {
-            for (Moim moim : user.getMoims()) {
+            List<Moim> moimList = moimRepository.findByRegisteredUsersContaining(user);
+            for (Moim moim : moimList) {
                 if(moim.getUser() == user){
                     throw new IllegalArgumentException("모임의 관리자는 탈퇴할 수 없습니다.");
                 }
@@ -105,10 +109,10 @@ public class UserService {
                 }
                 diving.getRegisteredUsers().remove(user);
             }
+            userCertificateRepository.deleteByUserId(user.getId());
             userRepository.deleteById(user.getId());
-            return new WithdrawResponse(true, "User deleted successfully.");
         } catch (Exception e) {
-            return new WithdrawResponse(false, "User deletion failed.");
+            throw new IllegalArgumentException(e);
         }
     }
 

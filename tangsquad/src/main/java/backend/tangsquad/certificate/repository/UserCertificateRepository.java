@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface UserCertificateRepository extends JpaRepository<UserCertificate, Long>{
     Optional<UserCertificate> findByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

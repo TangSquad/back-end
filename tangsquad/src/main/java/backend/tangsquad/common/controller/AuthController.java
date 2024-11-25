@@ -31,7 +31,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<JwtResponseDto>> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         try {
             String userPlatform = userService.getUserPlatform(loginRequestDto.getEmail());
-            if (!userPlatform.isEmpty()) {
+            if (userPlatform != null && !userPlatform.isEmpty()) {
                 throw new IllegalArgumentException("다른 플랫폼으로 가입한 사용자입니다.");
             }
             JwtResponseDto jwtResponseDto = authService.authenticateUser(loginRequestDto);

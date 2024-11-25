@@ -5,7 +5,6 @@ import backend.tangsquad.common.dto.request.*;
 import backend.tangsquad.common.dto.response.ApiResponse;
 import backend.tangsquad.common.dto.response.JwtResponseDto;
 import backend.tangsquad.common.dto.response.RegisterResponse;
-import backend.tangsquad.common.dto.response.WithdrawResponse;
 import backend.tangsquad.common.service.AuthService;
 import backend.tangsquad.common.service.ProfileService;
 import backend.tangsquad.common.service.UserService;
@@ -15,6 +14,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -74,9 +74,12 @@ public class UserController {
 
     @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API", security = @SecurityRequirement(name = "AccessToken"))
     @DeleteMapping("/withdraw")
-    public ResponseEntity<ApiResponse<WithdrawResponse>> withdrawUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        WithdrawResponse response = userService.deleteUser(userDetails.getUser());
-        return ResponseEntity.ok(new ApiResponse<>(true, "User withdrawn successfully.", response));
+    public ResponseEntity<ApiResponse<String>> withdrawUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if(userDetails == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse<>(false, "Unauthorized request."));
+        }
+        userService.deleteUser(userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponse<>(true, "User withdrawn successfully."));
     }
 
     @Operation(summary = "전화번호 인증 코드 전송 API", description = "회원 가입 전 전화번호로 인증 코드를 전송합니다.")
