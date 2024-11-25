@@ -5,10 +5,12 @@ import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.diving.dto.response.DivingJoinResponse;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
+import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.diving.repository.DivingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,6 +41,19 @@ public class DivingService {
                 .currentPeople(diving.getCurrentPeople())
                 .limitPeople(diving.getLimitPeople())
                 .build();
+    }
+
+
+    public List<Location> getPopularSpots() {
+        List<Diving> allDivings = divingRepository.findAll();
+
+        Map<Location, Long> locationVisitCount = allDivings.stream()
+                .collect(Collectors.groupingBy(Diving::getLocation, Collectors.counting()));
+
+        return locationVisitCount.entrySet().stream()
+                .sorted((entry1, entry2) -> Long.compare(entry2.getValue(), entry1.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     public List<DivingResponse> getRecentDivings() {
