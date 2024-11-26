@@ -253,6 +253,12 @@ public class MoimController {
         }
     }
 
+    @DeleteMapping("all")
+    @Operation(summary = "(테스트용) 모든 모임 삭제하기", description = "모든 모임을 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public void deleteAllMoims() {
+        moimService.deleteAllMoims();
+    }
+
 
     @PostMapping("like/{moimId}")
     @Operation(summary = "좋아요 모임 추가", description = "로그북에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))

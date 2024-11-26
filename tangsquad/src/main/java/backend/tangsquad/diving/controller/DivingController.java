@@ -247,6 +247,12 @@ public class DivingController {
         }
     }
 
+    @DeleteMapping("all")
+    @Operation(summary = "(테스트용) 모든 다이빙 삭제하기", description = "모든 다이빙을 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public void deleteAllDivings() {
+        divingService.deleteAll();
+    }
+
     @PostMapping("like/{divingId}")
     @Operation(summary = "좋아요 다이빙 추가", description = "다이빙에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<LikeDivingResponse> likeDiving(@PathVariable Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {

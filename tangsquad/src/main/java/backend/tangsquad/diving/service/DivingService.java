@@ -7,6 +7,7 @@ import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.diving.repository.DivingRepository;
+import backend.tangsquad.logbook.entity.Log;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -214,6 +215,21 @@ public class DivingService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public void deleteAll() {
+        try {
+            List<Diving> divings = divingRepository.findAll();
+
+            divings.stream().forEach(log -> {
+                divingRepository.delete(log);
+            });
+
+            System.out.println("All logs have been successfully processed and deleted.");
+        } catch (Exception e) {
+            System.err.println("An error occurred while deleting logs: " + e.getMessage());
+        }
+
     }
 
 }

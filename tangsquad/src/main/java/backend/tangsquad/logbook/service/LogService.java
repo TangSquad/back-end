@@ -28,7 +28,7 @@ public class LogService {
     private final LogRepository logRepository;
     private final LogbookRepository logbookRepository;
 
-    private List<LogResponse> returnLogResponses(List<Log> logs) {
+    private List<LogResponse> convertToLogResponses(List<Log> logs) {
         return logs.stream().map(log -> LogResponse.builder()
                 .id(log.getId())
                 .userId(log.getUser().getId())
@@ -42,13 +42,13 @@ public class LogService {
                 .startBar(log.getStartBar())
                 .endBar(log.getEndBar())
                 .diffBar(log.getDiffBar())
-                .logbookId(log.getLogbookId())
+                .logbookId(log.getLogbook().getId())
                 .whether(log.getWhether())
                 .build()
         ).collect(Collectors.toList());
     }
 
-    private LogResponse returnLogResponse(Log log) {
+    private LogResponse convertToLogResponse(Log log) {
         return LogResponse.builder()
                 .id(log.getId())
                 .userId(log.getUser().getId())
@@ -62,7 +62,7 @@ public class LogService {
                 .startBar(log.getStartBar())
                 .endBar(log.getEndBar())
                 .diffBar(log.getDiffBar())
-                .logbookId(log.getLogbookId())
+                .logbookId(log.getLogbook().getId())
                 .whether(log.getWhether())
                 .build();
     }
@@ -70,25 +70,38 @@ public class LogService {
     public LogResponse save(LogCreateRequest logCreateRequest, UserDetailsImpl userDetails) {
         try {
 
-                Log log = Log.builder()
-                        .user(userDetails.getUser())
-                        .viewSight(logCreateRequest.getViewSight())
-                        .tide(logCreateRequest.getTide())
-                        .startDiveTime(logCreateRequest.getStartDiveTime())
-                        .endDiveTime(logCreateRequest.getEndDiveTime())
-                        .timeDiffDive(logCreateRequest.getTimeDiffDive())
-                        .avgDepDiff(logCreateRequest.getAvgDepDiff())
-                        .maxDiff(logCreateRequest.getMaxDiff())
-                        .startBar(logCreateRequest.getStartBar())
-                        .endBar(logCreateRequest.getEndBar())
-                        .diffBar(logCreateRequest.getDiffBar())
-                        .logbookId(logCreateRequest.getLogbookId())
-                        .whether(logCreateRequest.getWhether())
-                        .build();
+            Optional<Logbook> logbookOptional = logbookRepository.findById(logCreateRequest.getLogbookId());
 
-                logRepository.save(log);
+            if (logbookOptional.isEmpty()) return null;
+            Logbook logbook = logbookOptional.get();
 
-                return returnLogResponse(log);
+            System.out.println("logbookId: " + logbook.getId());
+            System.out.println("logbook.getLogs().size(): " + logbook.getLogs().size());
+            if (logbook.getLogs().size() >= 8 ) return null;
+
+            Log log = Log.builder()
+                    .user(userDetails.getUser())
+                    .viewSight(logCreateRequest.getViewSight())
+                    .tide(logCreateRequest.getTide())
+                    .startDiveTime(logCreateRequest.getStartDiveTime())
+                    .endDiveTime(logCreateRequest.getEndDiveTime())
+                    .timeDiffDive(logCreateRequest.getTimeDiffDive())
+                    .avgDepDiff(logCreateRequest.getAvgDepDiff())
+                    .maxDiff(logCreateRequest.getMaxDiff())
+                    .startBar(logCreateRequest.getStartBar())
+                    .endBar(logCreateRequest.getEndBar())
+                    .diffBar(logCreateRequest.getDiffBar())
+                    .logbook(logbook)
+                    .whether(logCreateRequest.getWhether())
+                    .build();
+
+            logRepository.save(log);
+            System.out.println("log.getId().toString(): " + log.getId().toString());
+            logbook.getLogs().add(log);
+            logbookRepository.save(logbook);
+            System.out.println("logbook.getLogs().size(): " + logbook.getLogs().size());
+
+            return convertToLogResponse(log);
 
 
         } catch (Exception e) {
@@ -104,22 +117,33 @@ public class LogService {
     public List<LogResponse> getAllLogs() {
         List<Log> logs = logRepository.findAll();
 
-        return returnLogResponses(logs);
+        return convertToLogResponses(logs);
     }
 
     public List<LogResponse> getLogsInLogbook(Long logbookId) {
-       List<Log> logs = logRepository.findAll().stream()
-               .filter(log -> log.getLogbookId() == logbookId)
-               .collect(Collectors.toList());
+        try {
 
-       return returnLogResponses(logs);
+            Optional<Logbook> logbookOptional = logbookRepository.findById(logbookId);
+
+            if (logbookOptional.isEmpty()) return null;
+            Logbook logbook = logbookOptional.get();
+
+            List<Log> logs = logRepository.findAll().stream()
+                    .filter(log -> log.getLogbook() == logbook)
+                    .collect(Collectors.toList());
+
+            return convertToLogResponses(logs);
+        } catch (Exception e) {
+            logger.error("Error while getting log ID: " + logbookId, e);
+            throw new RuntimeException("Error while retrieving log.");
+        }
     }
     public LogResponse getLog(Long logId) {
         try {
             Log log = logRepository.findById(logId)
                     .orElseThrow(() -> new RuntimeException("Log not found"));
 
-            return returnLogResponse(log);
+            return convertToLogResponse(log);
         } catch (Exception e) {
             logger.error("Error while getting log ID: " + logId, e);
             throw new RuntimeException("Error while retrieving log.");
@@ -138,7 +162,7 @@ public class LogService {
             log.update(logUpdateRequest);
             logRepository.save(log);
 
-            return returnLogResponse(log);
+            return convertToLogResponse(log);
         } catch (Exception e) {
             logger.error("Error while updating log ID: " + logUpdateRequest.getLogId(), e);
             throw new RuntimeException("Error while updating log.");
@@ -155,10 +179,24 @@ public class LogService {
 
             logRepository.delete(log);
 
-            return returnLogResponse(log);
+            return convertToLogResponse(log);
         } catch (Exception e) {
             logger.error("Error while deleting log ID: " + logId, e);
             throw new RuntimeException("Error while deleting log.");
+        }
+    }
+
+    public void deleteAll() {
+        try {
+            List<Log> logs = logRepository.findAll();
+
+            logs.stream().forEach(log -> {
+                logRepository.delete(log);
+            });
+
+            System.out.println("All logs have been successfully processed and deleted.");
+        } catch (Exception e) {
+            System.err.println("An error occurred while deleting logs: " + e.getMessage());
         }
     }
 }

@@ -1,5 +1,6 @@
 package backend.tangsquad.logbook.dto.response;
 
+import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.entity.Whether;
 import lombok.Builder;
 import lombok.Data;

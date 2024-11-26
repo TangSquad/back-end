@@ -4,6 +4,7 @@ import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
+import backend.tangsquad.logbook.entity.Log;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
 import backend.tangsquad.moim.dto.request.MoimLeaderUsernameRequest;
 import backend.tangsquad.moim.dto.response.*;
@@ -277,6 +278,20 @@ public class MoimService  {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public void deleteAllMoims() {
+        try {
+            List<Moim> moims = moimRepository.findAll();
+
+            moims.stream().forEach(log -> {
+                moimRepository.delete(log);
+            });
+
+            System.out.println("All logs have been successfully processed and deleted.");
+        } catch (Exception e) {
+            System.err.println("An error occurred while deleting logs: " + e.getMessage());
         }
     }
 

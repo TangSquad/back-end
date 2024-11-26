@@ -47,9 +47,12 @@ public class Logbook {
     @Column
     private String location;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @Column(name = "logs")
-    private List<String> logs = new ArrayList<>();
+//    @ElementCollection(fetch = FetchType.LAZY)
+//    @Column(name = "logs")
+//    private List<String> logs = new ArrayList<>();
+    @OneToMany(mappedBy = "logbook", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Log> logs = new ArrayList<>();
+
 
     public void update(LogbookRequest logbookRequest) {
         if (logbookRequest.getDate() != null) this.date = logbookRequest.getDate();
@@ -61,7 +64,7 @@ public class Logbook {
     }
 
     @Builder
-    public Logbook(User user, LocalDateTime date, Long currentPeople, String thumbnailUrl, String location, String title, String contents, List<String> logs) {
+    public Logbook(User user, LocalDateTime date, Long currentPeople, String thumbnailUrl, String location, String title, String contents, List<Log> logs) {
         this.user = user;
         this.date = date;
         this.thumbnailUrl = thumbnailUrl;

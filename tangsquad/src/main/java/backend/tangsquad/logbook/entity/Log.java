@@ -69,11 +69,11 @@ public class Log {
     @Column
     private Long diffBar;
 
-//    @ManyToOne
-//    @JoinColumn(name = "logbook_id", nullable = false)
-//    private Logbook logbook;
-    @Column
-    private Long logbookId;
+    @ManyToOne
+    @JoinColumn(name = "logbook_id", nullable = false)
+    private Logbook logbook;
+//    @Column
+//    private Long logbookId;
 
     @Column
     private Whether whether;
@@ -93,7 +93,7 @@ public class Log {
     }
 
     @Builder
-    public Log(User user, String viewSight, String tide, String startDiveTime, String endDiveTime, String timeDiffDive, Long avgDepDiff, Long maxDiff, Long startBar, Long endBar, Long diffBar, Long logbookId, Whether whether) {
+    public Log(User user, String viewSight, String tide, String startDiveTime, String endDiveTime, String timeDiffDive, Long avgDepDiff, Long maxDiff, Long startBar, Long endBar, Long diffBar, Logbook logbook, Whether whether) {
         this.user = user;
         this.viewSight = viewSight;
         this.tide = tide;
@@ -105,7 +105,7 @@ public class Log {
         this.startBar = startBar;
         this.endBar = endBar;
         this.diffBar = diffBar;
-        this.logbookId = logbookId;
+        this.logbook = logbook;
         this.whether = whether;
     }
 }
