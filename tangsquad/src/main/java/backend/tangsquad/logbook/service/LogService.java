@@ -43,6 +43,7 @@ public class LogService {
                 .endBar(log.getEndBar())
                 .diffBar(log.getDiffBar())
                 .logbookId(log.getLogbookId())
+                .whether(log.getWhether())
                 .build()
         ).collect(Collectors.toList());
     }
@@ -62,6 +63,7 @@ public class LogService {
                 .endBar(log.getEndBar())
                 .diffBar(log.getDiffBar())
                 .logbookId(log.getLogbookId())
+                .whether(log.getWhether())
                 .build();
     }
 
@@ -81,6 +83,7 @@ public class LogService {
                         .endBar(logCreateRequest.getEndBar())
                         .diffBar(logCreateRequest.getDiffBar())
                         .logbookId(logCreateRequest.getLogbookId())
+                        .whether(logCreateRequest.getWhether())
                         .build();
 
                 logRepository.save(log);
