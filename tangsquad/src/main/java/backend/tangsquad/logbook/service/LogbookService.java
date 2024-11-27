@@ -6,6 +6,7 @@ import backend.tangsquad.like.repository.LikeLogbookRepository;
 import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
 import backend.tangsquad.logbook.dto.request.LogbookRequest;
 import backend.tangsquad.logbook.dto.response.LogbookResponse;
+import backend.tangsquad.logbook.entity.Log;
 import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.repository.LogbookRepository;
 import backend.tangsquad.swagger.global.CommonResponse;
@@ -26,6 +27,30 @@ public class LogbookService {
 
     private final LogbookRepository logbookRepository;
 
+    private LogbookResponse convertToLogbookResponse(Logbook logbook) {
+        return LogbookResponse.builder()
+                .logbookId(logbook.getId())
+                .userId(logbook.getUser().getId())
+                .title(logbook.getTitle())
+                .contents(logbook.getContents())
+                .date(logbook.getDate())
+                .location(logbook.getLocation())
+                .logs(logbook.getLogs())
+                .build();
+    }
+
+    private LogbookRequest convertToLogbookRequest(Logbook logbook) {
+        return LogbookRequest.builder()
+                .id(logbook.getId())
+                .isPublic(logbook.getIsPublic())
+                .date(logbook.getDate())
+                .thumbnailUrl(logbook.getThumbnailUrl())
+                .contents(logbook.getContents())
+                .location(logbook.getLocation())
+                .title(logbook.getTitle())
+                .build();
+    }
+
     public LogbookResponse save(LogbookCreateRequest logbookCreateRequest, UserDetailsImpl userDetails) {
         try {
             Logbook logbook = Logbook.builder()
@@ -38,16 +63,7 @@ public class LogbookService {
 
             Logbook savedLogbook = logbookRepository.save(logbook);
 
-            LogbookResponse logbookResponse = LogbookResponse.builder()
-                    .logbookId(savedLogbook.getId())
-                    .userId(savedLogbook.getUser().getId())
-                    .title(savedLogbook.getTitle())
-                    .contents(savedLogbook.getContents())
-                    .date(savedLogbook.getDate())
-                    .location(savedLogbook.getLocation())
-                    .build();
-
-            return logbookResponse;
+            return convertToLogbookResponse(savedLogbook);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,16 +75,8 @@ public class LogbookService {
     public List<LogbookResponse> getAllLogbooks() {
         List<Logbook> logbooks = logbookRepository.findAll();
 
-        return logbooks.stream().map(logbook -> LogbookResponse.builder()
-                .logbookId(logbook.getId())
-                .userId(logbook.getUser().getId())
-                .title(logbook.getTitle())
-                .contents(logbook.getContents())
-                .date(logbook.getDate())
-                .location(logbook.getLocation())
-                .build()
+        return logbooks.stream().map(logbook -> convertToLogbookResponse(logbook)
         ).collect(Collectors.toList());
-
     }
 
     public Logbook getLogbookByIdAndUserId(Long logbookId, Long userId) {
@@ -83,15 +91,7 @@ public class LogbookService {
             List<Logbook> logbooks = logbookRepository.findByUserId(userId);
 
             List<LogbookRequest> logbookRequests = logbooks.stream()
-                    .map(logbook -> LogbookRequest.builder()
-                            .id(logbook.getId())
-                            .isPublic(logbook.getIsPublic())
-                            .date(logbook.getDate())
-                            .thumbnailUrl(logbook.getThumbnailUrl())
-                            .contents(logbook.getContents())
-                            .location(logbook.getLocation())
-                            .title(logbook.getTitle())
-                            .build())
+                    .map(logbook -> convertToLogbookRequest(logbook))
                     .collect(Collectors.toList());
             return logbookRequests;
 
@@ -120,15 +120,7 @@ public class LogbookService {
             List<Logbook> logbooks = logbookRepository.findAllById(logbookIds);
 
             return logbooks.stream()
-                    .map(logbook -> LogbookRequest.builder()
-                            .id(logbook.getId())
-                            .isPublic(logbook.getIsPublic())
-                            .date(logbook.getDate())
-                            .thumbnailUrl(logbook.getThumbnailUrl())
-                            .contents(logbook.getContents())
-                            .location(logbook.getLocation())
-                            .title(logbook.getTitle())
-                            .build())
+                    .map(logbook -> convertToLogbookRequest(logbook))
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
@@ -154,17 +146,7 @@ public class LogbookService {
         logbook.update(logbookRequest);
 
         Logbook savedLogbook = logbookRepository.save(logbook);
-        LogbookResponse logbookResponse = LogbookResponse.builder()
-                .logbookId(savedLogbook.getId())
-                .userId(savedLogbook.getUser().getId())
-                .date(savedLogbook.getDate())
-                .title(savedLogbook.getTitle())
-                .contents(savedLogbook.getContents())
-                .location(savedLogbook.getLocation())
-                .build();
-
-        // Save and return the updated logbook
-        return logbookResponse;
+        return convertToLogbookResponse(savedLogbook);
     }
 
     public ResponseEntity<CommonResponse> deleteLog(Long logbookId, UserDetailsImpl userDetails) {
@@ -195,6 +177,20 @@ public class LogbookService {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    public void deleteAll() {
+        try {
+            List<Logbook> logbooks = logbookRepository.findAll();
+
+            logbooks.stream().forEach(log -> {
+                logbookRepository.delete(log);
+            });
+
+            System.out.println("All logs have been successfully processed and deleted.");
+        } catch (Exception e) {
+            System.err.println("An error occurred while deleting logs: " + e.getMessage());
         }
     }
 

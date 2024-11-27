@@ -131,4 +131,14 @@ public class LogController {
         }
     }
 
+    @DeleteMapping("all")
+    @Operation(
+            summary = "(테스트용) 모든 로그 삭제하기",
+            description = "모든 로그를 삭제합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    public void deleteAllLog() {
+        logService.deleteAll();
+    }
+
 }

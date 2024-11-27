@@ -2,6 +2,9 @@ package backend.tangsquad.moim.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.service.UserService;
+import backend.tangsquad.diving.dto.response.DivingResponse;
+import backend.tangsquad.diving.entity.Diving;
+import backend.tangsquad.logbook.entity.Log;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
 import backend.tangsquad.moim.dto.request.MoimLeaderUsernameRequest;
 import backend.tangsquad.moim.dto.response.*;
@@ -28,11 +31,11 @@ public class MoimService  {
 
     private List<MoimResponse> returnMoimResponses(List<Moim> moims) {
         return moims.stream()
-                .map(moim -> returnMoimResponse(moim)
+                .map(moim -> convertToMoimResponse(moim)
                 ).collect(Collectors.toList());
     }
 
-    private MoimResponse returnMoimResponse(Moim moim) {
+    private MoimResponse convertToMoimResponse(Moim moim) {
         return MoimResponse.builder()
                 .id(moim.getId())
                 .userId(moim.getUser().getId())
@@ -49,6 +52,17 @@ public class MoimService  {
                 .moods(moim.getMoods())
                 .registeredUserIds(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
                 .build();
+    }
+
+    public List<MoimResponse> getActiveMoims() {
+        List<Moim> activeMoims = moimRepository.findAll();
+
+        activeMoims.sort((a, b) -> Long.compare(b.getRegisteredUsers().size(), a.getRegisteredUsers().size()));
+
+        return activeMoims.stream()
+                .limit(3)
+                .map(this::convertToMoimResponse) // Map each Diving to DivingResponse
+                .collect(Collectors.toList());
     }
 
     public MoimResponse createMoim(MoimCreateRequest moimCreateRequest, UserDetailsImpl userDetails) {
@@ -70,7 +84,7 @@ public class MoimService  {
                     .build();
 
             moimRepository.save(moim);
-            return returnMoimResponse(moim);
+            return convertToMoimResponse(moim);
         } catch (Exception e) {
             return null;
         }
@@ -142,7 +156,7 @@ public class MoimService  {
             moim.update(moimUpdateRequest);
 
             Moim savedMoim = moimRepository.save(moim);
-            return  returnMoimResponse(moim);
+            return  convertToMoimResponse(moim);
         } catch (Exception e) {
             return null;
         }
@@ -223,7 +237,7 @@ public class MoimService  {
 
         Moim moim = optionalMoim.get();
 
-        return returnMoimResponse(moim);
+        return convertToMoimResponse(moim);
     }
 
     public List<MoimResponse> getMoims(UserDetailsImpl userDetails)
@@ -264,6 +278,20 @@ public class MoimService  {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public void deleteAllMoims() {
+        try {
+            List<Moim> moims = moimRepository.findAll();
+
+            moims.stream().forEach(log -> {
+                moimRepository.delete(log);
+            });
+
+            System.out.println("All logs have been successfully processed and deleted.");
+        } catch (Exception e) {
+            System.err.println("An error occurred while deleting logs: " + e.getMessage());
         }
     }
 

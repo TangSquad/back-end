@@ -5,10 +5,13 @@ import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.diving.dto.response.DivingJoinResponse;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
+import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.diving.repository.DivingRepository;
+import backend.tangsquad.logbook.entity.Log;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,7 +25,7 @@ public class DivingService {
         return divingRepository.save(diving);
     }
 
-    private DivingResponse returnDivingResponse(Diving diving) {
+    private DivingResponse convertToDivingResponse(Diving diving) {
         return DivingResponse.builder()
                 .id(diving.getDivingId())
                 .userId(diving.getUser().getId())
@@ -41,9 +44,34 @@ public class DivingService {
                 .build();
     }
 
+
+    public List<Location> getPopularSpots() {
+        List<Diving> allDivings = divingRepository.findAll();
+
+        Map<Location, Long> locationVisitCount = allDivings.stream()
+                .collect(Collectors.groupingBy(Diving::getLocation, Collectors.counting()));
+
+        return locationVisitCount.entrySet().stream()
+                .sorted((entry1, entry2) -> Long.compare(entry2.getValue(), entry1.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    public List<DivingResponse> getRecentDivings() {
+
+        List<Diving> allDivings = divingRepository.findAll();
+
+        allDivings.sort((a, b) -> Long.compare(b.getDivingId(), a.getDivingId()));
+
+        return allDivings.stream()
+                .limit(3)
+                .map(this::convertToDivingResponse) // Map each Diving to DivingResponse
+                .collect(Collectors.toList());
+    }
+
     private List<DivingResponse> returnDivingResponses(List<Diving> divings) {
         return divings.stream()
-                .map(diving -> returnDivingResponse(diving))
+                .map(diving -> convertToDivingResponse(diving))
                 .collect(Collectors.toList());
     }
 
@@ -66,7 +94,7 @@ public class DivingService {
                     .build();
 
             divingRepository.save(diving);
-            return returnDivingResponse(diving);
+            return convertToDivingResponse(diving);
         } catch (Exception e) {
             return null;
         }
@@ -133,7 +161,7 @@ public class DivingService {
             if (divingOptional.isPresent()) {
                 Diving diving = divingOptional.get();
 
-                return returnDivingResponse(diving);
+                return convertToDivingResponse(diving);
             } else {
                 return null;
             }
@@ -166,7 +194,7 @@ public class DivingService {
             diving.update(divingRequest);
 
             divingRepository.save(diving);
-            return returnDivingResponse(diving);
+            return convertToDivingResponse(diving);
         } catch (Exception e) {
             return null;
         }
@@ -187,6 +215,21 @@ public class DivingService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public void deleteAll() {
+        try {
+            List<Diving> divings = divingRepository.findAll();
+
+            divings.stream().forEach(log -> {
+                divingRepository.delete(log);
+            });
+
+            System.out.println("All logs have been successfully processed and deleted.");
+        } catch (Exception e) {
+            System.err.println("An error occurred while deleting logs: " + e.getMessage());
+        }
+
     }
 
 }

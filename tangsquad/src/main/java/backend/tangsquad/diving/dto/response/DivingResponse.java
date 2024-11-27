@@ -1,5 +1,6 @@
 package backend.tangsquad.diving.dto.response;
 
+import backend.tangsquad.diving.entity.Location;
 import lombok.Builder;
 import lombok.Data;
 
@@ -21,11 +22,11 @@ public class DivingResponse {
     private String licenseLimit;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String location;
+    private Location location;
     private List<String> registeredUserIds;
 
     @Builder
-    public DivingResponse(Long id, Long userId, String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic, String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, String location, List<String> registeredUserIds) {
+    public DivingResponse(Long id, Long userId, String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic, String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, Location location, List<String> registeredUserIds) {
         this.id = id;
         this.userId = userId;
         this.divingName = divingName;

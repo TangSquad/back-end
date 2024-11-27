@@ -5,6 +5,7 @@ import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.diving.dto.response.DivingJoinResponse;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
+import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.diving.service.DivingService;
 import backend.tangsquad.like.dto.request.LikeDivingRequest;
 import backend.tangsquad.like.dto.response.LikeDivingResponse;
@@ -63,6 +64,47 @@ public class DivingController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+
+    @GetMapping("/recent")
+    @Operation(
+            summary = "신규 다이빙 목록 조회",
+            description = "최근 3개 다이빙의 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다이빙 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    public ResponseEntity<List<DivingResponse>> getRecentDivings() {
+        List<DivingResponse> recentDivingResponses = divingService.getRecentDivings();
+
+        if (recentDivingResponses != null) {
+            return ResponseEntity.ok(recentDivingResponses);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @GetMapping("popular")
+    @Operation(
+            summary = "이 달의 다이빙 스팟",
+            description = "사용자들이 가장 많이 방문한 스팟을 보여줍니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다이빙 목록 조회 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    public ResponseEntity<List<Location>> getPopularSpots() {
+        List<Location> popularSpots = divingService.getPopularSpots();
+
+        if (popularSpots != null) {
+            return ResponseEntity.ok(popularSpots);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
     }
 
     @GetMapping("/all")
@@ -203,6 +245,12 @@ public class DivingController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+
+    @DeleteMapping("all")
+    @Operation(summary = "(테스트용) 모든 다이빙 삭제하기", description = "모든 다이빙을 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public void deleteAllDivings() {
+        divingService.deleteAll();
     }
 
     @PostMapping("like/{divingId}")

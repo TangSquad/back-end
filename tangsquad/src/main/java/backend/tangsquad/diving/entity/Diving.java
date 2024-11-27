@@ -3,7 +3,6 @@ package backend.tangsquad.diving.entity;
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.diving.dto.request.DivingRequest;
-import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -67,8 +66,8 @@ public class Diving {
     private LocalDate endDate;
 
     @Column
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private String location;
+    @Enumerated(EnumType.STRING)
+    private Location location;
 
     @ManyToMany
     @JoinTable(
@@ -99,7 +98,7 @@ public class Diving {
         this.registeredUsers.add(userDetails.getUser());
     }
 
-    public Diving(User user, String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, String age, List<String> moods, Long limitPeople, String limitLicense, LocalDate startDate, LocalDate endDate, String location) {
+    public Diving(User user, String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, Location location) {
         this.user = user;
         this.divingName = divingName;
         this.divingIntro = divingIntro;

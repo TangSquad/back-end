@@ -56,6 +56,26 @@ public class MoimController {
         }
     }
 
+    @GetMapping("/active")
+    @Operation(
+            summary = "이달의 가장 활발한 모임",
+            description = "사용자가 가장 많이 가입한 모임 최대 3개",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "모임 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
+    })
+    public ResponseEntity<List<MoimResponse>> activeMoims() {
+        List<MoimResponse> activeMoims = moimService.getActiveMoims();
+        if (activeMoims != null) {
+            return ResponseEntity.ok(activeMoims);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+
     @PostMapping("/join")
     @Operation(
             summary = "모임 가입",
@@ -231,6 +251,12 @@ public class MoimController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to delete Moim.");
         }
+    }
+
+    @DeleteMapping("all")
+    @Operation(summary = "(테스트용) 모든 모임 삭제하기", description = "모든 모임을 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public void deleteAllMoims() {
+        moimService.deleteAllMoims();
     }
 
 

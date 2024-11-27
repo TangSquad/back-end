@@ -47,10 +47,10 @@ public class LogbookController {
         }
     }
 
-    @GetMapping("{logId}")
+    @GetMapping("{logbookId}")
     @Operation(summary = "내 로그북 불러오기", description = "내 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<LogbookResponse> getMyLogbook(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable("logId") Long logId) {
-        Logbook logbook = logbookService.getLogbookByIdAndUserId(logId, userDetails.getId());
+    public ResponseEntity<LogbookResponse> getMyLogbook(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable("logbookId") Long logbookId) {
+        Logbook logbook = logbookService.getLogbookByIdAndUserId(logbookId, userDetails.getId());
 
         if (logbook != null) {
             LogbookResponse logbookResponse = convertToLogbookResponse(logbook);
@@ -60,22 +60,22 @@ public class LogbookController {
         }
     }
 
-    @GetMapping("user/{logbookId}")
-    @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<LogbookResponse> getUserLog(
-            @PathVariable("logbookId") Long logbookId) {
-
-        // Retrieve the logbook entry by ID
-        Logbook logbook = logbookService.getLogbookByLogbookId(logbookId);
-
-        if (logbook != null) {
-            // Convert Logbook entity to LogbookReadRequest DTO
-            LogbookResponse logbookResponse = convertToLogbookResponse(logbook);
-            return ResponseEntity.ok(logbookResponse); // Return the logbook details
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Logbook not found
-        }
-    }
+//    @GetMapping("user/{logbookId}")
+//    @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+//    public ResponseEntity<LogbookResponse> getUserLog(
+//            @PathVariable("logbookId") Long logbookId) {
+//
+//        // Retrieve the logbook entry by ID
+//        Logbook logbook = logbookService.getLogbookByLogbookId(logbookId);
+//
+//        if (logbook != null) {
+//            // Convert Logbook entity to LogbookReadRequest DTO
+//            LogbookResponse logbookResponse = convertToLogbookResponse(logbook);
+//            return ResponseEntity.ok(logbookResponse); // Return the logbook details
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Logbook not found
+//        }
+//    }
 
     private LogbookResponse convertToLogbookResponse(Logbook logbook) {
 
@@ -143,12 +143,18 @@ public class LogbookController {
 
     // Use @PathVariable for the ID since it's in the URL path
     @DeleteMapping("{logbookId}")
-    @Operation(summary = "로그북 삭제하기", description = "나의 로그를 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<CommonResponse> deleteLog(
+    @Operation(summary = "로그북 삭제하기", description = "나의 로그북을 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<CommonResponse> deleteLogbook(
             @PathVariable("logId") Long logbookId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return logbookService.deleteLog(logbookId, userDetails);
+    }
+
+    @DeleteMapping("all")
+    @Operation(summary = "(테스트용) 모든 로그북 삭제하기", description = "모든 로그북을 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public void deleteAllLogbook() {
+        logbookService.deleteAll();
     }
 
 

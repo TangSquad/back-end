@@ -36,14 +36,23 @@ public class Log {
     @Column
     private String tide;
 
+//    @Column
+//    private LocalTime startDiveTime;
+//
+//    @Column
+//    private LocalTime endDiveTime;
+//
+//    @Column
+//    private LocalTime timeDiffDive;
     @Column
-    private LocalTime startDiveTime;
+    private String startDiveTime;
 
     @Column
-    private LocalTime endDiveTime;
+    private String endDiveTime;
 
     @Column
-    private LocalTime timeDiffDive;
+    private String timeDiffDive;
+
 
     @Column
     private Long avgDepDiff;
@@ -60,11 +69,14 @@ public class Log {
     @Column
     private Long diffBar;
 
-//    @ManyToOne
-//    @JoinColumn(name = "logbook_id", nullable = false)
-//    private Logbook logbook;
+    @ManyToOne
+    @JoinColumn(name = "logbook_id", nullable = false)
+    private Logbook logbook;
+//    @Column
+//    private Long logbookId;
+
     @Column
-    private Long logbookId;
+    private Whether whether;
 
     public void update(LogUpdateRequest logUpdateRequest) {
         if (logUpdateRequest.getViewSight() != null) this.viewSight = logUpdateRequest.getViewSight();
@@ -77,10 +89,11 @@ public class Log {
         if (logUpdateRequest.getStartBar() != null) this.startBar = logUpdateRequest.getStartBar();
         if (logUpdateRequest.getEndBar() != null) this.endBar = logUpdateRequest.getEndBar();
         if (logUpdateRequest.getDiffBar() != null) this.diffBar = logUpdateRequest.getDiffBar();
+        if (logUpdateRequest.getWhether() != null) this.whether = logUpdateRequest.getWhether();
     }
 
     @Builder
-    public Log(User user, String viewSight, String tide, LocalTime startDiveTime, LocalTime endDiveTime, LocalTime timeDiffDive, Long avgDepDiff, Long maxDiff, Long startBar, Long endBar, Long diffBar, Long logbookId) {
+    public Log(User user, String viewSight, String tide, String startDiveTime, String endDiveTime, String timeDiffDive, Long avgDepDiff, Long maxDiff, Long startBar, Long endBar, Long diffBar, Logbook logbook, Whether whether) {
         this.user = user;
         this.viewSight = viewSight;
         this.tide = tide;
@@ -92,6 +105,7 @@ public class Log {
         this.startBar = startBar;
         this.endBar = endBar;
         this.diffBar = diffBar;
-        this.logbookId = logbookId;
+        this.logbook = logbook;
+        this.whether = whether;
     }
 }

@@ -1,5 +1,6 @@
 package backend.tangsquad.diving.dto.request;
 
+import backend.tangsquad.diving.entity.Location;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
@@ -21,10 +22,10 @@ public class DivingRequest {
     private String licenseLimit;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String location;
+    private Location location;
 
     @Builder
-    public DivingRequest(String divingName, Long userId, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic,String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, String location) {
+    public DivingRequest(String divingName, Long userId, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic,String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, Location location) {
         this.divingName = divingName;
         this.userId = userId;
         this.divingIntro = divingIntro;

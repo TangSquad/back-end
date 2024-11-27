@@ -1,5 +1,7 @@
 package backend.tangsquad.logbook.dto.request;
 
+import backend.tangsquad.logbook.entity.Logbook;
+import backend.tangsquad.logbook.entity.Whether;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,20 +12,21 @@ public class LogRequest {
     private Long id;
     private String viewSight;
     private String tide;
-    private LocalTime startDiveTime;
-    private LocalTime endDiveTime;
-    private LocalTime timeDiffDive;
+    private String startDiveTime;
+    private String endDiveTime;
+    private String timeDiffDive;
     private Long avgDepDiff;
     private Long maxDiff;
     private Long startBar;
     private Long endBar;
     private Long diffBar;
-    private Long logbookId;
+    private Logbook logbook;
+    private Whether whether;
 
     @Builder
-    public LogRequest(Long id, String viewSight, String tide, LocalTime startDiveTime, LocalTime endDiveTime,
-                      LocalTime timeDiffDive, Long avgDepDiff, Long maxDiff, Long startBar, Long endBar,
-                      Long diffBar, Long logbookId) {
+    public LogRequest(Long id, String viewSight, String tide, String startDiveTime, String endDiveTime,
+                      String timeDiffDive, Long avgDepDiff, Long maxDiff, Long startBar, Long endBar,
+                      Long diffBar, Logbook logbook, Whether whether) {
         this.id = id;
         this.viewSight = viewSight;
         this.tide = tide;
@@ -35,6 +38,7 @@ public class LogRequest {
         this.startBar = startBar;
         this.endBar = endBar;
         this.diffBar = diffBar;
-        this.logbookId = logbookId;
+        this.logbook = logbook;
+        this.whether = whether;
     }
 }
