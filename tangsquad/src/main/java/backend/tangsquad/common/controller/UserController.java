@@ -61,6 +61,23 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "이메일 찾기 API (1단계 인증 코드 전송)", description = "이메일 찾기 API")
+    @PostMapping("/find/email/send")
+    public ResponseEntity<ApiResponse<Void>> sendFindEmailCode(@Valid @RequestBody PhoneRequest phoneRequest) {
+        if(!userService.isPhoneExists(phoneRequest.getPhoneNumber())){
+            throw new IllegalArgumentException("가입된 사용자 정보가 없습니다.");
+        }
+        verificationService.sendPhoneVerificationCode(phoneRequest.getPhoneNumber());
+        return ResponseEntity.ok(new ApiResponse<>(true, "인증 코드가 전송되었습니다."));
+    }
+
+    @Operation(summary = "이메일 찾기 API (2단계 인증코드 검증 및 이메일 확인 , 000000 프리패스)", description = "이메일 찾기 API")
+    @PostMapping("/find/email/verify")
+    public ResponseEntity<ApiResponse<String>> verifyFindEmailCode(@Valid @RequestBody FindEmailRequest findEmailRequest) {
+        String result = userService.getUserEmail(findEmailRequest);
+        return ResponseEntity.ok(new ApiResponse<>(true, "이메일 찾기 성공", result));
+    }
+
     @Operation(summary = "회원가입 API", description = "회원가입 API 토큰을 반환합니다.")
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<JwtResponseDto>> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {

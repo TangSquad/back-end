@@ -1,5 +1,7 @@
 package backend.tangsquad.common.service;
 
+import backend.tangsquad.common.dto.request.EmailCheckRequest;
+import backend.tangsquad.common.dto.request.FindEmailRequest;
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.common.entity.UserProfile;
 import backend.tangsquad.common.entity.Equipment;
@@ -23,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RandomNickname randomNickname;
+    private final VerificationService verificationService;
 
     @Transactional
     public RegisterResponse registerUser(@Valid RegisterRequestDto registerRequestDto) {
@@ -112,6 +115,21 @@ public class UserService {
         user.setPassword(encodedPassword);
         userRepository.save(user);
         return true;
+    }
+
+    @Transactional(readOnly = true)
+    public String getUserEmail(FindEmailRequest request) {
+        boolean isVerified = verificationService.verifyPhoneCode(request.getPhoneNumber(), request.getCode());
+        if (isVerified) {
+            User user = userRepository.findByPhone(request.getPhoneNumber()).orElseThrow(() -> new IllegalArgumentException("가입된 유저 정보가 존재하지 않습니다."));
+            String platform = user.getPlatform();
+            if (platform != null) {
+                throw new IllegalArgumentException("다른 플랫폼으로 가입한 사용자입니다.");
+            }
+            return user.getEmail();
+        } else {
+            throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+        }
     }
 
     @Transactional(readOnly = true)
