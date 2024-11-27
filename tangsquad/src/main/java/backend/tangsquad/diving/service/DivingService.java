@@ -2,6 +2,7 @@ package backend.tangsquad.diving.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.chat.entity.ChatRoom;
+import backend.tangsquad.chat.repository.ChatRoomRepository;
 import backend.tangsquad.chat.service.ChatRoomService;
 import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.diving.dto.response.DivingJoinResponse;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class DivingService {
     private final DivingRepository divingRepository;
     private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
 
     public Diving save(Diving diving) {
         return divingRepository.save(diving);
@@ -121,6 +123,11 @@ public class DivingService {
             Diving diving = optionalDiving.get();
 
             diving.join(userDetails);
+
+            if(diving.getChatRoomId() != null) {
+                Optional<ChatRoom> chatRoom = chatRoomRepository.findById(diving.getChatRoomId());
+                chatRoom.ifPresent(room -> chatRoomService.createAndSaveChatUser(userDetails, room));
+            }
 
             divingRepository.save(diving);
 

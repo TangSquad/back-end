@@ -2,6 +2,7 @@ package backend.tangsquad.moim.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.chat.entity.ChatRoom;
+import backend.tangsquad.chat.repository.ChatRoomRepository;
 import backend.tangsquad.chat.service.ChatRoomService;
 import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.diving.dto.response.DivingResponse;
@@ -33,6 +34,7 @@ public class MoimService  {
     final private MoimRepository moimRepository;
     final private UserService userService;
     private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
 
     private List<MoimResponse> returnMoimResponses(List<Moim> moims) {
         return moims.stream()
@@ -108,12 +110,17 @@ public class MoimService  {
             if (moim.getRegisteredUsers().contains(userDetails.getUser())) {
                 return null;
             }
+
             moim.getRegisteredUsers().add(userDetails.getUser());
+
+            if(moim.getChatRoomId() != null) {
+                Optional<ChatRoom> chatRoom = chatRoomRepository.findById(moim.getChatRoomId());
+                chatRoom.ifPresent(room -> chatRoomService.createAndSaveChatUser(userDetails, room));
+            }
+
             moimRepository.save(moim);
 
-            MoimJoinResponse moimJoinResponse = new MoimJoinResponse(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()));
-
-            return moimJoinResponse;
+            return new MoimJoinResponse(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()));
         } catch (Exception e) {
             return null;
         }

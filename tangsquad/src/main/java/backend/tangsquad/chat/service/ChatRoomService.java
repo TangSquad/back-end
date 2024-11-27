@@ -80,7 +80,7 @@ public class ChatRoomService {
         }
     }
 
-    private void createAndSaveChatUser(UserDetailsImpl userDetails, ChatRoom chatRoom) {
+    public void createAndSaveChatUser(UserDetailsImpl userDetails, ChatRoom chatRoom) {
         ChatUser chatUser = ChatUser.builder()
                 .user(userDetails.getUser())
                 .chatRoom(chatRoom)
