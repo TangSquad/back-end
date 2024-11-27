@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class DivingResponse {
@@ -24,9 +25,10 @@ public class DivingResponse {
     private LocalDate endDate;
     private Location location;
     private List<String> registeredUserIds;
+    private UUID chatRoomId;
 
     @Builder
-    public DivingResponse(Long id, Long userId, String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic, String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, Location location, List<String> registeredUserIds) {
+    public DivingResponse(Long id, Long userId, String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic, String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, Location location, List<String> registeredUserIds, UUID chatRoomId) {
         this.id = id;
         this.userId = userId;
         this.divingName = divingName;
@@ -42,5 +44,6 @@ public class DivingResponse {
         this.endDate = endDate;
         this.location = location;
         this.registeredUserIds = registeredUserIds;
+        this.chatRoomId = chatRoomId;
     }
 }
