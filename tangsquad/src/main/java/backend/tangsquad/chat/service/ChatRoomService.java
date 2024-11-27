@@ -25,6 +25,7 @@ public class ChatRoomService {
     private final MoimRepository moimRepository;
     private final ChatUserRepository chatUserRepository;
 
+
     public List<ChatRoom> findAllRoom() {
         return chatRoomRepository.findAll();
     }
@@ -33,39 +34,59 @@ public class ChatRoomService {
         return chatRoomRepository.findById(roomId).orElse(null);
     }
 
-    public ChatRoom createChatRoom(String name, ChatRoom.RoomType type, Long typeId, UserDetailsImpl userDetails) {
-        if(userDetails == null) {
-            throw new IllegalArgumentException("UserDetails is null");
+    public ChatRoom createChatRoom(String name, ChatRoom.RoomType type, Long typeId, UserDetailsImpl userDetails, boolean newOrganization) {
+        validateUserDetails(userDetails);
+
+        if (!newOrganization) {
+            validateRoomTypeAndTypeId(type, typeId);
+            validateChatRoomUniqueness(type, typeId);
         }
 
-        if(type == ChatRoom.RoomType.DIVING) {
-            if(divingRepository.findById(typeId).isEmpty()) {
+        ChatRoom chatRoom = ChatRoom.create(name, type, typeId);
+        chatRoomRepository.save(chatRoom);
+
+        createAndSaveChatUser(userDetails, chatRoom);
+
+        return chatRoom;
+    }
+
+    public ChatRoom createChatRoom(String name, ChatRoom.RoomType type, Long typeId, UserDetailsImpl userDetails) {
+        return createChatRoom(name, type, typeId, userDetails, false);
+    }
+
+    private void validateUserDetails(UserDetailsImpl userDetails) {
+        if (userDetails == null) {
+            throw new IllegalArgumentException("UserDetails is null");
+        }
+    }
+
+    private void validateRoomTypeAndTypeId(ChatRoom.RoomType type, Long typeId) {
+        if (type == ChatRoom.RoomType.DIVING) {
+            if (divingRepository.findById(typeId).isEmpty()) {
                 throw new IllegalArgumentException("Diving not found");
             }
-        } else if(type == ChatRoom.RoomType.MOIM) {
-            if(moimRepository.findById(typeId).isEmpty()) {
+        } else if (type == ChatRoom.RoomType.MOIM) {
+            if (moimRepository.findById(typeId).isEmpty()) {
                 throw new IllegalArgumentException("Moim not found");
             }
         } else {
             throw new IllegalArgumentException("Invalid type");
         }
-        // 이미 해당 organizationId로 생성된 채팅방이 있는지 확인
-        if(chatRoomRepository.findByTypeIdAndType(typeId, type) != null) {
+    }
+
+    private void validateChatRoomUniqueness(ChatRoom.RoomType type, Long typeId) {
+        if (chatRoomRepository.findByTypeIdAndType(typeId, type) != null) {
             throw new IllegalArgumentException("ChatRoom already exists");
         }
+    }
 
-        ChatRoom chatRoom = ChatRoom.create(name, type, typeId);
-
-        chatRoomRepository.save(chatRoom);
-
+    public void createAndSaveChatUser(UserDetailsImpl userDetails, ChatRoom chatRoom) {
         ChatUser chatUser = ChatUser.builder()
                 .user(userDetails.getUser())
                 .chatRoom(chatRoom)
                 .build();
 
         chatUserRepository.save(chatUser);
-
-        return chatRoom;
     }
 
     public List<ChatRoomResponse> findMyRooms(UserDetailsImpl userDetails) {

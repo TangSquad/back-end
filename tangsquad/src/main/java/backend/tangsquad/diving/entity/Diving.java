@@ -10,6 +10,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 
 @Entity
@@ -68,6 +69,9 @@ public class Diving {
     @Column
     @Enumerated(EnumType.STRING)
     private Location location;
+
+    @Column
+    private UUID chatRoomId;
 
     @ManyToMany
     @JoinTable(

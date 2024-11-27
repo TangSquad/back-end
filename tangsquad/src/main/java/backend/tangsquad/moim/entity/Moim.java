@@ -14,6 +14,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -83,6 +84,9 @@ public class Moim {
 
     @OneToMany
     private List<Logbook> logbooks = new ArrayList<>();
+
+    @Column
+    private UUID chatRoomId;
 
     public void update(MoimUpdateRequest moimUpdateRequest) {
         if (moimUpdateRequest.getIsPublic() != null) this.isPublic = moimUpdateRequest.getIsPublic();

@@ -1,6 +1,9 @@
 package backend.tangsquad.diving.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.chat.entity.ChatRoom;
+import backend.tangsquad.chat.repository.ChatRoomRepository;
+import backend.tangsquad.chat.service.ChatRoomService;
 import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.diving.dto.response.DivingJoinResponse;
 import backend.tangsquad.diving.dto.response.DivingResponse;
@@ -10,6 +13,8 @@ import backend.tangsquad.diving.repository.DivingRepository;
 import backend.tangsquad.logbook.entity.Log;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -20,6 +25,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DivingService {
     private final DivingRepository divingRepository;
+    private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
 
     public Diving save(Diving diving) {
         return divingRepository.save(diving);
@@ -41,6 +48,7 @@ public class DivingService {
                 .licenseLimit(diving.getLicenseLimit())
                 .currentPeople(diving.getCurrentPeople())
                 .limitPeople(diving.getLimitPeople())
+                .chatRoomId(diving.getChatRoomId())
                 .build();
     }
 
@@ -75,6 +83,7 @@ public class DivingService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public DivingResponse createDiving(DivingRequest divingRequest, UserDetailsImpl userDetails) {
         try {
             Diving diving = Diving.builder()
@@ -93,6 +102,12 @@ public class DivingService {
                     .limitPeople(divingRequest.getLimitPeople())
                     .build();
 
+            // 다이빙을 위한 채팅방 생성
+            ChatRoom chatRoom = chatRoomService.createChatRoom(divingRequest.getDivingName(), ChatRoom.RoomType.DIVING, diving.getDivingId(), userDetails, true);
+
+            // 다이빙에 채팅방 id 설정
+            diving.setChatRoomId(chatRoom.getId());
+
             divingRepository.save(diving);
             return convertToDivingResponse(diving);
         } catch (Exception e) {
@@ -108,6 +123,11 @@ public class DivingService {
             Diving diving = optionalDiving.get();
 
             diving.join(userDetails);
+
+            if(diving.getChatRoomId() != null) {
+                Optional<ChatRoom> chatRoom = chatRoomRepository.findById(diving.getChatRoomId());
+                chatRoom.ifPresent(room -> chatRoomService.createAndSaveChatUser(userDetails, room));
+            }
 
             divingRepository.save(diving);
 
