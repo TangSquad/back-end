@@ -1,6 +1,8 @@
 package backend.tangsquad.moim.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.chat.entity.ChatRoom;
+import backend.tangsquad.chat.service.ChatRoomService;
 import backend.tangsquad.common.service.UserService;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
@@ -16,6 +18,8 @@ import backend.tangsquad.moim.repository.MoimRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -28,6 +32,7 @@ public class MoimService  {
 
     final private MoimRepository moimRepository;
     final private UserService userService;
+    private final ChatRoomService chatRoomService;
 
     private List<MoimResponse> returnMoimResponses(List<Moim> moims) {
         return moims.stream()
@@ -51,6 +56,7 @@ public class MoimService  {
                 .age(moim.getAge())
                 .moods(moim.getMoods())
                 .registeredUserIds(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
+                .chatRoomId(moim.getChatRoomId())
                 .build();
     }
 
@@ -65,6 +71,7 @@ public class MoimService  {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public MoimResponse createMoim(MoimCreateRequest moimCreateRequest, UserDetailsImpl userDetails) {
         try {
             Moim moim = Moim.builder()
@@ -82,6 +89,9 @@ public class MoimService  {
                     .age(moimCreateRequest.getAge())
                     .moods(moimCreateRequest.getMoods())
                     .build();
+
+            ChatRoom chatRoom = chatRoomService.createChatRoom(moim.getMoimName(), ChatRoom.RoomType.MOIM, moim.getId(), userDetails, true);
+            moim.setChatRoomId(chatRoom.getId());
 
             moimRepository.save(moim);
             return convertToMoimResponse(moim);

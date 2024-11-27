@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class MoimResponse {
@@ -22,9 +23,11 @@ public class MoimResponse {
     private List<String> locations;
     private List<String> registeredUserIds;
     private String age;
+    private List<String> moods;
+    private UUID chatRoomId;
 
     @Builder
-    public MoimResponse(Long id, Long userId, String thumbnailurl, Boolean isPublic, String moimName, String moimIntro, String moimDetails, Long currentPeople, Long limitPeople, Long expense, String licenseLimit, List<String> locations, List<String> registeredUserIds, String age, List<String> moods) {
+    public MoimResponse(Long id, Long userId, String thumbnailurl, Boolean isPublic, String moimName, String moimIntro, String moimDetails, Long currentPeople, Long limitPeople, Long expense, String licenseLimit, List<String> locations, List<String> registeredUserIds, String age, List<String> moods, UUID chatRoomId) {
         this.id = id;
         this.userId = userId;
         this.thumbnailurl = thumbnailurl;
@@ -40,8 +43,9 @@ public class MoimResponse {
         this.registeredUserIds = registeredUserIds;
         this.age = age;
         this.moods = moods;
+        this.chatRoomId = chatRoomId;
     }
 
-    private List<String> moods;
+
 
 }
