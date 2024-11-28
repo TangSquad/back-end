@@ -1,6 +1,7 @@
 package backend.tangsquad.logbook.dto.request;
 
 import backend.tangsquad.common.entity.User;
+import backend.tangsquad.logbook.entity.UserCondition;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,9 +18,9 @@ public class LogbookRequest {
     private String title;
     private String contents;
     private String location;
-
+    private UserCondition userCondition;
     @Builder
-    public LogbookRequest(Long id, Boolean isPublic, String thumbnailUrl, LocalDateTime date, String title, String contents, String location, Long weather) {
+    public LogbookRequest(Long id, Boolean isPublic, String thumbnailUrl, LocalDateTime date, String title, String contents, String location, UserCondition userCondition) {
         this.id = id;
         this.isPublic = isPublic;
         this.thumbnailUrl = thumbnailUrl;
@@ -27,5 +28,6 @@ public class LogbookRequest {
         this.title = title;
         this.contents = contents;
         this.location = location;
+        this.userCondition = userCondition;
     }
 }

@@ -47,11 +47,14 @@ public class Logbook {
     @Column
     private String location;
 
-//    @ElementCollection(fetch = FetchType.LAZY)
-//    @Column(name = "logs")
-//    private List<String> logs = new ArrayList<>();
     @OneToMany(mappedBy = "logbook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Log> logs = new ArrayList<>();
+
+    // --- 컨디션
+    @Column
+    @Enumerated(EnumType.STRING)
+    private UserCondition userCondition;
+
 
 
     public void update(LogbookRequest logbookRequest) {
@@ -61,17 +64,20 @@ public class Logbook {
         if (logbookRequest.getTitle() != null) this.title = logbookRequest.getTitle();
         if (logbookRequest.getContents() != null) this.contents = logbookRequest.getContents();
         if (logbookRequest.getLocation() != null) this.location = logbookRequest.getLocation();
+        if (logbookRequest.getUserCondition() != null) this.userCondition = logbookRequest.getUserCondition();
     }
 
     @Builder
-    public Logbook(User user, LocalDateTime date, Long currentPeople, String thumbnailUrl, String location, String title, String contents, List<Log> logs) {
+    public Logbook(User user, Boolean isPublic,LocalDateTime date, String thumbnailUrl, String location, String title, String contents, List<Log> logs, UserCondition userCondition) {
         this.user = user;
+        this.isPublic = isPublic;
         this.date = date;
         this.thumbnailUrl = thumbnailUrl;
         this.title = title;
         this.contents = contents;
         this.location = location;
         this.logs = logs;
+        this.userCondition = userCondition;
     }
 
 }
