@@ -29,22 +29,7 @@ public class LogService {
     private final LogbookRepository logbookRepository;
 
     private List<LogResponse> convertToLogResponses(List<Log> logs) {
-        return logs.stream().map(log -> LogResponse.builder()
-                .id(log.getId())
-                .userId(log.getUser().getId())
-                .viewSight(log.getViewSight())
-                .tide(log.getTide())
-                .startDiveTime(log.getStartDiveTime())
-                .endDiveTime(log.getEndDiveTime())
-                .timeDiffDive(log.getTimeDiffDive())
-                .avgDepDiff(log.getAvgDepDiff())
-                .maxDiff(log.getMaxDiff())
-                .startBar(log.getStartBar())
-                .endBar(log.getEndBar())
-                .diffBar(log.getDiffBar())
-                .logbookId(log.getLogbook().getId())
-                .whether(log.getWhether())
-                .build()
+        return logs.stream().map(log -> convertToLogResponse(log)
         ).collect(Collectors.toList());
     }
 
@@ -52,18 +37,24 @@ public class LogService {
         return LogResponse.builder()
                 .id(log.getId())
                 .userId(log.getUser().getId())
+                .whether(log.getWhether())
+                .airTemp(log.getAirTemp())
+                .surfTemp(log.getSurfTemp())
+                .bottTemp(log.getBottTemp())
+                .userCondition(log.getUserCondition())
                 .viewSight(log.getViewSight())
                 .tide(log.getTide())
+                .wave(log.getWave())
+                .surge(log.getSurge())
                 .startDiveTime(log.getStartDiveTime())
                 .endDiveTime(log.getEndDiveTime())
-                .timeDiffDive(log.getTimeDiffDive())
-                .avgDepDiff(log.getAvgDepDiff())
-                .maxDiff(log.getMaxDiff())
+                .diveTime(log.getDiveTime())
+                .subject(log.getSubject())
+                .avgDepDepth(log.getAvgDepDepth())
+                .maxDepth(log.getMaxDepth())
                 .startBar(log.getStartBar())
                 .endBar(log.getEndBar())
-                .diffBar(log.getDiffBar())
                 .logbookId(log.getLogbook().getId())
-                .whether(log.getWhether())
                 .build();
     }
 
@@ -81,18 +72,24 @@ public class LogService {
 
             Log log = Log.builder()
                     .user(userDetails.getUser())
+                    .whether(logCreateRequest.getWhether())
+                    .airTemp(logCreateRequest.getAirTemp())
+                    .surfTemp(logCreateRequest.getSurfTemp())
+                    .bottTemp(logCreateRequest.getBottTemp())
+                    .userCondition(logCreateRequest.getUserCondition())
                     .viewSight(logCreateRequest.getViewSight())
                     .tide(logCreateRequest.getTide())
+                    .wave(logCreateRequest.getWave())
+                    .surge(logCreateRequest.getSurge())
                     .startDiveTime(logCreateRequest.getStartDiveTime())
                     .endDiveTime(logCreateRequest.getEndDiveTime())
-                    .timeDiffDive(logCreateRequest.getTimeDiffDive())
-                    .avgDepDiff(logCreateRequest.getAvgDepDiff())
-                    .maxDiff(logCreateRequest.getMaxDiff())
+                    .diveTime(logCreateRequest.getDiveTime())
+                    .subject(logCreateRequest.getSubject())
+                    .avgDepDepth(logCreateRequest.getAvgDepDepth())
+                    .maxDepth(logCreateRequest.getMaxDepth())
                     .startBar(logCreateRequest.getStartBar())
                     .endBar(logCreateRequest.getEndBar())
-                    .diffBar(logCreateRequest.getDiffBar())
                     .logbook(logbook)
-                    .whether(logCreateRequest.getWhether())
                     .build();
 
             logRepository.save(log);
@@ -152,7 +149,7 @@ public class LogService {
 
     public LogResponse updateLog(LogUpdateRequest logUpdateRequest, UserDetailsImpl userDetails) {
         try {
-            Log log = logRepository.findById(logUpdateRequest.getLogId())
+            Log log = logRepository.findById(logUpdateRequest.getLogbook().getId())
                     .orElseThrow(() -> new RuntimeException("Log not found"));
 
             if (!log.getUser().getId().equals(userDetails.getUser().getId())) {
@@ -164,7 +161,7 @@ public class LogService {
 
             return convertToLogResponse(log);
         } catch (Exception e) {
-            logger.error("Error while updating log ID: " + logUpdateRequest.getLogId(), e);
+            logger.error("Error while updating log ID: " + logUpdateRequest.getLogbook().getId(), e);
             throw new RuntimeException("Error while updating log.");
         }
     }

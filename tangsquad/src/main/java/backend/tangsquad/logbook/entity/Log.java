@@ -1,19 +1,13 @@
 package backend.tangsquad.logbook.entity;
 
 import backend.tangsquad.common.entity.User;
-import backend.tangsquad.logbook.dto.request.LogRequest;
 import backend.tangsquad.logbook.dto.request.LogUpdateRequest;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -31,10 +25,10 @@ public class Log {
     @JsonManagedReference
     private User user;
 
-
     // ---- 날씨
     // 날씨 - SUNNY, CLOUDY, ...
     @Column
+    @Enumerated(EnumType.STRING)
     private Whether whether;
 
     // 기온
@@ -51,36 +45,29 @@ public class Log {
 
     // --- 컨디션
     @Column
-    private Condition condition;
-
-
+    @Enumerated(EnumType.STRING)
+    private UserCondition userCondition;
 
     // ---- 수중 환경
-
     // 시야
     @Column
     private String viewSight;
 
     // 조류
     @Column
+    @Enumerated(EnumType.STRING)
     private Level tide;
 
     // 파도
     @Column
+    @Enumerated(EnumType.STRING)
     private Level wave;
 
     // 서지
     @Column
+    @Enumerated(EnumType.STRING)
     private Level surge;
 
-//    @Column
-//    private LocalTime startDiveTime;
-//
-//    @Column
-//    private LocalTime endDiveTime;
-//
-//    @Column
-//    private LocalTime timeDiffDive;
     @Column
     private String startDiveTime;
 
@@ -88,7 +75,7 @@ public class Log {
     private String endDiveTime;
 
     @Column
-    private String timeDiffDive;
+    private String diveTime;
 
     // 다이빙 주제
     @Column
@@ -107,42 +94,55 @@ public class Log {
     @Column
     private Long endBar;
 
-    @Column
-    private Long diffBar;
-
     @ManyToOne
     @JoinColumn(name = "logbook_id", nullable = false)
     private Logbook logbook;
-//    @Column
-//    private Long logbookId;
-    public void update(LogUpdateRequest logUpdateRequest) {
-        if (logUpdateRequest.getViewSight() != null) this.viewSight = logUpdateRequest.getViewSight();
-        if (logUpdateRequest.getTide() != null) this.tide = logUpdateRequest.getTide();
-        if (logUpdateRequest.getStartDiveTime() != null) this.startDiveTime = logUpdateRequest.getStartDiveTime();
-        if (logUpdateRequest.getEndDiveTime() != null) this.endDiveTime = logUpdateRequest.getEndDiveTime();
-        if (logUpdateRequest.getTimeDiffDive() != null) this.timeDiffDive = logUpdateRequest.getTimeDiffDive();
-        if (logUpdateRequest.getAvgDepDiff() != null) this.avgDepDiff = logUpdateRequest.getAvgDepDiff();
-        if (logUpdateRequest.getMaxDiff() != null) this.maxDiff = logUpdateRequest.getMaxDiff();
-        if (logUpdateRequest.getStartBar() != null) this.startBar = logUpdateRequest.getStartBar();
-        if (logUpdateRequest.getEndBar() != null) this.endBar = logUpdateRequest.getEndBar();
-        if (logUpdateRequest.getDiffBar() != null) this.diffBar = logUpdateRequest.getDiffBar();
-        if (logUpdateRequest.getWhether() != null) this.whether = logUpdateRequest.getWhether();
-    }
+
 
     @Builder
-    public Log(User user, String viewSight, String tide, String startDiveTime, String endDiveTime, String timeDiffDive, Long avgDepDiff, Long maxDiff, Long startBar, Long endBar, Long diffBar, Logbook logbook, Whether whether) {
+    public Log(Long id, User user, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, UserCondition userCondition, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
+        this.id = id;
         this.user = user;
+        this.whether = whether;
+        this.airTemp = airTemp;
+        this.surfTemp = surfTemp;
+        this.bottTemp = bottTemp;
+        this.userCondition = userCondition;
         this.viewSight = viewSight;
         this.tide = tide;
+        this.wave = wave;
+        this.surge = surge;
         this.startDiveTime = startDiveTime;
         this.endDiveTime = endDiveTime;
-        this.timeDiffDive = timeDiffDive;
-        this.avgDepDiff = avgDepDiff;
-        this.maxDiff = maxDiff;
+        this.diveTime = diveTime;
+        this.subject = subject;
+        this.avgDepDepth = avgDepDepth;
+        this.maxDepth = maxDepth;
         this.startBar = startBar;
         this.endBar = endBar;
-        this.diffBar = diffBar;
         this.logbook = logbook;
-        this.whether = whether;
     }
+    //    @Column
+//    private Long logbookId;
+    public void update(LogUpdateRequest logUpdateRequest) {
+        if (logUpdateRequest.getWhether() != null) this.whether = logUpdateRequest.getWhether();
+        if (logUpdateRequest.getAirTemp() != null) this.airTemp = logUpdateRequest.getAirTemp();
+        if (logUpdateRequest.getSurfTemp() != null) this.surfTemp = logUpdateRequest.getSurfTemp();
+        if (logUpdateRequest.getBottTemp() != null) this.bottTemp = logUpdateRequest.getBottTemp();
+        if (logUpdateRequest.getUserCondition() != null) this.userCondition = logUpdateRequest.getUserCondition();
+        if (logUpdateRequest.getViewSight() != null) this.viewSight = logUpdateRequest.getViewSight();
+        if (logUpdateRequest.getTide() != null) this.tide = logUpdateRequest.getTide();
+        if (logUpdateRequest.getWave() != null) this.wave = logUpdateRequest.getWave();
+        if (logUpdateRequest.getSurge() != null) this.surge = logUpdateRequest.getSurge();
+        if (logUpdateRequest.getStartDiveTime() != null) this.startDiveTime = logUpdateRequest.getStartDiveTime();
+        if (logUpdateRequest.getEndDiveTime() != null) this.endDiveTime = logUpdateRequest.getEndDiveTime();
+        if (logUpdateRequest.getDiveTime() != null) this.diveTime = logUpdateRequest.getDiveTime();
+        if (logUpdateRequest.getSubject() != null) this.subject = logUpdateRequest.getSubject();
+        if (logUpdateRequest.getAvgDepDepth() != null) this.avgDepDepth = logUpdateRequest.getAvgDepDepth();
+        if (logUpdateRequest.getMaxDepth() != null) this.maxDepth = logUpdateRequest.getMaxDepth();
+        if (logUpdateRequest.getStartBar() != null) this.startBar = logUpdateRequest.getStartBar();
+        if (logUpdateRequest.getEndBar() != null) this.endBar = logUpdateRequest.getEndBar();
+        if (logUpdateRequest.getLogbook() != null) this.logbook = logUpdateRequest.getLogbook();
+    }
+
 }
