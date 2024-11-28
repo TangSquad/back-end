@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,11 +31,47 @@ public class Log {
     @JsonManagedReference
     private User user;
 
+
+    // ---- 날씨
+    // 날씨 - SUNNY, CLOUDY, ...
+    @Column
+    private Whether whether;
+
+    // 기온
+    @Column
+    private Double airTemp;
+
+    // 수면온도
+    @Column
+    private Double surfTemp;
+
+    // 바닥온도
+    @Column
+    private Double bottTemp;
+
+    // --- 컨디션
+    @Column
+    private Condition condition;
+
+
+
+    // ---- 수중 환경
+
+    // 시야
     @Column
     private String viewSight;
 
+    // 조류
     @Column
-    private String tide;
+    private Level tide;
+
+    // 파도
+    @Column
+    private Level wave;
+
+    // 서지
+    @Column
+    private Level surge;
 
 //    @Column
 //    private LocalTime startDiveTime;
@@ -53,12 +90,16 @@ public class Log {
     @Column
     private String timeDiffDive;
 
+    // 다이빙 주제
+    @Column
+    private Subject subject;
+
 
     @Column
-    private Long avgDepDiff;
+    private Long avgDepDepth;
 
     @Column
-    private Long maxDiff;
+    private Long maxDepth;
 
     @Column
     private Long startBar;
@@ -74,10 +115,6 @@ public class Log {
     private Logbook logbook;
 //    @Column
 //    private Long logbookId;
-
-    @Column
-    private Whether whether;
-
     public void update(LogUpdateRequest logUpdateRequest) {
         if (logUpdateRequest.getViewSight() != null) this.viewSight = logUpdateRequest.getViewSight();
         if (logUpdateRequest.getTide() != null) this.tide = logUpdateRequest.getTide();
