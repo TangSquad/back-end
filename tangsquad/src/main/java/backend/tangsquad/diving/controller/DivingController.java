@@ -272,7 +272,7 @@ public class DivingController {
         }
     }
 
-    @GetMapping("like/{divingId}")
+    @DeleteMapping("like/{divingId}")
     @Operation(summary = "좋아요한 다이빙 취소하기", description = "좋아요한 다이빙을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<DivingResponse> cancelLikeDivings(@PathVariable("divingId") Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         DivingResponse divingResponse = likeDivingService.cancelLike(divingId, userDetails);
