@@ -13,7 +13,6 @@ public class LogUpdateRequest {
     private Double airTemp;
     private Double surfTemp;
     private Double bottTemp;
-    private UserCondition userCondition;
     private String viewSight;
     private Level tide;
     private Level wave;
@@ -29,14 +28,13 @@ public class LogUpdateRequest {
     private Logbook logbook;
 
     @Builder
-    public LogUpdateRequest(Long id, Long userId, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, UserCondition userCondition, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
+    public LogUpdateRequest(Long id, Long userId, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
         this.id = id;
         this.userId = userId;
         this.whether = whether;
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;
         this.bottTemp = bottTemp;
-        this.userCondition = userCondition;
         this.viewSight = viewSight;
         this.tide = tide;
         this.wave = wave;

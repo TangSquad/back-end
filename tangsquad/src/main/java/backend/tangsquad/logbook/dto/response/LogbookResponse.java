@@ -1,6 +1,7 @@
 package backend.tangsquad.logbook.dto.response;
 
 import backend.tangsquad.logbook.entity.Log;
+import backend.tangsquad.logbook.entity.UserCondition;
 import lombok.Builder;
 import lombok.Data;
 
@@ -18,9 +19,10 @@ public class LogbookResponse {
     private LocalDateTime date;
     private String location;
     private List<Log> logs;
+    private UserCondition userCondition;
 
     @Builder
-    public LogbookResponse(Long logbookId, Boolean isPublic, String thumbnailUrl, Long userId, String title, String contents, LocalDateTime date, String location, List<Log> logs) {
+    public LogbookResponse(Long logbookId, Boolean isPublic, String thumbnailUrl, Long userId, String title, String contents, LocalDateTime date, String location, List<Log> logs, UserCondition userCondition) {
         this.logbookId = logbookId;
         this.isPublic = isPublic;
         this.thumbnailUrl = thumbnailUrl;
@@ -30,5 +32,6 @@ public class LogbookResponse {
         this.date = date;
         this.location = location;
         this.logs = logs;
+        this.userCondition = userCondition;
     }
 }

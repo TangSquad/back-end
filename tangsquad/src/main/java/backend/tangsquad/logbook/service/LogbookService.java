@@ -35,6 +35,7 @@ public class LogbookService {
                 .contents(logbook.getContents())
                 .date(logbook.getDate())
                 .location(logbook.getLocation())
+                .userCondition(logbook.getUserCondition())
                 .logs(logbook.getLogs())
                 .build();
     }
@@ -47,6 +48,7 @@ public class LogbookService {
                 .thumbnailUrl(logbook.getThumbnailUrl())
                 .contents(logbook.getContents())
                 .location(logbook.getLocation())
+                .userCondition(logbook.getUserCondition())
                 .title(logbook.getTitle())
                 .build();
     }
@@ -55,10 +57,13 @@ public class LogbookService {
         try {
             Logbook logbook = Logbook.builder()
                     .user(userDetails.getUser())
+                    .isPublic(logbookCreateRequest.getIsPublic())
                     .date(logbookCreateRequest.getDate())
-                    .location(logbookCreateRequest.getLocation())
-                    .title(logbookCreateRequest.getTitle())
+                    .thumbnailUrl(logbookCreateRequest.getThumbnailUrl())
                     .contents(logbookCreateRequest.getContents())
+                    .location(logbookCreateRequest.getLocation())
+                    .userCondition(logbookCreateRequest.getUserCondition())
+                    .title(logbookCreateRequest.getTitle())
                     .build();
 
             Logbook savedLogbook = logbookRepository.save(logbook);

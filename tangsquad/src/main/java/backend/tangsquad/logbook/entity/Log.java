@@ -43,11 +43,6 @@ public class Log {
     @Column
     private Double bottTemp;
 
-    // --- 컨디션
-    @Column
-    @Enumerated(EnumType.STRING)
-    private UserCondition userCondition;
-
     // ---- 수중 환경
     // 시야
     @Column
@@ -100,14 +95,13 @@ public class Log {
 
 
     @Builder
-    public Log(Long id, User user, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, UserCondition userCondition, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
+    public Log(Long id, User user, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
         this.id = id;
         this.user = user;
         this.whether = whether;
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;
         this.bottTemp = bottTemp;
-        this.userCondition = userCondition;
         this.viewSight = viewSight;
         this.tide = tide;
         this.wave = wave;
@@ -129,7 +123,6 @@ public class Log {
         if (logUpdateRequest.getAirTemp() != null) this.airTemp = logUpdateRequest.getAirTemp();
         if (logUpdateRequest.getSurfTemp() != null) this.surfTemp = logUpdateRequest.getSurfTemp();
         if (logUpdateRequest.getBottTemp() != null) this.bottTemp = logUpdateRequest.getBottTemp();
-        if (logUpdateRequest.getUserCondition() != null) this.userCondition = logUpdateRequest.getUserCondition();
         if (logUpdateRequest.getViewSight() != null) this.viewSight = logUpdateRequest.getViewSight();
         if (logUpdateRequest.getTide() != null) this.tide = logUpdateRequest.getTide();
         if (logUpdateRequest.getWave() != null) this.wave = logUpdateRequest.getWave();

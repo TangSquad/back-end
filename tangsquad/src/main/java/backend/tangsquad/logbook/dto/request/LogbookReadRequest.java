@@ -1,5 +1,6 @@
 package backend.tangsquad.logbook.dto.request;
 
+import backend.tangsquad.logbook.entity.UserCondition;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,9 +17,10 @@ public class LogbookReadRequest {
     private String title;
     private String contents;
     private String location;
+    private UserCondition userCondition;
 
     @Builder
-    public LogbookReadRequest(Long logId, Boolean isPublic, Long userId, String thumbnailUrl, LocalDateTime date, String title, String contents, String location, Long weather) {
+    public LogbookReadRequest(Long logId, Boolean isPublic, Long userId, String thumbnailUrl, LocalDateTime date, String title, String contents, String location, UserCondition userCondition) {
         this.logId = logId;
         this.userId = userId;
         this.thumbnailUrl = thumbnailUrl;
@@ -27,6 +29,7 @@ public class LogbookReadRequest {
         this.title = title;
         this.contents = contents;
         this.location = location;
+        this.userCondition = userCondition;
     }
 
 }
