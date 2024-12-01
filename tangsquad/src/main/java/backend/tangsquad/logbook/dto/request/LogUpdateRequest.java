@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 public class LogUpdateRequest {
 
-    private Long id;
-    private Long userId;
+    private Long logbookId;
+    private Long logId;
     private String location;
     private Whether whether;
     private Double airTemp;
@@ -24,12 +24,11 @@ public class LogUpdateRequest {
     private Long maxDepth;
     private Long startBar;
     private Long endBar;
-    private Logbook logbook;
 
     @Builder
-    public LogUpdateRequest(Long id, Long userId, String location, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
-        this.id = id;
-        this.userId = userId;
+    public LogUpdateRequest(Long logbookId, Long logId, String location, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar) {
+        this.logbookId = logbookId;
+        this.logId = logId;
         this.location = location;
         this.whether = whether;
         this.airTemp = airTemp;
@@ -45,6 +44,5 @@ public class LogUpdateRequest {
         this.maxDepth = maxDepth;
         this.startBar = startBar;
         this.endBar = endBar;
-        this.logbook = logbook;
     }
 }
