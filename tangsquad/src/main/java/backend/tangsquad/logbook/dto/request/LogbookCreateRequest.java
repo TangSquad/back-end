@@ -14,18 +14,16 @@ public class LogbookCreateRequest {
     private String thumbnailUrl;
     private String title;
     private String contents;
-    private String location;
 
     private UserCondition userCondition;
 
     @Builder
-    public LogbookCreateRequest(LocalDateTime date, Boolean isPublic, String thumbnailUrl,String title, String contents, String location, UserCondition userCondition) {
+    public LogbookCreateRequest(LocalDateTime date, Boolean isPublic, String thumbnailUrl,String title, String contents, UserCondition userCondition) {
         this.date = date;
         this.isPublic = isPublic;
         this.thumbnailUrl = thumbnailUrl;
         this.title = title;
         this.contents = contents;
-        this.location = location;
         this.userCondition = userCondition;
     }
 

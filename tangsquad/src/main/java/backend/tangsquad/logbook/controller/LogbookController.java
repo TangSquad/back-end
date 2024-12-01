@@ -85,7 +85,6 @@ public class LogbookController {
                 .title(logbook.getTitle())
                 .date(logbook.getDate())
                 .contents(logbook.getContents())
-                .location(logbook.getLocation())
                 .isPublic(logbook.getIsPublic())
                 .build();
     }

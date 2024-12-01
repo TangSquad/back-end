@@ -65,7 +65,6 @@ public class LikeLogbookService {
                     .title(logbook.getTitle())
                     .contents(logbook.getContents())
                     .date(logbook.getDate())
-                    .location(logbook.getLocation())
                     .logs(logbook.getLogs())
                     .userCondition(logbook.getUserCondition())
                     .build())

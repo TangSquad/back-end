@@ -34,7 +34,6 @@ public class LogbookService {
                 .title(logbook.getTitle())
                 .contents(logbook.getContents())
                 .date(logbook.getDate())
-                .location(logbook.getLocation())
                 .userCondition(logbook.getUserCondition())
                 .logs(logbook.getLogs())
                 .build();
@@ -47,7 +46,6 @@ public class LogbookService {
                 .date(logbook.getDate())
                 .thumbnailUrl(logbook.getThumbnailUrl())
                 .contents(logbook.getContents())
-                .location(logbook.getLocation())
                 .userCondition(logbook.getUserCondition())
                 .title(logbook.getTitle())
                 .build();
@@ -61,7 +59,6 @@ public class LogbookService {
                     .date(logbookCreateRequest.getDate())
                     .thumbnailUrl(logbookCreateRequest.getThumbnailUrl())
                     .contents(logbookCreateRequest.getContents())
-                    .location(logbookCreateRequest.getLocation())
                     .userCondition(logbookCreateRequest.getUserCondition())
                     .title(logbookCreateRequest.getTitle())
                     .build();

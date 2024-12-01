@@ -17,17 +17,15 @@ public class LogbookRequest {
     private Boolean isPublic;
     private String title;
     private String contents;
-    private String location;
     private UserCondition userCondition;
     @Builder
-    public LogbookRequest(Long id, Boolean isPublic, String thumbnailUrl, LocalDateTime date, String title, String contents, String location, UserCondition userCondition) {
+    public LogbookRequest(Long id, Boolean isPublic, String thumbnailUrl, LocalDateTime date, String title, String contents, UserCondition userCondition) {
         this.id = id;
         this.isPublic = isPublic;
         this.thumbnailUrl = thumbnailUrl;
         this.date = date;
         this.title = title;
         this.contents = contents;
-        this.location = location;
         this.userCondition = userCondition;
     }
 }

@@ -16,11 +16,10 @@ public class LogbookReadRequest {
     private LocalDateTime date;
     private String title;
     private String contents;
-    private String location;
     private UserCondition userCondition;
 
     @Builder
-    public LogbookReadRequest(Long logId, Boolean isPublic, Long userId, String thumbnailUrl, LocalDateTime date, String title, String contents, String location, UserCondition userCondition) {
+    public LogbookReadRequest(Long logId, Boolean isPublic, Long userId, String thumbnailUrl, LocalDateTime date, String title, String contents, UserCondition userCondition) {
         this.logId = logId;
         this.userId = userId;
         this.thumbnailUrl = thumbnailUrl;
@@ -28,7 +27,6 @@ public class LogbookReadRequest {
         this.date = date;
         this.title = title;
         this.contents = contents;
-        this.location = location;
         this.userCondition = userCondition;
     }
 

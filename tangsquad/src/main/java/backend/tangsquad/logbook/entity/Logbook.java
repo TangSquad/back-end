@@ -44,9 +44,6 @@ public class Logbook {
     @Column
     private String contents;
 
-    @Column
-    private String location;
-
     @OneToMany(mappedBy = "logbook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Log> logs = new ArrayList<>();
 
@@ -63,19 +60,17 @@ public class Logbook {
         if (logbookRequest.getThumbnailUrl() != null) this.thumbnailUrl = logbookRequest.getThumbnailUrl();
         if (logbookRequest.getTitle() != null) this.title = logbookRequest.getTitle();
         if (logbookRequest.getContents() != null) this.contents = logbookRequest.getContents();
-        if (logbookRequest.getLocation() != null) this.location = logbookRequest.getLocation();
         if (logbookRequest.getUserCondition() != null) this.userCondition = logbookRequest.getUserCondition();
     }
 
     @Builder
-    public Logbook(User user, Boolean isPublic,LocalDateTime date, String thumbnailUrl, String location, String title, String contents, List<Log> logs, UserCondition userCondition) {
+    public Logbook(User user, Boolean isPublic,LocalDateTime date, String thumbnailUrl, String title, String contents, List<Log> logs, UserCondition userCondition) {
         this.user = user;
         this.isPublic = isPublic;
         this.date = date;
         this.thumbnailUrl = thumbnailUrl;
         this.title = title;
         this.contents = contents;
-        this.location = location;
         this.logs = logs;
         this.userCondition = userCondition;
     }
