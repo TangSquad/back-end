@@ -112,6 +112,20 @@ public class Moim {
         if (moimUserLeaderRequest.getUser() != null) this.user = moimUserLeaderRequest.getUser();
     }
 
+    public synchronized void update(User addUser) {
+        if (addUser == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        if (registeredUsers == null) {
+            System.out.println("registeredUsers is null");
+            registeredUsers = new ArrayList<>();
+        }
+        System.out.println("Adding registeredUser: " + addUser);
+        this.registeredUsers.add(addUser);
+    }
+
+
+
     @Builder
     public Moim(User user, Boolean isPublic, String thumbnailUrl, Long currentPeople, String moimName, String moimIntro, String moimDetails, Long limitPeople, Long expense, String licenseLimit, List<String> locations, String age, List<String> moods, List<User> registeredUsers) {
         this.user = user;

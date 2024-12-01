@@ -39,7 +39,7 @@ public class MoimService  {
         return MoimResponse.builder()
                 .id(moim.getId())
                 .userId(moim.getUser() != null ? moim.getUser().getId() : null)
-                .thumbnailurl(moim.getThumbnailUrl())
+                .thumbnailUrl(moim.getThumbnailUrl())
                 .isPublic(moim.getIsPublic())
                 .moimName(moim.getMoimName())
                 .moimIntro(moim.getMoimIntro())
@@ -54,9 +54,11 @@ public class MoimService  {
                         : Collections.emptyList())
                 .age(moim.getAge())
                 .moods(moim.getMoods() != null ? moim.getMoods() : Collections.emptyList())
-                .chatRoomId(moim.getChatRoomId() != null ? moim.getChatRoomId() : null)
+                .chatRoomId(moim.getChatRoomId())
                 .build();
     }
+
+
 
     public List<MoimResponse> getActiveMoims() {
         List<Moim> activeMoims = moimRepository.findAll();
@@ -72,14 +74,16 @@ public class MoimService  {
     @Transactional
     public MoimResponse createMoim(MoimCreateRequest moimCreateRequest, UserDetailsImpl userDetails) {
         try {
+
+            System.out.println("createMoim 1");
             Moim moim = Moim.builder()
                     .user(userDetails.getUser())
-                    .thumbnailUrl(moimCreateRequest.getThumbnailurl())
                     .isPublic(moimCreateRequest.getIsPublic())
+                    .thumbnailUrl(moimCreateRequest.getThumbnailUrl())
+                    .currentPeople(moimCreateRequest.getCurrentPeople())
                     .moimName(moimCreateRequest.getMoimName())
                     .moimIntro(moimCreateRequest.getMoimIntro())
                     .moimDetails(moimCreateRequest.getMoimDetails())
-                    .currentPeople(moimCreateRequest.getCurrentPeople())
                     .limitPeople(moimCreateRequest.getLimitPeople())
                     .expense(moimCreateRequest.getExpense())
                     .licenseLimit(moimCreateRequest.getLicenseLimit())
@@ -88,15 +92,22 @@ public class MoimService  {
                     .moods(moimCreateRequest.getMoods())
                     .build();
 
+            System.out.println("createMoim2");
+            moim.update(userDetails.getUser());
+            System.out.println("createMoim3");
+
             ChatRoom chatRoom = chatRoomService.createChatRoom(moim.getMoimName(), ChatRoom.RoomType.MOIM, moim.getId(), userDetails, true);
             moim.setChatRoomId(chatRoom.getId());
+            System.out.println("createMoim4");
 
             Moim savedMoim = moimRepository.save(moim);
+            System.out.println("createMoim5");
             return convertToMoimResponse(savedMoim);
         } catch (Exception e) {
             return null;
         }
     }
+
 
     public MoimJoinResponse joinMoim(Long moimId, UserDetailsImpl userDetails) {
         try {
@@ -109,7 +120,7 @@ public class MoimService  {
                 return null;
             }
 
-            moim.getRegisteredUsers().add(userDetails.getUser());
+            moim.update(userDetails.getUser());
 
             if(moim.getChatRoomId() != null) {
                 Optional<ChatRoom> chatRoom = chatRoomRepository.findById(moim.getChatRoomId());
@@ -138,20 +149,7 @@ public class MoimService  {
         }
     }
 
-//    public Moim updateMoimLeaderByName(Long moimId, Long newLeaderId) {
-//        Moim moim = moimRepository.findById(moimId)
-//                .orElseThrow(() -> new IllegalArgumentException("Moim not found"));
-//
-//        User newLeader = userService.findById(newLeaderId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + newLeaderId));
-//
-//        moim.setUser(newLeader);
-//
-//        return moimRepository.save(moim);
-//    }
 
-
-    // 수정 필요
     public MoimResponse updateMoim(MoimUpdateRequest moimUpdateRequest, UserDetailsImpl userDetails) {
 
         try {
