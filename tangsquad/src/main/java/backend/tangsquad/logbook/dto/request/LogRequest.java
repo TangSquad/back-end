@@ -14,8 +14,6 @@ public class LogRequest {
     private Level tide;
     private Level wave;
     private Level surge;
-    private String startDiveTime;
-    private String endDiveTime;
     private String diveTime;
     private Subject subject;
     private Long avgDepth;
@@ -26,7 +24,7 @@ public class LogRequest {
 
 
     @Builder
-    public LogRequest(Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook, Whether whether) {
+    public LogRequest(Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook, Whether whether) {
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;
         this.bottTemp = bottTemp;
@@ -34,8 +32,6 @@ public class LogRequest {
         this.tide = tide;
         this.wave = wave;
         this.surge = surge;
-        this.startDiveTime = startDiveTime;
-        this.endDiveTime = endDiveTime;
         this.diveTime = diveTime;
         this.subject = subject;
         this.avgDepth = avgDepth;

@@ -30,10 +30,6 @@ public class LogResponse {
 
     private Level surge;
 
-    private String startDiveTime;
-
-    private String endDiveTime;
-
     private String diveTime;
 
     private Subject subject;
@@ -48,7 +44,7 @@ public class LogResponse {
 
 
     @Builder
-    public LogResponse(Long id, Long userId, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, UserCondition userCondition, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Long logbookId) {
+    public LogResponse(Long id, Long userId, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, UserCondition userCondition, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Long logbookId) {
         this.id = id;
         this.userId = userId;
         this.whether = whether;
@@ -60,8 +56,6 @@ public class LogResponse {
         this.tide = tide;
         this.wave = wave;
         this.surge = surge;
-        this.startDiveTime = startDiveTime;
-        this.endDiveTime = endDiveTime;
         this.diveTime = diveTime;
         this.subject = subject;
         this.avgDepDepth = avgDepDepth;

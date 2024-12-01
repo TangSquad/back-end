@@ -64,12 +64,6 @@ public class Log {
     private Level surge;
 
     @Column
-    private String startDiveTime;
-
-    @Column
-    private String endDiveTime;
-
-    @Column
     private String diveTime;
 
     // 다이빙 주제
@@ -95,7 +89,7 @@ public class Log {
 
 
     @Builder
-    public Log(Long id, User user, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
+    public Log(Long id, User user, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
         this.id = id;
         this.user = user;
         this.whether = whether;
@@ -106,8 +100,6 @@ public class Log {
         this.tide = tide;
         this.wave = wave;
         this.surge = surge;
-        this.startDiveTime = startDiveTime;
-        this.endDiveTime = endDiveTime;
         this.diveTime = diveTime;
         this.subject = subject;
         this.avgDepth = avgDepth;
@@ -127,8 +119,6 @@ public class Log {
         if (logUpdateRequest.getTide() != null) this.tide = logUpdateRequest.getTide();
         if (logUpdateRequest.getWave() != null) this.wave = logUpdateRequest.getWave();
         if (logUpdateRequest.getSurge() != null) this.surge = logUpdateRequest.getSurge();
-        if (logUpdateRequest.getStartDiveTime() != null) this.startDiveTime = logUpdateRequest.getStartDiveTime();
-        if (logUpdateRequest.getEndDiveTime() != null) this.endDiveTime = logUpdateRequest.getEndDiveTime();
         if (logUpdateRequest.getDiveTime() != null) this.diveTime = logUpdateRequest.getDiveTime();
         if (logUpdateRequest.getSubject() != null) this.subject = logUpdateRequest.getSubject();
         if (logUpdateRequest.getAvgDepth() != null) this.avgDepth = logUpdateRequest.getAvgDepth();
