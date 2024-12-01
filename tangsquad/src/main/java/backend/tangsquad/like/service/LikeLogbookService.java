@@ -74,7 +74,6 @@ public class LikeLogbookService {
 
         LogbookResponse logbookResponse = LogbookResponse.builder()
                 .logbookId(logbook.getId())
-                .location(logbook.getLocation())
                         .contents(logbook.getContents())
                                 .userId(logbook.getUser().getId())
                                         .date(logbook.getDate())

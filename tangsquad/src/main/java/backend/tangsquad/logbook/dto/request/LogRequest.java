@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class LogRequest {
+    private String location;
     private Whether whether;
     private Double airTemp;
     private Double surfTemp;
@@ -24,7 +25,8 @@ public class LogRequest {
 
 
     @Builder
-    public LogRequest(Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook, Whether whether) {
+    public LogRequest(String location, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook, Whether whether) {
+        this.location = location;
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;
         this.bottTemp = bottTemp;

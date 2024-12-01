@@ -17,12 +17,11 @@ public class LogbookResponse {
     private String title;
     private String contents;
     private LocalDateTime date;
-    private String location;
     private List<Log> logs;
     private UserCondition userCondition;
 
     @Builder
-    public LogbookResponse(Long logbookId, Boolean isPublic, String thumbnailUrl, Long userId, String title, String contents, LocalDateTime date, String location, List<Log> logs, UserCondition userCondition) {
+    public LogbookResponse(Long logbookId, Boolean isPublic, String thumbnailUrl, Long userId, String title, String contents, LocalDateTime date, List<Log> logs, UserCondition userCondition) {
         this.logbookId = logbookId;
         this.isPublic = isPublic;
         this.thumbnailUrl = thumbnailUrl;
@@ -30,7 +29,6 @@ public class LogbookResponse {
         this.title = title;
         this.contents = contents;
         this.date = date;
-        this.location = location;
         this.logs = logs;
         this.userCondition = userCondition;
     }

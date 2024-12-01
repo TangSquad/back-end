@@ -10,6 +10,8 @@ public class LogResponse {
 
     private Long userId;
 
+    private String location;
+
     private Long logbookId;
 
     private Whether whether;
@@ -44,9 +46,10 @@ public class LogResponse {
 
 
     @Builder
-    public LogResponse(Long id, Long userId, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, UserCondition userCondition, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Long logbookId) {
+    public LogResponse(Long id, Long userId, String location, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, UserCondition userCondition, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Long logbookId) {
         this.id = id;
         this.userId = userId;
+        this.location = location;
         this.whether = whether;
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;

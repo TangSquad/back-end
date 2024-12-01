@@ -25,11 +25,16 @@ public class Log {
     @JsonManagedReference
     private User user;
 
+    // 장소
+    @Column
+    private String location;
+
     // ---- 날씨
     // 날씨 - SUNNY, CLOUDY, ...
     @Column
     @Enumerated(EnumType.STRING)
     private Whether whether;
+
 
     // 기온
     @Column
@@ -89,9 +94,10 @@ public class Log {
 
 
     @Builder
-    public Log(Long id, User user, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
+    public Log(Long id, User user, String location, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
         this.id = id;
         this.user = user;
+        this.location = location;
         this.whether = whether;
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;
@@ -111,6 +117,7 @@ public class Log {
     //    @Column
 //    private Long logbookId;
     public void update(LogUpdateRequest logUpdateRequest) {
+        if (logUpdateRequest.getLocation() != null) this.location = logUpdateRequest.getLocation();
         if (logUpdateRequest.getWhether() != null) this.whether = logUpdateRequest.getWhether();
         if (logUpdateRequest.getAirTemp() != null) this.airTemp = logUpdateRequest.getAirTemp();
         if (logUpdateRequest.getSurfTemp() != null) this.surfTemp = logUpdateRequest.getSurfTemp();

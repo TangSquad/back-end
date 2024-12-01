@@ -45,8 +45,6 @@ public class LogService {
                 .tide(log.getTide())
                 .wave(log.getWave())
                 .surge(log.getSurge())
-                .startDiveTime(log.getStartDiveTime())
-                .endDiveTime(log.getEndDiveTime())
                 .diveTime(log.getDiveTime())
                 .subject(log.getSubject())
                 .avgDepDepth(log.getAvgDepth())
