@@ -1,6 +1,7 @@
 package backend.tangsquad.like.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
+import backend.tangsquad.common.entity.User;
 import backend.tangsquad.common.repository.UserRepository;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
@@ -36,17 +37,20 @@ public class LikeMoimService {
                 .getId();
 
         Long savedMoimId = moimRepository.findById(moimId)
-                .orElseThrow(() -> new RuntimeException("로그북을 찾을 수 없습니다."))
+                .orElseThrow(() -> new RuntimeException("모임을 찾을 수 없습니다."))
                 .getId();
+
+        Optional<LikeMoim> likeMoimOptional = likeMoimRepository.findByUserIdAndMoimId(userId, savedMoimId);
+
+        if (likeMoimOptional.isPresent()) throw new RuntimeException("이미 좋아요를 누른 모임입니다.");
 
         LikeMoim like = new LikeMoim(userId, savedMoimId);
         LikeMoim savedLike = likeMoimRepository.save(like);
-        LikeMoimRequest likeMoimRequest = new LikeMoimRequest(
+
+        return new LikeMoimRequest(
                 savedLike.getUserId(),
                 savedLike.getMoimId()
         );
-
-        return likeMoimRequest;
     }
 
     public List<MoimResponse> getLikeMoims(UserDetailsImpl userDetails) {
@@ -56,19 +60,26 @@ public class LikeMoimService {
             List<LikeMoim> likeMoims = likeMoimRepository.findAllByUserId(userId);
 
             List<Long> moimIds = likeMoims.stream()
-                    .map(likeMoim -> likeMoim.getMoimId())
+                    .map(LikeMoim::getMoimId)
                     .collect(Collectors.toList());
 
             List<Moim> moims = moimRepository.findAllById(moimIds);
             return moims.stream().map(moim -> MoimResponse.builder()
+                    .id(moim.getId())
                     .userId(moim.getUser().getId())
+                    .thumbnailurl(moim.getThumbnailUrl())
                     .isPublic(moim.getIsPublic())
                     .moimName(moim.getMoimName())
                     .moimIntro(moim.getMoimIntro())
-                    .moimDetails(moim.getMoimDetails())
+                    .currentPeople(moim.getCurrentPeople())
                     .limitPeople(moim.getLimitPeople())
                     .expense(moim.getExpense())
                     .licenseLimit(moim.getLicenseLimit())
+                    .locations(moim.getLocations())
+                    .registeredUserIds(moim.getRegisteredUsers().stream().map(User::getId).collect(Collectors.toList()))
+                    .age(moim.getAge())
+                    .moods(moim.getMoods())
+                    .chatRoomId(moim.getChatRoomId())
                     .build()
             ).collect(Collectors.toList());
 
@@ -77,26 +88,13 @@ public class LikeMoimService {
         }
     }
 
-    public MoimResponse cancelLike(Long moimId, UserDetailsImpl userDetails) {
-        Optional<Moim> moimOptional = moimRepository.findById(moimId);
-        Moim moim;
-
-        if (moimOptional.isPresent()) moim = moimOptional.get();
-        else return null;
-
-        MoimResponse moimResponse = MoimResponse.builder()
-                .moimName(moim.getMoimName())
-                .moimIntro(moim.getMoimIntro())
-                .limitPeople(moim.getLimitPeople())
-                .isPublic(moim.getIsPublic())
-                .expense(moim.getExpense())
-                .licenseLimit(moim.getLicenseLimit())
-                .moimDetails(moim.getMoimDetails())
-                .build();
-
-        if (moim.getUser() != userDetails.getUser()) return null;
-
-        moimRepository.delete(moim);
-        return moimResponse;
+    public void cancelLike(Long moimId, UserDetailsImpl userDetails) {
+        Optional<LikeMoim> optionalLikeMoim = likeMoimRepository.findByUserIdAndMoimId(userDetails.getId(), moimId);
+        if(optionalLikeMoim.isEmpty()) throw new RuntimeException("좋아요를 누르지 않은 모임입니다.");
+        try{
+            likeMoimRepository.deleteByUserIdAndMoimId(userDetails.getId(), moimId);
+        } catch (Exception e) {
+            throw new RuntimeException("좋아요 취소 중 오류가 발생했습니다.");
+        }
     }
 }

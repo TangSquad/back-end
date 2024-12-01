@@ -33,14 +33,17 @@ public class LikeLogbookService {
                 .orElseThrow(() -> new RuntimeException("로그북을 찾을 수 없습니다."))
                 .getId();
 
+        Optional<LikeLogbook> likeLogbookOptional = likeLogbookRepository.findByUserIdAndLogbookId(userId, savedLogbookId);
+
+        if (likeLogbookOptional.isPresent()) throw new RuntimeException("이미 좋아요를 누른 로그북입니다.");
+
         LikeLogbook like = new LikeLogbook(userId, savedLogbookId);
         LikeLogbook savedLike = likeLogbookRepository.save(like);
-        LikeLogbookRequest likeLogbookRequest = new LikeLogbookRequest(
+
+        return new LikeLogbookRequest(
                 savedLike.getUserId(),
                 savedLike.getLogbookId()
         );
-
-        return likeLogbookRequest;
     }
 
     public List<LogbookResponse> getLikeLogbooks(UserDetailsImpl userDetails) {
@@ -49,45 +52,35 @@ public class LikeLogbookService {
             List<LikeLogbook> likedLogbooks = likeLogbookRepository.findAllByUserId(userDetails.getId());
 
             List<Long> likeLogbookIds = likedLogbooks.stream()
-                    .map(likeLogbook -> likeLogbook.getLogbookId())
+                    .map(LikeLogbook::getLogbookId)
                     .collect(Collectors.toList());
 
             List<Logbook> logbooks = logbookRepository.findAllById(likeLogbookIds);
 
             return logbooks.stream().map(logbook -> LogbookResponse.builder()
-                            .userId(logbook.getUser().getId())
-                            .date(logbook.getDate())
-                            .title(logbook.getTitle())
-                            .build())
-                    .collect(Collectors.toList());
+                    .logbookId(logbook.getId())
+                    .userId(logbook.getUser().getId())
+                    .thumbnailUrl(logbook.getThumbnailUrl())
+                    .isPublic(logbook.getIsPublic())
+                    .title(logbook.getTitle())
+                    .contents(logbook.getContents())
+                    .date(logbook.getDate())
+                    .logs(logbook.getLogs())
+                    .userCondition(logbook.getUserCondition())
+                    .build())
+                .collect(Collectors.toList());
         } catch (Exception e) {
             return null;
         }
     }
 
-    public LogbookResponse cancelLike(Long logId, UserDetailsImpl userDetails) {
-        Optional<Logbook> optionalLogbook = logbookRepository.findById(logId);
-        Logbook logbook;
-        if (optionalLogbook.isPresent())
-            logbook = optionalLogbook.get();
-        else return null;
-
-        LogbookResponse logbookResponse = LogbookResponse.builder()
-                .logbookId(logbook.getId())
-                        .contents(logbook.getContents())
-                                .userId(logbook.getUser().getId())
-                                        .date(logbook.getDate())
-                                                .title(logbook.getTitle())
-
-                .build();
-
-
-        if (logbook.getUser() != userDetails.getUser()) {
-            return null;
+    public void cancelLike(Long logId, UserDetailsImpl userDetails) {
+        Optional<LikeLogbook> likeLogbook = likeLogbookRepository.findByUserIdAndLogbookId(userDetails.getId(), logId);
+        if(likeLogbook.isPresent()) {
+            likeLogbookRepository.delete(likeLogbook.get());
+        } else {
+            throw new RuntimeException("좋아요를 누르지 않은 로그북입니다.");
         }
-
-        logbookRepository.delete(logbook);
-        return logbookResponse;
     }
 
 }
