@@ -78,7 +78,7 @@ public class Log {
 
 
     @Column
-    private Long avgDepDepth;
+    private Long avgDepth;
 
     @Column
     private Long maxDepth;
@@ -95,7 +95,7 @@ public class Log {
 
 
     @Builder
-    public Log(Long id, User user, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
+    public Log(Long id, User user, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
         this.id = id;
         this.user = user;
         this.whether = whether;
@@ -110,7 +110,7 @@ public class Log {
         this.endDiveTime = endDiveTime;
         this.diveTime = diveTime;
         this.subject = subject;
-        this.avgDepDepth = avgDepDepth;
+        this.avgDepth = avgDepth;
         this.maxDepth = maxDepth;
         this.startBar = startBar;
         this.endBar = endBar;
@@ -131,7 +131,7 @@ public class Log {
         if (logUpdateRequest.getEndDiveTime() != null) this.endDiveTime = logUpdateRequest.getEndDiveTime();
         if (logUpdateRequest.getDiveTime() != null) this.diveTime = logUpdateRequest.getDiveTime();
         if (logUpdateRequest.getSubject() != null) this.subject = logUpdateRequest.getSubject();
-        if (logUpdateRequest.getAvgDepDepth() != null) this.avgDepDepth = logUpdateRequest.getAvgDepDepth();
+        if (logUpdateRequest.getAvgDepth() != null) this.avgDepth = logUpdateRequest.getAvgDepth();
         if (logUpdateRequest.getMaxDepth() != null) this.maxDepth = logUpdateRequest.getMaxDepth();
         if (logUpdateRequest.getStartBar() != null) this.startBar = logUpdateRequest.getStartBar();
         if (logUpdateRequest.getEndBar() != null) this.endBar = logUpdateRequest.getEndBar();

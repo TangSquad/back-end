@@ -21,14 +21,14 @@ public class LogUpdateRequest {
     private String endDiveTime;
     private String diveTime;
     private Subject subject;
-    private Long avgDepDepth;
+    private Long avgDepth;
     private Long maxDepth;
     private Long startBar;
     private Long endBar;
     private Logbook logbook;
 
     @Builder
-    public LogUpdateRequest(Long id, Long userId, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
+    public LogUpdateRequest(Long id, Long userId, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String startDiveTime, String endDiveTime, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
         this.id = id;
         this.userId = userId;
         this.whether = whether;
@@ -43,7 +43,7 @@ public class LogUpdateRequest {
         this.endDiveTime = endDiveTime;
         this.diveTime = diveTime;
         this.subject = subject;
-        this.avgDepDepth = avgDepDepth;
+        this.avgDepth = avgDepth;
         this.maxDepth = maxDepth;
         this.startBar = startBar;
         this.endBar = endBar;
