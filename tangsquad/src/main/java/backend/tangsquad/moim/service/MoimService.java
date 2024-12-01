@@ -4,10 +4,6 @@ import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.chat.entity.ChatRoom;
 import backend.tangsquad.chat.repository.ChatRoomRepository;
 import backend.tangsquad.chat.service.ChatRoomService;
-import backend.tangsquad.common.service.UserService;
-import backend.tangsquad.diving.dto.response.DivingResponse;
-import backend.tangsquad.diving.entity.Diving;
-import backend.tangsquad.logbook.entity.Log;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
 import backend.tangsquad.moim.dto.request.MoimLeaderUsernameRequest;
 import backend.tangsquad.moim.dto.response.*;
@@ -21,10 +17,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -33,13 +26,12 @@ import java.util.stream.Collectors;
 public class MoimService  {
 
     final private MoimRepository moimRepository;
-    final private UserService userService;
     private final ChatRoomService chatRoomService;
     private final ChatRoomRepository chatRoomRepository;
 
     private List<MoimResponse> returnMoimResponses(List<Moim> moims) {
         return moims.stream()
-                .map(moim -> convertToMoimResponse(moim)
+                .map(this::convertToMoimResponse
                 ).collect(Collectors.toList());
     }
 
@@ -109,6 +101,8 @@ public class MoimService  {
     public MoimJoinResponse joinMoim(Long moimId, UserDetailsImpl userDetails) {
         try {
             Optional<Moim> moimOptional = moimRepository.findById(moimId);
+            if(moimOptional.isEmpty()) throw new NoSuchElementException();
+
             Moim moim = moimOptional.get();
 
             if (moim.getRegisteredUsers().contains(userDetails.getUser())) {
@@ -144,17 +138,17 @@ public class MoimService  {
         }
     }
 
-    public Moim updateMoimLeaderByName(Long moimId, Long newLeaderId) {
-        Moim moim = moimRepository.findById(moimId)
-                .orElseThrow(() -> new IllegalArgumentException("Moim not found"));
-
-        User newLeader = userService.findById(newLeaderId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + newLeaderId));
-
-        moim.setUser(newLeader);
-
-        return moimRepository.save(moim);
-    }
+//    public Moim updateMoimLeaderByName(Long moimId, Long newLeaderId) {
+//        Moim moim = moimRepository.findById(moimId)
+//                .orElseThrow(() -> new IllegalArgumentException("Moim not found"));
+//
+//        User newLeader = userService.findById(newLeaderId)
+//                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + newLeaderId));
+//
+//        moim.setUser(newLeader);
+//
+//        return moimRepository.save(moim);
+//    }
 
 
     // 수정 필요
@@ -163,7 +157,7 @@ public class MoimService  {
         try {
             Optional<Moim> moimOptional = moimRepository.findById(moimUpdateRequest.getMoimId());
 
-            if (!moimOptional.isPresent()) {
+            if (moimOptional.isEmpty()) {
                 throw new NoSuchElementException();
             }
 
@@ -176,7 +170,6 @@ public class MoimService  {
             // Update the logbook using the new update method
             moim.update(moimUpdateRequest);
 
-            Moim savedMoim = moimRepository.save(moim);
             return  convertToMoimResponse(moim);
         } catch (Exception e) {
             return null;
@@ -204,9 +197,14 @@ public class MoimService  {
 
             Long changedUserId = moimLeaderRequest.getUserId();
             Optional<Moim> moimOptional = moimRepository.findById(moimId);
+
+            if(moimOptional.isEmpty()) {
+                throw new NoSuchElementException();
+            }
+
             Moim moim = moimOptional.get();
 
-            if (moim.getUser().getId() != userDetails.getId()) {
+            if (!Objects.equals(moim.getUser().getId(), userDetails.getId())) {
                 return null;
             }
 
@@ -225,10 +223,10 @@ public class MoimService  {
 
         try {
             Long moimId = moimLeaderUsernameRequest.getMoimId();
-            Moim moim = moimRepository.findById(moimId).get();
+            Moim moim = moimRepository.findById(moimId).orElseThrow(NoSuchElementException::new);
 
             // Ensure the user is authorized to update this moim leader
-            if (moim.getUser().getId() != userDetails.getUser().getId()) {
+            if (!Objects.equals(moim.getUser().getId(), userDetails.getUser().getId())) {
                 throw new AccessDeniedException("User is not authorized to update this Moim");
             }
 
@@ -246,20 +244,20 @@ public class MoimService  {
     }
 
 
-    public boolean isAuthorizedToUpdateLeader(Long moimId, Long currentUserId) {
-        return moimRepository.findById(moimId)
-                .map(moim -> moim.getUser().getId().equals(currentUserId))
-                .orElse(false);
-    }
+//    public boolean isAuthorizedToUpdateLeader(Long moimId, Long currentUserId) {
+//        return moimRepository.findById(moimId)
+//                .map(moim -> moim.getUser().getId().equals(currentUserId))
+//                .orElse(false);
+//    }
 
-    public MoimResponse getMoim(Long moimId, UserDetailsImpl userDetails) {
-        Optional<Moim> optionalMoim = moimRepository.findById(moimId);
-        if (optionalMoim.isEmpty()) return null;
-
-        Moim moim = optionalMoim.get();
-
-        return convertToMoimResponse(moim);
-    }
+//    public MoimResponse getMoim(Long moimId, UserDetailsImpl userDetails) {
+//        Optional<Moim> optionalMoim = moimRepository.findById(moimId);
+//        if (optionalMoim.isEmpty()) return null;
+//
+//        Moim moim = optionalMoim.get();
+//
+//        return convertToMoimResponse(moim);
+//    }
 
     public List<MoimResponse> getMoims(UserDetailsImpl userDetails)
     {
@@ -274,8 +272,10 @@ public class MoimService  {
         }
     }
 
-    public Optional<Moim> getMoim(Long moimId) {
-        return moimRepository.findById(moimId);
+    public MoimResponse getMoim(Long moimId) {
+        Optional<Moim> moim = moimRepository.findById(moimId);
+        if(moim.isEmpty()) throw new NoSuchElementException();
+        return convertToMoimResponse(moim.get());
     }
 
     public boolean deleteMoim(Long moimId, UserDetailsImpl userDetails) {
@@ -284,7 +284,7 @@ public class MoimService  {
             // Retrieve the diving from the service
             Optional<Moim> moimOptional = moimRepository.findById(moimId);
 
-            if (!moimOptional.isPresent()) {
+            if (moimOptional.isEmpty()) {
                 return false;
             }
 
@@ -306,9 +306,7 @@ public class MoimService  {
         try {
             List<Moim> moims = moimRepository.findAll();
 
-            moims.stream().forEach(log -> {
-                moimRepository.delete(log);
-            });
+            moimRepository.deleteAll(moims);
 
             System.out.println("All logs have been successfully processed and deleted.");
         } catch (Exception e) {

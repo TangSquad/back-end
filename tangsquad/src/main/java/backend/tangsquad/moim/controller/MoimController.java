@@ -177,7 +177,7 @@ public class MoimController {
     @Operation(summary = "모임 아이디로 모임 불러오기", description = "모임 아이디로 모임을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<MoimResponse> getMyMoim(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        MoimResponse moimResponse = moimService.getMoim(moimId, userDetails);
+        MoimResponse moimResponse = moimService.getMoim(moimId);
 
         if (moimResponse != null) {
             return ResponseEntity.ok(moimResponse);
