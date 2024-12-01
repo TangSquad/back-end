@@ -22,8 +22,6 @@ public class LogResponse {
 
     private Double bottTemp;
 
-    private UserCondition userCondition;
-
     private String viewSight;
 
     private Level tide;
@@ -46,7 +44,7 @@ public class LogResponse {
 
 
     @Builder
-    public LogResponse(Long id, Long userId, String location, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, UserCondition userCondition, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Long logbookId) {
+    public LogResponse(Long id, Long userId, String location, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Long logbookId) {
         this.id = id;
         this.userId = userId;
         this.location = location;
@@ -54,7 +52,6 @@ public class LogResponse {
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;
         this.bottTemp = bottTemp;
-        this.userCondition = userCondition;
         this.viewSight = viewSight;
         this.tide = tide;
         this.wave = wave;

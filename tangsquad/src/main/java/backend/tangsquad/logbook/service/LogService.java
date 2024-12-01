@@ -37,6 +37,7 @@ public class LogService {
         return LogResponse.builder()
                 .id(log.getId())
                 .userId(log.getUser().getId())
+                .location(log.getLocation())
                 .whether(log.getWhether())
                 .airTemp(log.getAirTemp())
                 .surfTemp(log.getSurfTemp())
@@ -69,6 +70,7 @@ public class LogService {
 
             Log log = Log.builder()
                     .user(userDetails.getUser())
+                    .location(logCreateRequest.getLocation())
                     .whether(logCreateRequest.getWhether())
                     .airTemp(logCreateRequest.getAirTemp())
                     .surfTemp(logCreateRequest.getSurfTemp())
