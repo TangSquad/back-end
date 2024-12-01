@@ -255,8 +255,8 @@ public class DivingController {
 
     @PostMapping("like/{divingId}")
     @Operation(summary = "좋아요 다이빙 추가", description = "다이빙에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<LikeDivingResponse> likeDiving(@PathVariable Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        LikeDivingResponse likeDivingResponse = likeDivingService.createLike(divingId, userDetails);
+    public ResponseEntity<DivingResponse> likeDiving(@PathVariable Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        DivingResponse likeDivingResponse = likeDivingService.createLike(divingId, userDetails);
         return ResponseEntity.ok(likeDivingResponse);
     }
 

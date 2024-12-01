@@ -2,6 +2,7 @@ package backend.tangsquad.logbook.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.repository.UserRepository;
+import backend.tangsquad.converter.ConvertTo;
 import backend.tangsquad.like.repository.LikeLogbookRepository;
 import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
 import backend.tangsquad.logbook.dto.request.LogbookRequest;
@@ -21,35 +22,14 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static backend.tangsquad.converter.ConvertTo.convertToLogbookResponse;
+
 @Service
 @RequiredArgsConstructor
 public class LogbookService {
 
     private final LogbookRepository logbookRepository;
 
-    private LogbookResponse convertToLogbookResponse(Logbook logbook) {
-        return LogbookResponse.builder()
-                .id(logbook.getId())
-                .userId(logbook.getUser().getId())
-                .title(logbook.getTitle())
-                .contents(logbook.getContents())
-                .date(logbook.getDate())
-                .userCondition(logbook.getUserCondition())
-                .logIds(logbook.getLogs().stream().map(log -> log.getId()).toList())
-                .build();
-    }
-
-    private LogbookRequest convertToLogbookRequest(Logbook logbook) {
-        return LogbookRequest.builder()
-                .id(logbook.getId())
-                .isPublic(logbook.getIsPublic())
-                .date(logbook.getDate())
-                .thumbnailUrl(logbook.getThumbnailUrl())
-                .contents(logbook.getContents())
-                .userCondition(logbook.getUserCondition())
-                .title(logbook.getTitle())
-                .build();
-    }
 
     public LogbookResponse save(LogbookCreateRequest logbookCreateRequest, UserDetailsImpl userDetails) {
         try {

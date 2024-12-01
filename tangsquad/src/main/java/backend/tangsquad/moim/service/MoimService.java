@@ -4,6 +4,7 @@ import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.chat.entity.ChatRoom;
 import backend.tangsquad.chat.repository.ChatRoomRepository;
 import backend.tangsquad.chat.service.ChatRoomService;
+import backend.tangsquad.converter.ConvertTo;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
 import backend.tangsquad.moim.dto.request.MoimLeaderUsernameRequest;
 import backend.tangsquad.moim.dto.response.*;
@@ -20,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static backend.tangsquad.converter.ConvertTo.convertToMoimResponse;
+
 
 @Service
 @RequiredArgsConstructor
@@ -31,33 +34,9 @@ public class MoimService  {
 
     private List<MoimResponse> returnMoimResponses(List<Moim> moims) {
         return moims.stream()
-                .map(this::convertToMoimResponse
+                .map(ConvertTo::convertToMoimResponse
                 ).collect(Collectors.toList());
     }
-
-    private MoimResponse convertToMoimResponse(Moim moim) {
-        return MoimResponse.builder()
-                .id(moim.getId())
-                .userId(moim.getUser() != null ? moim.getUser().getId() : null)
-                .thumbnailUrl(moim.getThumbnailUrl())
-                .isPublic(moim.getIsPublic())
-                .moimName(moim.getMoimName())
-                .moimIntro(moim.getMoimIntro())
-                .moimDetails(moim.getMoimDetails())
-                .currentPeople(moim.getCurrentPeople())
-                .limitPeople(moim.getLimitPeople())
-                .expense(moim.getExpense())
-                .licenseLimit(moim.getLicenseLimit())
-                .locations(moim.getLocations() != null ? moim.getLocations() : Collections.emptyList())
-                .registeredUserIds(moim.getRegisteredUsers() != null
-                        ? moim.getRegisteredUsers().stream().map(User::getId).collect(Collectors.toList())
-                        : Collections.emptyList())
-                .age(moim.getAge())
-                .moods(moim.getMoods() != null ? moim.getMoods() : Collections.emptyList())
-                .chatRoomId(moim.getChatRoomId())
-                .build();
-    }
-
 
 
     public List<MoimResponse> getActiveMoims() {
@@ -67,7 +46,7 @@ public class MoimService  {
 
         return activeMoims.stream()
                 .limit(3)
-                .map(this::convertToMoimResponse) // Map each Diving to DivingResponse
+                .map(ConvertTo::convertToMoimResponse) // Map each Diving to DivingResponse
                 .collect(Collectors.toList());
     }
 
@@ -75,7 +54,6 @@ public class MoimService  {
     public MoimResponse createMoim(MoimCreateRequest moimCreateRequest, UserDetailsImpl userDetails) {
         try {
 
-            System.out.println("createMoim 1");
             Moim moim = Moim.builder()
                     .user(userDetails.getUser())
                     .isPublic(moimCreateRequest.getIsPublic())
@@ -92,16 +70,12 @@ public class MoimService  {
                     .moods(moimCreateRequest.getMoods())
                     .build();
 
-            System.out.println("createMoim2");
             moim.update(userDetails.getUser());
-            System.out.println("createMoim3");
 
             ChatRoom chatRoom = chatRoomService.createChatRoom(moim.getMoimName(), ChatRoom.RoomType.MOIM, moim.getId(), userDetails, true);
             moim.setChatRoomId(chatRoom.getId());
-            System.out.println("createMoim4");
 
             Moim savedMoim = moimRepository.save(moim);
-            System.out.println("createMoim5");
             return convertToMoimResponse(savedMoim);
         } catch (Exception e) {
             return null;
@@ -159,13 +133,11 @@ public class MoimService  {
                 throw new NoSuchElementException();
             }
 
-            // Get the existing logbook
             Moim moim = moimOptional.get();
 
             if (userDetails.getUser() != moim.getUser()) {
                 return null;
             }
-            // Update the logbook using the new update method
             moim.update(moimUpdateRequest);
 
             return  convertToMoimResponse(moim);
@@ -223,14 +195,12 @@ public class MoimService  {
             Long moimId = moimLeaderUsernameRequest.getMoimId();
             Moim moim = moimRepository.findById(moimId).orElseThrow(NoSuchElementException::new);
 
-            // Ensure the user is authorized to update this moim leader
             if (!Objects.equals(moim.getUser().getId(), userDetails.getUser().getId())) {
                 throw new AccessDeniedException("User is not authorized to update this Moim");
             }
 
             moim.update(moimLeaderUsernameRequest);
             User newUser = moimLeaderUsernameRequest.getUser();
-
 
             return MoimLeaderUsernameResponse.builder()
                     .moimId(moimId)
@@ -260,7 +230,6 @@ public class MoimService  {
     public List<MoimResponse> getMoims(UserDetailsImpl userDetails)
     {
         try {
-            // Retrieve the user's logs
             List<Moim> moims = moimRepository.findByUserId(userDetails.getId());
 
             return returnMoimResponses(moims);
@@ -279,7 +248,6 @@ public class MoimService  {
     public boolean deleteMoim(Long moimId, UserDetailsImpl userDetails) {
 
         try {
-            // Retrieve the diving from the service
             Optional<Moim> moimOptional = moimRepository.findById(moimId);
 
             if (moimOptional.isEmpty()) {

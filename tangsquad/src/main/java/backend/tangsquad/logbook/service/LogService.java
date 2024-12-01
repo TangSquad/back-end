@@ -20,6 +20,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static backend.tangsquad.converter.ConvertTo.convertToLogResponse;
+
 @Service
 @RequiredArgsConstructor
 public class LogService {
@@ -32,29 +34,6 @@ public class LogService {
     private List<LogResponse> convertToLogResponses(List<Log> logs) {
         return logs.stream().map(log -> convertToLogResponse(log)
         ).collect(Collectors.toList());
-    }
-
-    private LogResponse convertToLogResponse(Log log) {
-        return LogResponse.builder()
-                .id(log.getId())
-                .userId(log.getUser().getId())
-                .location(log.getLocation())
-                .whether(log.getWhether())
-                .airTemp(log.getAirTemp())
-                .surfTemp(log.getSurfTemp())
-                .bottTemp(log.getBottTemp())
-                .viewSight(log.getViewSight())
-                .tide(log.getTide())
-                .wave(log.getWave())
-                .surge(log.getSurge())
-                .diveTime(log.getDiveTime())
-                .subject(log.getSubject())
-                .avgDepDepth(log.getAvgDepth())
-                .maxDepth(log.getMaxDepth())
-                .startBar(log.getStartBar())
-                .endBar(log.getEndBar())
-                .logbookId(log.getLogbook().getId())
-                .build();
     }
 
     public LogResponse save(LogCreateRequest logCreateRequest, UserDetailsImpl userDetails) {

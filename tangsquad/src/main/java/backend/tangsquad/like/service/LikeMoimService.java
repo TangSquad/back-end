@@ -3,6 +3,7 @@ package backend.tangsquad.like.service;
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.common.repository.UserRepository;
+import backend.tangsquad.converter.ConvertTo;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.like.dto.request.LikeLogbookRequest;
@@ -72,23 +73,7 @@ public class LikeMoimService {
                     .collect(Collectors.toList());
 
             List<Moim> moims = moimRepository.findAllById(moimIds);
-            return moims.stream().map(moim -> MoimResponse.builder()
-                    .id(moim.getId())
-                    .userId(moim.getUser().getId())
-                    .thumbnailUrl(moim.getThumbnailUrl())
-                    .isPublic(moim.getIsPublic())
-                    .moimName(moim.getMoimName())
-                    .moimIntro(moim.getMoimIntro())
-                    .currentPeople(moim.getCurrentPeople())
-                    .limitPeople(moim.getLimitPeople())
-                    .expense(moim.getExpense())
-                    .licenseLimit(moim.getLicenseLimit())
-                    .locations(moim.getLocations())
-                    .registeredUserIds(moim.getRegisteredUsers().stream().map(User::getId).collect(Collectors.toList()))
-                    .age(moim.getAge())
-                    .moods(moim.getMoods())
-                    .chatRoomId(moim.getChatRoomId())
-                    .build()
+            return moims.stream().map(moim -> ConvertTo.convertToMoimResponse(moim)
             ).collect(Collectors.toList());
 
         } catch (Exception e) {
