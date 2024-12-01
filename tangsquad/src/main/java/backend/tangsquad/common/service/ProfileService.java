@@ -181,28 +181,53 @@ public class ProfileService {
     private ProfileEditResponse createProfileEditResponse(User user) {
         UserProfile profile = user.getUserProfile();
         Equipment equipment = profile.getEquipment();
-        UserCertificate userCertificate = userCertificateRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("UserCertificate not found with userId " + user.getId()));
+        Optional<UserCertificate> userCertificate = userCertificateRepository.findByUserId(user.getId());
 
-        return new ProfileEditResponse(
-                user.getName(),
-                user.getNickname(),
-                profile.getProfileImageUrl(),
-                userCertificate.getId(),
-                userCertificate.getImageUrl(),
-                profile.getIntroduction(),
-                profile.getUrl(),
-                profile.getAffiliation(),
-                false, // isLogbookOpen
-                false, // isLikeOpen
-                false, // isEquipmentOpen
-                equipment.getHeight(),
-                equipment.getWeight(),
-                equipment.getSuit(),
-                equipment.getShoes(),
-                equipment.getWeightBelt(),
-                equipment.getMask(),
-                equipment.getBc()
-        );
+        if (userCertificate.isEmpty()) {
+            return new ProfileEditResponse(
+                    user.getName(),
+                    user.getNickname(),
+                    profile.getProfileImageUrl(),
+                    null,
+                    null,
+                    profile.getIntroduction(),
+                    profile.getUrl(),
+                    profile.getAffiliation(),
+                    false, // isLogbookOpen
+                    false, // isLikeOpen
+                    false, // isEquipmentOpen
+                    equipment.getHeight(),
+                    equipment.getWeight(),
+                    equipment.getSuit(),
+                    equipment.getShoes(),
+                    equipment.getWeightBelt(),
+                    equipment.getMask(),
+                    equipment.getBc()
+            );
+        } else {
+
+            return new ProfileEditResponse(
+                    user.getName(),
+                    user.getNickname(),
+                    profile.getProfileImageUrl(),
+                    userCertificate.get().getId(),
+                    userCertificate.get().getImageUrl(),
+                    profile.getIntroduction(),
+                    profile.getUrl(),
+                    profile.getAffiliation(),
+                    false, // isLogbookOpen
+                    false, // isLikeOpen
+                    false, // isEquipmentOpen
+                    equipment.getHeight(),
+                    equipment.getWeight(),
+                    equipment.getSuit(),
+                    equipment.getShoes(),
+                    equipment.getWeightBelt(),
+                    equipment.getMask(),
+                    equipment.getBc()
+            );
+        }
+
+
     }
 }

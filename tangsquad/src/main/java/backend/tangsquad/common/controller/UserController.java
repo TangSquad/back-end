@@ -89,7 +89,7 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>(true, "User registered successfully.", jwtResponseDto));
     }
 
-    @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API")
+    @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴 API", security = @SecurityRequirement(name = "AccessToken"))
     @DeleteMapping("/withdraw")
     public ResponseEntity<ApiResponse<WithdrawResponse>> withdrawUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         Long userId = userDetails.getId();
