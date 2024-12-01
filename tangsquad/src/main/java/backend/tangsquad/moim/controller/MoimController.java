@@ -1,6 +1,7 @@
 package backend.tangsquad.moim.controller;
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.like.dto.request.LikeMoimRequest;
+import backend.tangsquad.like.entity.LikeMoim;
 import backend.tangsquad.like.service.LikeMoimService;
 import backend.tangsquad.moim.dto.request.MoimLeaderUsernameRequest;
 import backend.tangsquad.moim.dto.response.*;
@@ -22,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/moim")
 @RestController
@@ -282,7 +284,7 @@ public class MoimController {
 
     @DeleteMapping("like/{moimId}")
     @Operation(summary = "좋아요한 모임 취소하기", description = "좋아요한 모임을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<String> cancelLikeMoims(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<String> cancelLikeMoim(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         try{
             likeMoimService.cancelLike(moimId, userDetails);
         } catch (Exception e) {
@@ -290,4 +292,16 @@ public class MoimController {
         }
         return ResponseEntity.ok("success");
     }
+
+    @GetMapping("likeMoims")
+    @Operation(summary = "모든 likeMoims 가져오기", description = "모든 likeMoim 을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
+    public ResponseEntity<List<LikeMoim>> getAllLikeMoims(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<LikeMoim> likeMoims = likeMoimService.gellAllLikeMoims();
+        try{
+            return ResponseEntity.ok(likeMoims);
+        } catch (Exception e) {
+            return ResponseEntity.ok(null);
+        }
+    }
+
 }

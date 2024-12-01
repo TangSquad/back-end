@@ -17,19 +17,27 @@ import backend.tangsquad.moim.dto.response.MoimResponse;
 import backend.tangsquad.moim.entity.Moim;
 import backend.tangsquad.moim.repository.MoimRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class LikeMoimService {
 
     private final UserRepository userRepository;
     private final LikeMoimRepository likeMoimRepository;
     private final MoimRepository moimRepository;
+
+    @Autowired
+    public LikeMoimService(UserRepository userRepository, LikeMoimRepository likeMoimRepository, MoimRepository moimRepository) {
+        this.userRepository = userRepository;
+        this.likeMoimRepository = likeMoimRepository;
+        this.moimRepository = moimRepository;
+    }
 
     public LikeMoimRequest createLike(Long moimId, UserDetailsImpl userDetails) {
         Long userId = userRepository.findById(userDetails.getId())
@@ -55,7 +63,7 @@ public class LikeMoimService {
 
     public List<MoimResponse> getLikeMoims(UserDetailsImpl userDetails) {
         try {
-            Long userId = userDetails.getId();  // Get the authenticated user's ID
+            Long userId = userDetails.getId();
 
             List<LikeMoim> likeMoims = likeMoimRepository.findAllByUserId(userId);
 
@@ -88,13 +96,25 @@ public class LikeMoimService {
         }
     }
 
+    @Transactional
     public void cancelLike(Long moimId, UserDetailsImpl userDetails) {
         Optional<LikeMoim> optionalLikeMoim = likeMoimRepository.findByUserIdAndMoimId(userDetails.getId(), moimId);
-        if(optionalLikeMoim.isEmpty()) throw new RuntimeException("좋아요를 누르지 않은 모임입니다.");
-        try{
+        if (optionalLikeMoim.isEmpty()) {
+            throw new RuntimeException("좋아요를 누르지 않은 모임입니다.");
+        }
+        try {
             likeMoimRepository.deleteByUserIdAndMoimId(userDetails.getId(), moimId);
         } catch (Exception e) {
             throw new RuntimeException("좋아요 취소 중 오류가 발생했습니다.");
+        }
+    }
+
+    public List<LikeMoim> gellAllLikeMoims() {
+        try {
+            List<LikeMoim> likeMoims = likeMoimRepository.findAll();
+            return likeMoims;
+        } catch (Exception e) {
+            return null;
         }
     }
 }
