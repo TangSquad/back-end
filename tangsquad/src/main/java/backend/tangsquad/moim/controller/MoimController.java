@@ -284,7 +284,7 @@ public class MoimController {
     @Operation(summary = "좋아요한 모임 취소하기", description = "좋아요한 모임을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<String> cancelLikeMoims(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         try{
-            cancelLikeMoims(moimId, userDetails);
+            likeMoimService.cancelLike(moimId, userDetails);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to cancel like Moim.");
         }
