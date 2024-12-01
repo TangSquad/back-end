@@ -282,13 +282,12 @@ public class MoimController {
 
     @DeleteMapping("like/{moimId}")
     @Operation(summary = "좋아요한 모임 취소하기", description = "좋아요한 모임을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<MoimResponse> cancelLikeMoims(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        MoimResponse moimResponse = likeMoimService.cancelLike(moimId, userDetails);
-
-        if (moimResponse != null) {
-            return ResponseEntity.ok(moimResponse);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    public ResponseEntity<String> cancelLikeMoims(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try{
+            cancelLikeMoims(moimId, userDetails);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to cancel like Moim.");
         }
+        return ResponseEntity.ok("success");
     }
 }

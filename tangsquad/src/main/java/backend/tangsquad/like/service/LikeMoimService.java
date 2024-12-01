@@ -88,26 +88,13 @@ public class LikeMoimService {
         }
     }
 
-    public MoimResponse cancelLike(Long moimId, UserDetailsImpl userDetails) {
-        Optional<Moim> moimOptional = moimRepository.findById(moimId);
-        Moim moim;
-
-        if (moimOptional.isPresent()) moim = moimOptional.get();
-        else return null;
-
-        MoimResponse moimResponse = MoimResponse.builder()
-                .moimName(moim.getMoimName())
-                .moimIntro(moim.getMoimIntro())
-                .limitPeople(moim.getLimitPeople())
-                .isPublic(moim.getIsPublic())
-                .expense(moim.getExpense())
-                .licenseLimit(moim.getLicenseLimit())
-                .moimDetails(moim.getMoimDetails())
-                .build();
-
-        if (moim.getUser() != userDetails.getUser()) return null;
-
-        moimRepository.delete(moim);
-        return moimResponse;
+    public void cancelLike(Long moimId, UserDetailsImpl userDetails) {
+        Optional<LikeMoim> optionalLikeMoim = likeMoimRepository.findByUserIdAndMoimId(userDetails.getId(), moimId);
+        if(optionalLikeMoim.isEmpty()) throw new RuntimeException("좋아요를 누르지 않은 모임입니다.");
+        try{
+            likeMoimRepository.deleteByUserIdAndMoimId(userDetails.getId(), moimId);
+        } catch (Exception e) {
+            throw new RuntimeException("좋아요 취소 중 오류가 발생했습니다.");
+        }
     }
 }

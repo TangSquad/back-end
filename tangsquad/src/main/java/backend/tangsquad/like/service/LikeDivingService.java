@@ -22,8 +22,6 @@ public class LikeDivingService {
 
     private final UserRepository userRepository;
 
-    private final LogbookRepository logbookRepository;
-
     private final LikeDivingRepository likeDivingRepository;
 
     private final DivingRepository divingRepository;
@@ -34,18 +32,21 @@ public class LikeDivingService {
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."))
                 .getId();
 
-        Long savedLogbookId = logbookRepository.findById(divingId)
-                .orElseThrow(() -> new RuntimeException("로그북을 찾을 수 없습니다."))
-                .getId();
+        Long savedLogbookId = divingRepository.findById(divingId)
+                .orElseThrow(() -> new RuntimeException("다이빙을 찾을 수 없습니다.")).getDivingId();
+
+
+        Optional<LikeDiving> optionalLikeDiving = likeDivingRepository.findByUserIdAndDivingId(userId, savedLogbookId);
+
+        if (optionalLikeDiving.isPresent()) throw new RuntimeException("이미 좋아요를 누른 다이빙입니다.");
 
         LikeDiving like = new LikeDiving(userId, savedLogbookId);
         LikeDiving savedLike = likeDivingRepository.save(like);
-        LikeDivingResponse likeDivingResponse = LikeDivingResponse.builder()
+
+        return LikeDivingResponse.builder()
                 .userId(savedLike.getUserId())
                 .divingId(savedLike.getDivingId())
                 .build();
-
-        return likeDivingResponse;
     }
 
     public List<DivingResponse> getLikeDivings(UserDetailsImpl userDetails) {
@@ -56,7 +57,7 @@ public class LikeDivingService {
             List<LikeDiving> likedDivings = likeDivingRepository.findAllByUserId(userId);
 
             List<Long> divingIds = likedDivings.stream()
-                    .map(likeDiving -> likeDiving.getDivingId())
+                    .map(LikeDiving::getDivingId)
                     .collect(Collectors.toList());
 
             List<Diving> divings = divingRepository.findAllById(divingIds);
@@ -77,11 +78,10 @@ public class LikeDivingService {
 
     public DivingResponse cancelLike(Long divingId, UserDetailsImpl userDetails) {
         Optional<Diving> optionalDiving = divingRepository.findById(divingId);
-        Diving diving;
 
+        if (optionalDiving.isEmpty()) return null;
 
-        if (optionalDiving.isPresent()) diving = optionalDiving.get();
-        else return null;
+        Diving diving = optionalDiving.get();
 
         DivingResponse divingResponse = DivingResponse.builder()
                 .divingIntro(diving.getDivingIntro())
