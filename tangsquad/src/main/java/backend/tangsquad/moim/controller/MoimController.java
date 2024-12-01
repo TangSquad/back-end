@@ -43,12 +43,12 @@ public class MoimController {
             @RequestBody MoimCreateRequest moimCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        MoimResponse moimCreateResponse = moimService.createMoim(moimCreateRequest, userDetails);
+        MoimResponse moimResponse = moimService.createMoim(moimCreateRequest, userDetails);
 
-        System.out.println("moimCreateResponse: " + moimCreateResponse);
+        System.out.println("moimResponse: " + moimResponse);
 
-        if (moimCreateResponse != null) {
-            return ResponseEntity.ok(moimCreateResponse);
+        if (moimResponse != null) {
+            return ResponseEntity.ok(moimResponse);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }

@@ -11,7 +11,7 @@ import java.util.UUID;
 public class MoimResponse {
     private Long id;
     private Long userId;
-    private String thumbnailurl;
+    private String thumbnailUrl;
     private Boolean isPublic;
     private String moimName;
     private String moimIntro;
@@ -27,10 +27,10 @@ public class MoimResponse {
     private UUID chatRoomId;
 
     @Builder
-    public MoimResponse(Long id, Long userId, String thumbnailurl, Boolean isPublic, String moimName, String moimIntro, String moimDetails, Long currentPeople, Long limitPeople, Long expense, String licenseLimit, List<String> locations, List<Long> registeredUserIds, String age, List<String> moods, UUID chatRoomId) {
+    public MoimResponse(Long id, Long userId, String thumbnailUrl, Boolean isPublic, String moimName, String moimIntro, String moimDetails, Long currentPeople, Long limitPeople, Long expense, String licenseLimit, List<String> locations, List<Long> registeredUserIds, String age, List<String> moods, UUID chatRoomId) {
         this.id = id;
         this.userId = userId;
-        this.thumbnailurl = thumbnailurl;
+        this.thumbnailUrl = thumbnailUrl;
         this.isPublic = isPublic;
         this.moimName = moimName;
         this.moimIntro = moimIntro;
@@ -45,7 +45,5 @@ public class MoimResponse {
         this.moods = moods;
         this.chatRoomId = chatRoomId;
     }
-
-
 
 }

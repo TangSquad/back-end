@@ -67,7 +67,7 @@ public class LikeMoimService {
             return moims.stream().map(moim -> MoimResponse.builder()
                     .id(moim.getId())
                     .userId(moim.getUser().getId())
-                    .thumbnailurl(moim.getThumbnailUrl())
+                    .thumbnailUrl(moim.getThumbnailUrl())
                     .isPublic(moim.getIsPublic())
                     .moimName(moim.getMoimName())
                     .moimIntro(moim.getMoimIntro())

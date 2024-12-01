@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class MoimCreateRequest {
     private Boolean isPublic;
-    private String thumbnailurl;
+    private String thumbnailUrl;
     private Long currentPeople;
     private String moimName;
     private String moimIntro;
