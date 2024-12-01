@@ -39,15 +39,13 @@ public class MoimController {
             description = "새로운 모임을 생성합니다.",
             security = @SecurityRequirement(name = "AccessToken")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "모임 생성 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
-    })
     public ResponseEntity<MoimResponse> createMoim(
             @RequestBody MoimCreateRequest moimCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         MoimResponse moimCreateResponse = moimService.createMoim(moimCreateRequest, userDetails);
+
+        System.out.println("moimCreateResponse: " + moimCreateResponse);
 
         if (moimCreateResponse != null) {
             return ResponseEntity.ok(moimCreateResponse);

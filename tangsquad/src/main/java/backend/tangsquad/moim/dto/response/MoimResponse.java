@@ -21,13 +21,13 @@ public class MoimResponse {
     private Long expense;
     private String licenseLimit;
     private List<String> locations;
-    private List<String> registeredUserIds;
+    private List<Long> registeredUserIds;
     private String age;
     private List<String> moods;
     private UUID chatRoomId;
 
     @Builder
-    public MoimResponse(Long id, Long userId, String thumbnailurl, Boolean isPublic, String moimName, String moimIntro, String moimDetails, Long currentPeople, Long limitPeople, Long expense, String licenseLimit, List<String> locations, List<String> registeredUserIds, String age, List<String> moods, UUID chatRoomId) {
+    public MoimResponse(Long id, Long userId, String thumbnailurl, Boolean isPublic, String moimName, String moimIntro, String moimDetails, Long currentPeople, Long limitPeople, Long expense, String licenseLimit, List<String> locations, List<Long> registeredUserIds, String age, List<String> moods, UUID chatRoomId) {
         this.id = id;
         this.userId = userId;
         this.thumbnailurl = thumbnailurl;

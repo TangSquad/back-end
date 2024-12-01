@@ -21,6 +21,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class MoimService  {
     private MoimResponse convertToMoimResponse(Moim moim) {
         return MoimResponse.builder()
                 .id(moim.getId())
-                .userId(moim.getUser().getId())
+                .userId(moim.getUser() != null ? moim.getUser().getId() : null)
                 .thumbnailurl(moim.getThumbnailUrl())
                 .isPublic(moim.getIsPublic())
                 .moimName(moim.getMoimName())
@@ -53,12 +54,15 @@ public class MoimService  {
                 .moimDetails(moim.getMoimDetails())
                 .currentPeople(moim.getCurrentPeople())
                 .limitPeople(moim.getLimitPeople())
-                .locations(moim.getLocations())
+                .expense(moim.getExpense())
                 .licenseLimit(moim.getLicenseLimit())
+                .locations(moim.getLocations() != null ? moim.getLocations() : Collections.emptyList())
+                .registeredUserIds(moim.getRegisteredUsers() != null
+                        ? moim.getRegisteredUsers().stream().map(User::getId).collect(Collectors.toList())
+                        : Collections.emptyList())
                 .age(moim.getAge())
-                .moods(moim.getMoods())
-                .registeredUserIds(moim.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
-                .chatRoomId(moim.getChatRoomId())
+                .moods(moim.getMoods() != null ? moim.getMoods() : Collections.emptyList())
+                .chatRoomId(moim.getChatRoomId() != null ? moim.getChatRoomId() : null)
                 .build();
     }
 
@@ -95,8 +99,8 @@ public class MoimService  {
             ChatRoom chatRoom = chatRoomService.createChatRoom(moim.getMoimName(), ChatRoom.RoomType.MOIM, moim.getId(), userDetails, true);
             moim.setChatRoomId(chatRoom.getId());
 
-            moimRepository.save(moim);
-            return convertToMoimResponse(moim);
+            Moim savedMoim = moimRepository.save(moim);
+            return convertToMoimResponse(savedMoim);
         } catch (Exception e) {
             return null;
         }
