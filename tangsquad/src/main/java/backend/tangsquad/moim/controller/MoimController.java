@@ -39,15 +39,13 @@ public class MoimController {
             description = "새로운 모임을 생성합니다.",
             security = @SecurityRequirement(name = "AccessToken")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "모임 생성 성공", content = @Content(schema = @Schema(implementation = MoimResponse.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
-    })
     public ResponseEntity<MoimResponse> createMoim(
             @RequestBody MoimCreateRequest moimCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         MoimResponse moimCreateResponse = moimService.createMoim(moimCreateRequest, userDetails);
+
+        System.out.println("moimCreateResponse: " + moimCreateResponse);
 
         if (moimCreateResponse != null) {
             return ResponseEntity.ok(moimCreateResponse);
@@ -179,7 +177,7 @@ public class MoimController {
     @Operation(summary = "모임 아이디로 모임 불러오기", description = "모임 아이디로 모임을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<MoimResponse> getMyMoim(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        MoimResponse moimResponse = moimService.getMoim(moimId, userDetails);
+        MoimResponse moimResponse = moimService.getMoim(moimId);
 
         if (moimResponse != null) {
             return ResponseEntity.ok(moimResponse);
@@ -284,13 +282,12 @@ public class MoimController {
 
     @DeleteMapping("like/{moimId}")
     @Operation(summary = "좋아요한 모임 취소하기", description = "좋아요한 모임을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<MoimResponse> cancelLikeMoims(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        MoimResponse moimResponse = likeMoimService.cancelLike(moimId, userDetails);
-
-        if (moimResponse != null) {
-            return ResponseEntity.ok(moimResponse);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    public ResponseEntity<String> cancelLikeMoims(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try{
+            likeMoimService.cancelLike(moimId, userDetails);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to cancel like Moim.");
         }
+        return ResponseEntity.ok("success");
     }
 }

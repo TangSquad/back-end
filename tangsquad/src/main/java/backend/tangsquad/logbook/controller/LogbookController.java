@@ -180,12 +180,12 @@ public class LogbookController {
 
     @DeleteMapping("like/{logbookId}")
     @Operation(summary = "좋아요한 로그북 취소하기", description = "좋아요한 로그북을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<LogbookResponse> cancelLikeLogbooks(@PathVariable("logbookId") Long logbookId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        LogbookResponse logbookResponse = likeLogbookService.cancelLike(logbookId, userDetails);
-        if (logbookResponse != null) {
-            return ResponseEntity.ok(logbookResponse);
-        } else {
+    public ResponseEntity<String> cancelLikeLogbooks(@PathVariable("logbookId") Long logbookId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try {
+            likeLogbookService.cancelLike(logbookId, userDetails);
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+        return ResponseEntity.ok().body("좋아요 취소 완료");
     }
 }
