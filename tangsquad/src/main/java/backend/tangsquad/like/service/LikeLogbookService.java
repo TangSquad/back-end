@@ -58,14 +58,14 @@ public class LikeLogbookService {
             List<Logbook> logbooks = logbookRepository.findAllById(likeLogbookIds);
 
             return logbooks.stream().map(logbook -> LogbookResponse.builder()
-                    .logbookId(logbook.getId())
+                    .id(logbook.getId())
                     .userId(logbook.getUser().getId())
                     .thumbnailUrl(logbook.getThumbnailUrl())
                     .isPublic(logbook.getIsPublic())
                     .title(logbook.getTitle())
                     .contents(logbook.getContents())
                     .date(logbook.getDate())
-                    .logs(logbook.getLogs())
+                    .logIds(logbook.getLogs().stream().map(log -> log.getId()).collect(Collectors.toList()))
                     .userCondition(logbook.getUserCondition())
                     .build())
                 .collect(Collectors.toList());

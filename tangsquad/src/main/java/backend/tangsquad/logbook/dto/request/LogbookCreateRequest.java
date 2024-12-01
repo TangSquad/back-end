@@ -14,7 +14,6 @@ public class LogbookCreateRequest {
     private String thumbnailUrl;
     private String title;
     private String contents;
-
     private UserCondition userCondition;
 
     @Builder
