@@ -11,6 +11,7 @@ import backend.tangsquad.common.dto.response.ProfileEditResponse;
 import backend.tangsquad.common.dto.response.UserEquipmentResponse;
 import backend.tangsquad.common.dto.response.UserIntroductionResponse;
 import backend.tangsquad.common.dto.response.UserProfileResponse;
+import backend.tangsquad.common.repository.UserProfileRepository;
 import backend.tangsquad.common.repository.UserRepository;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.service.DivingService;
@@ -31,6 +32,7 @@ public class ProfileService {
     private final UserCertificateService userCertificateService;
     private final UserCertificateRepository userCertificateRepository;
     private final DivingService divingService;
+    private final UserProfileRepository userProfileRepository;
 
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfile(Long userId) {
@@ -70,9 +72,20 @@ public class ProfileService {
         );
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public UserEquipmentResponse getUserEquipment(Long userId) {
-        Equipment equipment = getUserById(userId).getUserProfile().getEquipment();
+        User user = getUserById(userId);  // user를 한 번만 조회
+        UserProfile userProfile = user.getUserProfile();  // 이미 로드된 userProfile 사용
+
+        Equipment equipment = userProfile.getEquipment();
+
+        if (equipment == null) {  // 장비 정보가 없을 경우
+            equipment = new Equipment();
+            equipment.setUserProfile(userProfile);
+            userProfile.setEquipment(equipment);
+            userProfileRepository.save(userProfile);  // userProfile과 함께 저장
+        }
+
         return new UserEquipmentResponse(
                 equipment.getHeight(),
                 equipment.getWeight(),
