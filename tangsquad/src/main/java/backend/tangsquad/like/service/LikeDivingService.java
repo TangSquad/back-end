@@ -8,7 +8,6 @@ import backend.tangsquad.diving.repository.DivingRepository;
 import backend.tangsquad.like.dto.response.LikeDivingResponse;
 import backend.tangsquad.like.entity.LikeDiving;
 import backend.tangsquad.like.repository.LikeDivingRepository;
-import backend.tangsquad.logbook.repository.LogbookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,15 +31,15 @@ public class LikeDivingService {
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."))
                 .getId();
 
-        Long savedLogbookId = divingRepository.findById(divingId)
+        Long savedDiving = divingRepository.findById(divingId)
                 .orElseThrow(() -> new RuntimeException("다이빙을 찾을 수 없습니다.")).getDivingId();
 
 
-        Optional<LikeDiving> optionalLikeDiving = likeDivingRepository.findByUserIdAndDivingId(userId, savedLogbookId);
+        Optional<LikeDiving> optionalLikeDiving = likeDivingRepository.findByUserIdAndDivingId(userId, savedDiving);
 
         if (optionalLikeDiving.isPresent()) throw new RuntimeException("이미 좋아요를 누른 다이빙입니다.");
 
-        LikeDiving like = new LikeDiving(userId, savedLogbookId);
+        LikeDiving like = new LikeDiving(userId, savedDiving);
         LikeDiving savedLike = likeDivingRepository.save(like);
 
         return LikeDivingResponse.builder()
@@ -62,12 +61,22 @@ public class LikeDivingService {
 
             List<Diving> divings = divingRepository.findAllById(divingIds);
             return divings.stream().map(diving -> DivingResponse.builder()
+                    .id(diving.getDivingId())
+                    .userId(diving.getUser().getId())
+                    .isPublic(diving.getIsPublic())
+                    .thumbnailUrl(diving.getThumbnailUrl())
                     .divingName(diving.getDivingName())
                     .divingIntro(diving.getDivingIntro())
                     .age(diving.getAge())
                     .moods(diving.getMoods())
+                    .currentPeople(diving.getCurrentPeople())
                     .limitPeople(diving.getLimitPeople())
                     .licenseLimit(diving.getLicenseLimit())
+                    .startDate(diving.getStartDate())
+                    .endDate(diving.getEndDate())
+                    .location(diving.getLocation())
+                    .registeredUserIds(diving.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
+                    .chatRoomId(diving.getChatRoomId())
                     .build()
             ).collect(Collectors.toList());
 
@@ -76,27 +85,13 @@ public class LikeDivingService {
         }
     }
 
-    public DivingResponse cancelLike(Long divingId, UserDetailsImpl userDetails) {
-        Optional<Diving> optionalDiving = divingRepository.findById(divingId);
-
-        if (optionalDiving.isEmpty()) return null;
-
-        Diving diving = optionalDiving.get();
-
-        DivingResponse divingResponse = DivingResponse.builder()
-                .divingIntro(diving.getDivingIntro())
-                .divingName(diving.getDivingName())
-                .endDate(diving.getEndDate())
-                .moods(diving.getMoods())
-                .location(diving.getLocation())
-                .startDate(diving.getStartDate())
-                .licenseLimit(diving.getLicenseLimit())
-                .age(diving.getAge())
-                .build();
-
-        if (diving.getUser() != userDetails.getUser()) return null;
-
-        divingRepository.delete(diving);
-        return divingResponse;
+    public void cancelLike(Long divingId, UserDetailsImpl userDetails) {
+        Optional<LikeDiving> optionalLikeDiving = likeDivingRepository.findByUserIdAndDivingId(userDetails.getId(), divingId);
+        if(optionalLikeDiving.isEmpty()) throw new RuntimeException("좋아요를 누르지 않은 모임입니다.");
+        try{
+            likeDivingRepository.delete(optionalLikeDiving.get());
+        } catch (Exception e) {
+            throw new RuntimeException("좋아요 취소 중 오류가 발생했습니다.");
+        }
     }
 }
