@@ -1,5 +1,6 @@
 package backend.tangsquad.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +36,7 @@ public class Equipment {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userprofile_id", nullable = false)
+    @JsonManagedReference
     private UserProfile userProfile;
 
     @PrePersist

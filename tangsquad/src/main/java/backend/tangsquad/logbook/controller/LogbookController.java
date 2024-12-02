@@ -37,14 +37,14 @@ public class LogbookController {
             description = "새로운 로그북을 생성합니다.",
             security = @SecurityRequirement(name = "AccessToken")
     )
-    public ResponseEntity<LogbookCreateRequest> createLogbook(
+    public ResponseEntity<LogbookResponse> createLogbook(
             @RequestBody LogbookCreateRequest logbookCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         LogbookResponse logbookResponse = logbookService.save(logbookCreateRequest, userDetails);
 
         if (logbookResponse != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(logbookCreateRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(logbookResponse);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -56,7 +56,7 @@ public class LogbookController {
         Logbook logbook = logbookService.getLogbookByIdAndUserId(logbookId, userDetails.getId());
 
         if (logbook != null) {
-            LogbookResponse logbookResponse = convertToLogbookResponse(logbook);
+            LogbookResponse logbookResponse = convertToLogbookResponse(logbook, userDetails.getUser().getUserProfile());
             return ResponseEntity.ok(logbookResponse);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -65,8 +65,8 @@ public class LogbookController {
 
     @GetMapping("all")
     @Operation(summary = "모든 로그북 불러오기", description = "모든 로그북을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<List<LogbookResponse>> getAllLogbooks() {
-        List<LogbookResponse> logbookResponses = logbookService.getAllLogbooks();
+    public ResponseEntity<List<LogbookResponse>> getAllLogbooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<LogbookResponse> logbookResponses = logbookService.getAllLogbooks(userDetails);
 
         if (logbookResponses != null) {
             return ResponseEntity.ok(logbookResponses);
@@ -79,7 +79,7 @@ public class LogbookController {
     @GetMapping("")
     @Operation(summary = "내 로그북 불러오기", description = "나의 로그들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<LogbookResponse>> getMyLogbooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<LogbookResponse> logbookResponses = logbookService.getLogbooksByUserId(userDetails.getUser().getId());
+        List<LogbookResponse> logbookResponses = logbookService.getLogbooksByUserId(userDetails);
 
         if (logbookResponses != null) {
             return ResponseEntity.ok(logbookResponses);
@@ -91,7 +91,7 @@ public class LogbookController {
     @GetMapping("user/{userId}")
     @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그들을 불러옵니다.")
     public ResponseEntity<List<LogbookResponse>> getLogbooks(@PathVariable("userId") Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<LogbookResponse> logbookResponses = logbookService.getLogbooksByUserId(userId);
+        List<LogbookResponse> logbookResponses = logbookService.getLogbooksByUserId(userDetails);
 
         if (logbookResponses != null) {
             return ResponseEntity.ok(logbookResponses);

@@ -70,7 +70,7 @@ public class LogService {
 
             logRepository.save(log);
             System.out.println("log.getId().toString(): " + log.getId().toString());
-            logbook.update(log);
+            logbook.addLog(log);
             logbookRepository.save(logbook);
             System.out.println("logbook.getLogs().size(): " + logbook.getLogs().size());
 

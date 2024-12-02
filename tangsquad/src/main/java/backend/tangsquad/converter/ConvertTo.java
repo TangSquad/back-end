@@ -1,6 +1,7 @@
 package backend.tangsquad.converter;
 
 import backend.tangsquad.common.entity.User;
+import backend.tangsquad.common.entity.UserProfile;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.logbook.dto.response.LogResponse;
@@ -57,15 +58,14 @@ public final class ConvertTo {
                 .build();
     }
 
-    public static LogbookResponse convertToLogbookResponse(Logbook logbook) {
+    public static LogbookResponse convertToLogbookResponse(Logbook logbook, UserProfile userProfile) {
         return LogbookResponse.builder()
-                .id(logbook.getId())
-                .userId(logbook.getUser().getId())
+                .date(logbook.getDate())
+                .imageUrls(logbook.getImageUrls())
                 .title(logbook.getTitle())
                 .contents(logbook.getContents())
-                .date(logbook.getDate())
                 .userCondition(logbook.getUserCondition())
-                .logIds(logbook.getLogs().stream().map(log -> log.getId()).toList())
+                .equipment(userProfile.getEquipment())
                 .build();
     }
 
