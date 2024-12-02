@@ -262,11 +262,15 @@ public class MoimController {
 
     @PostMapping("like/{moimId}")
     @Operation(summary = "좋아요 모임 추가", description = "로그북에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<LikeMoimRequest> likeMoim(@PathVariable Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<MoimResponse> likeMoim(@PathVariable Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        LikeMoimRequest likeMoimRequest = likeMoimService.createLike(moimId, userDetails);
+        MoimResponse moimResponse = likeMoimService.createLike(moimId, userDetails);
 
-        return ResponseEntity.ok(likeMoimRequest);
+        if (moimResponse != null) {
+            return ResponseEntity.ok(moimResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     @GetMapping("like")

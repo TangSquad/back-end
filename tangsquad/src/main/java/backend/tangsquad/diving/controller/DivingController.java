@@ -4,11 +4,8 @@ import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.diving.dto.response.DivingJoinResponse;
 import backend.tangsquad.diving.dto.response.DivingResponse;
-import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.diving.service.DivingService;
-import backend.tangsquad.like.dto.request.LikeDivingRequest;
-import backend.tangsquad.like.dto.response.LikeDivingResponse;
 import backend.tangsquad.like.service.LikeDivingService;
 import backend.tangsquad.moim.dto.response.MoimResponse;
 import backend.tangsquad.swagger.global.CommonResponse;
@@ -20,18 +17,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequestMapping("/diving")
 @RestController
@@ -255,8 +245,8 @@ public class DivingController {
 
     @PostMapping("like/{divingId}")
     @Operation(summary = "좋아요 다이빙 추가", description = "다이빙에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<LikeDivingResponse> likeDiving(@PathVariable Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        LikeDivingResponse likeDivingResponse = likeDivingService.createLike(divingId, userDetails);
+    public ResponseEntity<DivingResponse> likeDiving(@PathVariable Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        DivingResponse likeDivingResponse = likeDivingService.createLike(divingId, userDetails);
         return ResponseEntity.ok(likeDivingResponse);
     }
 

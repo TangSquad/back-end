@@ -4,13 +4,13 @@ import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.chat.entity.ChatRoom;
 import backend.tangsquad.chat.repository.ChatRoomRepository;
 import backend.tangsquad.chat.service.ChatRoomService;
+import backend.tangsquad.converter.ConvertTo;
 import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.diving.dto.response.DivingJoinResponse;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.diving.repository.DivingRepository;
-import backend.tangsquad.logbook.entity.Log;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,26 +30,6 @@ public class DivingService {
 
     public Diving save(Diving diving) {
         return divingRepository.save(diving);
-    }
-
-    private DivingResponse convertToDivingResponse(Diving diving) {
-        return DivingResponse.builder()
-                .id(diving.getDivingId())
-                .userId(diving.getUser().getId())
-                .isPublic(diving.getIsPublic())
-                .divingName(diving.getDivingName())
-                .divingIntro(diving.getDivingIntro())
-                .age(diving.getAge())
-                .moods(diving.getMoods())
-                .startDate(diving.getStartDate())
-                .endDate(diving.getEndDate())
-                .thumbnailUrl(diving.getThumbnailUrl())
-                .location(diving.getLocation())
-                .licenseLimit(diving.getLicenseLimit())
-                .currentPeople(diving.getCurrentPeople())
-                .limitPeople(diving.getLimitPeople())
-                .chatRoomId(diving.getChatRoomId())
-                .build();
     }
 
 
@@ -72,14 +52,16 @@ public class DivingService {
         allDivings.sort((a, b) -> Long.compare(b.getDivingId(), a.getDivingId()));
 
         return allDivings.stream()
-                .limit(3)
-                .map(this::convertToDivingResponse) // Map each Diving to DivingResponse
+                .limit(3)  // Limit to the first 3 divings
+                .map(ConvertTo::convertToDivingResponse) // Correct mapping using method reference
                 .collect(Collectors.toList());
     }
 
+
+
     private List<DivingResponse> returnDivingResponses(List<Diving> divings) {
         return divings.stream()
-                .map(diving -> convertToDivingResponse(diving))
+                .map(ConvertTo::convertToDivingResponse) // Correct usage
                 .collect(Collectors.toList());
     }
 
@@ -109,7 +91,7 @@ public class DivingService {
             diving.setChatRoomId(chatRoom.getId());
 
             divingRepository.save(diving);
-            return convertToDivingResponse(diving);
+            return ConvertTo.convertToDivingResponse(diving);
         } catch (Exception e) {
             return null;
         }
@@ -181,7 +163,7 @@ public class DivingService {
             if (divingOptional.isPresent()) {
                 Diving diving = divingOptional.get();
 
-                return convertToDivingResponse(diving);
+                return ConvertTo.convertToDivingResponse(diving);
             } else {
                 return null;
             }
@@ -214,7 +196,7 @@ public class DivingService {
             diving.update(divingRequest);
 
             divingRepository.save(diving);
-            return convertToDivingResponse(diving);
+            return ConvertTo.convertToDivingResponse(diving);
         } catch (Exception e) {
             return null;
         }

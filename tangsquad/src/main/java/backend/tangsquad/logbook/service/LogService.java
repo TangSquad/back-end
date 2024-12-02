@@ -16,8 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static backend.tangsquad.converter.ConvertTo.convertToLogResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -31,29 +34,6 @@ public class LogService {
     private List<LogResponse> convertToLogResponses(List<Log> logs) {
         return logs.stream().map(log -> convertToLogResponse(log)
         ).collect(Collectors.toList());
-    }
-
-    private LogResponse convertToLogResponse(Log log) {
-        return LogResponse.builder()
-                .id(log.getId())
-                .userId(log.getUser().getId())
-                .location(log.getLocation())
-                .whether(log.getWhether())
-                .airTemp(log.getAirTemp())
-                .surfTemp(log.getSurfTemp())
-                .bottTemp(log.getBottTemp())
-                .viewSight(log.getViewSight())
-                .tide(log.getTide())
-                .wave(log.getWave())
-                .surge(log.getSurge())
-                .diveTime(log.getDiveTime())
-                .subject(log.getSubject())
-                .avgDepDepth(log.getAvgDepth())
-                .maxDepth(log.getMaxDepth())
-                .startBar(log.getStartBar())
-                .endBar(log.getEndBar())
-                .logbookId(log.getLogbook().getId())
-                .build();
     }
 
     public LogResponse save(LogCreateRequest logCreateRequest, UserDetailsImpl userDetails) {
@@ -90,7 +70,7 @@ public class LogService {
 
             logRepository.save(log);
             System.out.println("log.getId().toString(): " + log.getId().toString());
-            logbook.getLogs().add(log);
+            logbook.update(log);
             logbookRepository.save(logbook);
             System.out.println("logbook.getLogs().size(): " + logbook.getLogs().size());
 
@@ -145,22 +125,32 @@ public class LogService {
 
     public LogResponse updateLog(LogUpdateRequest logUpdateRequest, UserDetailsImpl userDetails) {
         try {
-            Log log = logRepository.findById(logUpdateRequest.getLogbook().getId())
-                    .orElseThrow(() -> new RuntimeException("Log not found"));
+            Logbook logbook = logbookRepository.findById(logUpdateRequest.getLogbookId())
+                    .orElseThrow(() -> new NoSuchElementException("Logbook not found with id: " + logUpdateRequest.getLogbookId()));
 
+            Log log = logRepository.findAll().stream()
+                    .filter(l -> l.getLogbook().equals(logbook)) // Filter logs by matching logbook
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("Log not found for the given Logbook"));
+
+            // Check if the logged-in user is authorized to update the log
             if (!log.getUser().getId().equals(userDetails.getUser().getId())) {
-                throw new RuntimeException("Unauthorized to update this log.");
+                return null;
             }
 
+            // Update the log and save
             log.update(logUpdateRequest);
             logRepository.save(log);
 
+            // Return the response
             return convertToLogResponse(log);
-        } catch (Exception e) {
-            logger.error("Error while updating log ID: " + logUpdateRequest.getLogbook().getId(), e);
-            throw new RuntimeException("Error while updating log.");
+
+        } catch (NoSuchElementException e) {
+            logger.error("Error: " + e.getMessage(), e);
+            throw e; // Re-throw the exception after logging it
         }
     }
+
     public LogResponse delete(Long logId, UserDetailsImpl userDetails) {
         try {
             Log log = logRepository.findById(logId)

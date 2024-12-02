@@ -2,10 +2,10 @@ package backend.tangsquad.like.service;
 
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.repository.UserRepository;
+import backend.tangsquad.converter.ConvertTo;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.repository.DivingRepository;
-import backend.tangsquad.like.dto.response.LikeDivingResponse;
 import backend.tangsquad.like.entity.LikeDiving;
 import backend.tangsquad.like.repository.LikeDivingRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class LikeDivingService {
     private final DivingRepository divingRepository;
 
 
-    public LikeDivingResponse createLike(Long divingId, UserDetailsImpl userDetails) {
+    public DivingResponse createLike(Long divingId, UserDetailsImpl userDetails) {
         Long userId = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."))
                 .getId();
@@ -42,10 +42,11 @@ public class LikeDivingService {
         LikeDiving like = new LikeDiving(userId, savedDiving);
         LikeDiving savedLike = likeDivingRepository.save(like);
 
-        return LikeDivingResponse.builder()
-                .userId(savedLike.getUserId())
-                .divingId(savedLike.getDivingId())
-                .build();
+        Optional<Diving> diving = divingRepository.findById(savedDiving);
+        if (diving.isEmpty()) new RuntimeException("다이빙을 찾을 수 없습니다.");
+
+
+        return ConvertTo.convertToDivingResponse(diving.get());
     }
 
     public List<DivingResponse> getLikeDivings(UserDetailsImpl userDetails) {
@@ -60,24 +61,7 @@ public class LikeDivingService {
                     .collect(Collectors.toList());
 
             List<Diving> divings = divingRepository.findAllById(divingIds);
-            return divings.stream().map(diving -> DivingResponse.builder()
-                    .id(diving.getDivingId())
-                    .userId(diving.getUser().getId())
-                    .isPublic(diving.getIsPublic())
-                    .thumbnailUrl(diving.getThumbnailUrl())
-                    .divingName(diving.getDivingName())
-                    .divingIntro(diving.getDivingIntro())
-                    .age(diving.getAge())
-                    .moods(diving.getMoods())
-                    .currentPeople(diving.getCurrentPeople())
-                    .limitPeople(diving.getLimitPeople())
-                    .licenseLimit(diving.getLicenseLimit())
-                    .startDate(diving.getStartDate())
-                    .endDate(diving.getEndDate())
-                    .location(diving.getLocation())
-                    .registeredUserIds(diving.getRegisteredUsers().stream().map(user -> user.getId().toString()).collect(Collectors.toList()))
-                    .chatRoomId(diving.getChatRoomId())
-                    .build()
+            return divings.stream().map(diving -> ConvertTo.convertToDivingResponse(diving)
             ).collect(Collectors.toList());
 
         } catch (Exception e) {

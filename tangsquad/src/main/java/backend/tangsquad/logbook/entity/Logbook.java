@@ -52,8 +52,6 @@ public class Logbook {
     @Enumerated(EnumType.STRING)
     private UserCondition userCondition;
 
-
-
     public void update(LogbookRequest logbookRequest) {
         if (logbookRequest.getDate() != null) this.date = logbookRequest.getDate();
         if (logbookRequest.getIsPublic() != null) this.isPublic = logbookRequest.getIsPublic();
@@ -62,6 +60,19 @@ public class Logbook {
         if (logbookRequest.getContents() != null) this.contents = logbookRequest.getContents();
         if (logbookRequest.getUserCondition() != null) this.userCondition = logbookRequest.getUserCondition();
     }
+
+    public synchronized void update(Log addLog) {
+        if (addLog == null) {
+            throw new IllegalArgumentException("Log cannot be null");
+        }
+        if (logs == null) {
+            System.out.println("logs are null");
+            logs = new ArrayList<>();
+        }
+        System.out.println("Adding log: " + logs);
+        this.logs.add(addLog);
+    }
+
 
     @Builder
     public Logbook(User user, Boolean isPublic,LocalDateTime date, String thumbnailUrl, String title, String contents, List<Log> logs, UserCondition userCondition) {

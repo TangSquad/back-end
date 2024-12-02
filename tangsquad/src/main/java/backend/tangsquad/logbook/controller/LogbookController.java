@@ -5,6 +5,7 @@ import backend.tangsquad.like.dto.request.LikeLogbookRequest;
 import backend.tangsquad.like.service.LikeLogbookService;
 import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
 import backend.tangsquad.logbook.dto.request.LogbookRequest;
+import backend.tangsquad.logbook.dto.response.LogResponse;
 import backend.tangsquad.logbook.dto.response.LogbookResponse;
 import backend.tangsquad.logbook.entity.Logbook;
 import backend.tangsquad.logbook.service.LogbookService;
@@ -18,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+
+import static backend.tangsquad.converter.ConvertTo.convertToLogbookResponse;
 
 @RequestMapping("/logbook")
 @RestController
@@ -54,39 +57,10 @@ public class LogbookController {
 
         if (logbook != null) {
             LogbookResponse logbookResponse = convertToLogbookResponse(logbook);
-            return ResponseEntity.ok(logbookResponse); // Return the logbook details
+            return ResponseEntity.ok(logbookResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Logbook not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-    }
-
-//    @GetMapping("user/{logbookId}")
-//    @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그를 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-//    public ResponseEntity<LogbookResponse> getUserLog(
-//            @PathVariable("logbookId") Long logbookId) {
-//
-//        // Retrieve the logbook entry by ID
-//        Logbook logbook = logbookService.getLogbookByLogbookId(logbookId);
-//
-//        if (logbook != null) {
-//            // Convert Logbook entity to LogbookReadRequest DTO
-//            LogbookResponse logbookResponse = convertToLogbookResponse(logbook);
-//            return ResponseEntity.ok(logbookResponse); // Return the logbook details
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Logbook not found
-//        }
-//    }
-
-    private LogbookResponse convertToLogbookResponse(Logbook logbook) {
-
-        return LogbookResponse.builder()
-                .logbookId(logbook.getId())
-                .userId(logbook.getUser().getId())
-                .title(logbook.getTitle())
-                .date(logbook.getDate())
-                .contents(logbook.getContents())
-                .isPublic(logbook.getIsPublic())
-                .build();
     }
 
     @GetMapping("all")
@@ -104,11 +78,11 @@ public class LogbookController {
 
     @GetMapping("")
     @Operation(summary = "내 로그북 불러오기", description = "나의 로그들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<List<LogbookRequest>> getMyLogbooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<LogbookRequest> logbookRequests = logbookService.getLogbooksByUserId(userDetails.getUser().getId());
+    public ResponseEntity<List<LogbookResponse>> getMyLogbooks(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<LogbookResponse> logbookResponses = logbookService.getLogbooksByUserId(userDetails.getUser().getId());
 
-        if (logbookRequests != null) {
-            return ResponseEntity.ok(logbookRequests);
+        if (logbookResponses != null) {
+            return ResponseEntity.ok(logbookResponses);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -116,11 +90,11 @@ public class LogbookController {
 
     @GetMapping("user/{userId}")
     @Operation(summary = "유저 로그북 불러오기", description = "해당 유저의 로그들을 불러옵니다.")
-    public ResponseEntity<List<LogbookRequest>> getLogbooks(@PathVariable("userId") Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<LogbookRequest> logbookRequests = logbookService.getLogbooksByUserId(userId);
+    public ResponseEntity<List<LogbookResponse>> getLogbooks(@PathVariable("userId") Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<LogbookResponse> logbookResponses = logbookService.getLogbooksByUserId(userId);
 
-        if (logbookRequests != null) {
-            return ResponseEntity.ok(logbookRequests);
+        if (logbookResponses != null) {
+            return ResponseEntity.ok(logbookResponses);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -160,9 +134,9 @@ public class LogbookController {
     // 로그북 인스턴스 모두 나와야 함.
     @PostMapping("like/{logbookId}")
     @Operation(summary = "좋아요 로그북 추가", description = "로그북에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<LikeLogbookRequest> likeLogbook(@PathVariable Long logbookId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        LikeLogbookRequest likeLogbookRequest = likeLogbookService.createLike(logbookId, userDetails);
-        return ResponseEntity.ok(likeLogbookRequest);
+    public ResponseEntity<LogbookResponse> likeLogbook(@PathVariable Long logbookId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        LogbookResponse logbookResponse = likeLogbookService.createLike(logbookId, userDetails);
+        return ResponseEntity.ok(logbookResponse);
     }
 
     @GetMapping("like")

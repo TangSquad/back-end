@@ -3,6 +3,7 @@ package backend.tangsquad.like.service;
 import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.common.repository.UserRepository;
+import backend.tangsquad.converter.ConvertTo;
 import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.like.dto.request.LikeLogbookRequest;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static backend.tangsquad.converter.ConvertTo.convertToMoimResponse;
+
 @Service
 public class LikeMoimService {
 
@@ -39,7 +42,7 @@ public class LikeMoimService {
         this.moimRepository = moimRepository;
     }
 
-    public LikeMoimRequest createLike(Long moimId, UserDetailsImpl userDetails) {
+    public MoimResponse createLike(Long moimId, UserDetailsImpl userDetails) {
         Long userId = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."))
                 .getId();
@@ -55,10 +58,10 @@ public class LikeMoimService {
         LikeMoim like = new LikeMoim(userId, savedMoimId);
         LikeMoim savedLike = likeMoimRepository.save(like);
 
-        return new LikeMoimRequest(
-                savedLike.getUserId(),
-                savedLike.getMoimId()
-        );
+        Optional<Moim> moimOptional = moimRepository.findById(moimId);
+        if (moimOptional.isEmpty()) return null;
+
+        return convertToMoimResponse(moimOptional.get());
     }
 
     public List<MoimResponse> getLikeMoims(UserDetailsImpl userDetails) {
@@ -72,23 +75,7 @@ public class LikeMoimService {
                     .collect(Collectors.toList());
 
             List<Moim> moims = moimRepository.findAllById(moimIds);
-            return moims.stream().map(moim -> MoimResponse.builder()
-                    .id(moim.getId())
-                    .userId(moim.getUser().getId())
-                    .thumbnailUrl(moim.getThumbnailUrl())
-                    .isPublic(moim.getIsPublic())
-                    .moimName(moim.getMoimName())
-                    .moimIntro(moim.getMoimIntro())
-                    .currentPeople(moim.getCurrentPeople())
-                    .limitPeople(moim.getLimitPeople())
-                    .expense(moim.getExpense())
-                    .licenseLimit(moim.getLicenseLimit())
-                    .locations(moim.getLocations())
-                    .registeredUserIds(moim.getRegisteredUsers().stream().map(User::getId).collect(Collectors.toList()))
-                    .age(moim.getAge())
-                    .moods(moim.getMoods())
-                    .chatRoomId(moim.getChatRoomId())
-                    .build()
+            return moims.stream().map(moim -> convertToMoimResponse(moim)
             ).collect(Collectors.toList());
 
         } catch (Exception e) {

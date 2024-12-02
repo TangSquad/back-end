@@ -114,8 +114,7 @@ public class Log {
         this.endBar = endBar;
         this.logbook = logbook;
     }
-    //    @Column
-//    private Long logbookId;
+
     public void update(LogUpdateRequest logUpdateRequest) {
         if (logUpdateRequest.getLocation() != null) this.location = logUpdateRequest.getLocation();
         if (logUpdateRequest.getWhether() != null) this.whether = logUpdateRequest.getWhether();
@@ -132,7 +131,6 @@ public class Log {
         if (logUpdateRequest.getMaxDepth() != null) this.maxDepth = logUpdateRequest.getMaxDepth();
         if (logUpdateRequest.getStartBar() != null) this.startBar = logUpdateRequest.getStartBar();
         if (logUpdateRequest.getEndBar() != null) this.endBar = logUpdateRequest.getEndBar();
-        if (logUpdateRequest.getLogbook() != null) this.logbook = logUpdateRequest.getLogbook();
     }
 
 }
