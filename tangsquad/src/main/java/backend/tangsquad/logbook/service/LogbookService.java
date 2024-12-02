@@ -6,6 +6,7 @@ import backend.tangsquad.converter.ConvertTo;
 import backend.tangsquad.like.repository.LikeLogbookRepository;
 import backend.tangsquad.logbook.dto.request.LogbookCreateRequest;
 import backend.tangsquad.logbook.dto.request.LogbookRequest;
+import backend.tangsquad.logbook.dto.request.ThumbnailRequest;
 import backend.tangsquad.logbook.dto.response.LogbookResponse;
 import backend.tangsquad.logbook.entity.Log;
 import backend.tangsquad.logbook.entity.Logbook;
@@ -30,22 +31,28 @@ public class LogbookService {
 
     private final LogbookRepository logbookRepository;
 
-
     public LogbookResponse save(LogbookCreateRequest logbookCreateRequest, UserDetailsImpl userDetails) {
         try {
             Logbook logbook = Logbook.builder()
                     .user(userDetails.getUser())
                     .isPublic(logbookCreateRequest.getIsPublic())
                     .date(logbookCreateRequest.getDate())
-                    .thumbnailUrl(logbookCreateRequest.getThumbnailUrl())
                     .contents(logbookCreateRequest.getContents())
+                    .imageUrls(logbookCreateRequest.getImageUrls())
                     .userCondition(logbookCreateRequest.getUserCondition())
                     .title(logbookCreateRequest.getTitle())
                     .build();
 
+            if (logbookCreateRequest.getImageUrls().size() != 0) {
+                String thumbnailUrl = logbookCreateRequest.getImageUrls().get(0);
+                ThumbnailRequest thumbnailRequest = new ThumbnailRequest();
+                thumbnailRequest.setThumbnailUrl(thumbnailUrl);
+                logbook.updateThumbnail(thumbnailRequest);
+            }
+
             Logbook savedLogbook = logbookRepository.save(logbook);
 
-            return convertToLogbookResponse(savedLogbook);
+            return convertToLogbookResponse(savedLogbook, userDetails.getUser().getUserProfile());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,10 +61,10 @@ public class LogbookService {
         }
     }
 
-    public List<LogbookResponse> getAllLogbooks() {
+    public List<LogbookResponse> getAllLogbooks(UserDetailsImpl userDetails) {
         List<Logbook> logbooks = logbookRepository.findAll();
 
-        return logbooks.stream().map(logbook -> convertToLogbookResponse(logbook)
+        return logbooks.stream().map(logbook -> convertToLogbookResponse(logbook, userDetails.getUser().getUserProfile())
         ).collect(Collectors.toList());
     }
 
@@ -67,13 +74,13 @@ public class LogbookService {
                 .orElse(null);
     }
 
-    public List<LogbookResponse> getLogbooksByUserId(Long userId) {
+    public List<LogbookResponse> getLogbooksByUserId(UserDetailsImpl userDetails) {
 
         try {
-            List<Logbook> logbooks = logbookRepository.findByUserId(userId);
+            List<Logbook> logbooks = logbookRepository.findByUserId(userDetails.getUser().getId());
 
             return logbooks.stream()
-                    .map(logbook -> convertToLogbookResponse(logbook))
+                    .map(logbook -> convertToLogbookResponse(logbook, userDetails.getUser().getUserProfile()))
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
@@ -94,7 +101,7 @@ public class LogbookService {
 
         Logbook savedLogbook = logbookRepository.save(logbook);
 
-        return convertToLogbookResponse(savedLogbook);
+        return convertToLogbookResponse(savedLogbook, userDetails.getUser().getUserProfile());
     }
 
     public ResponseEntity<CommonResponse> deleteLog(Long logbookId, UserDetailsImpl userDetails) {

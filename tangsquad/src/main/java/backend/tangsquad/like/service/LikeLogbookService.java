@@ -45,7 +45,7 @@ public class LikeLogbookService {
         LikeLogbook like = new LikeLogbook(userId, savedLogbookId);
         LikeLogbook savedLike = likeLogbookRepository.save(like);
 
-        return convertToLogbookResponse(logbookOptional.get());
+        return convertToLogbookResponse(logbookOptional.get(), userDetails.getUser().getUserProfile());
     }
 
     public List<LogbookResponse> getLikeLogbooks(UserDetailsImpl userDetails) {
@@ -59,7 +59,7 @@ public class LikeLogbookService {
 
             List<Logbook> logbooks = logbookRepository.findAllById(likeLogbookIds);
 
-            return logbooks.stream().map(logbook -> convertToLogbookResponse(logbook))
+            return logbooks.stream().map(logbook -> convertToLogbookResponse(logbook, userDetails.getUser().getUserProfile()))
                 .collect(Collectors.toList());
         } catch (Exception e) {
             return null;

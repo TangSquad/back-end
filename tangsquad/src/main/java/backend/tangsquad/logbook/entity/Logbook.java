@@ -2,6 +2,7 @@ package backend.tangsquad.logbook.entity;
 
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.logbook.dto.request.LogbookRequest;
+import backend.tangsquad.logbook.dto.request.ThumbnailRequest;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -33,10 +34,14 @@ public class Logbook {
     private Boolean isPublic;
 
     @Column
+    @ElementCollection
+    private List<String> imageUrls = new ArrayList<>();
+
+    @Column
     private String thumbnailUrl;
 
     @Column
-    private LocalDateTime date;
+    private String date;
 
     @Column(nullable = false)
     private String title;
@@ -55,14 +60,22 @@ public class Logbook {
     public void update(LogbookRequest logbookRequest) {
         if (logbookRequest.getDate() != null) this.date = logbookRequest.getDate();
         if (logbookRequest.getIsPublic() != null) this.isPublic = logbookRequest.getIsPublic();
-        if (logbookRequest.getThumbnailUrl() != null) this.thumbnailUrl = logbookRequest.getThumbnailUrl();
+        if (logbookRequest.getImageUrls() != null) this.imageUrls = logbookRequest.getImageUrls();
         if (logbookRequest.getTitle() != null) this.title = logbookRequest.getTitle();
         if (logbookRequest.getContents() != null) this.contents = logbookRequest.getContents();
         if (logbookRequest.getUserCondition() != null) this.userCondition = logbookRequest.getUserCondition();
+
+        if (logbookRequest.getImageUrls().size() != 0) {
+            this.thumbnailUrl = this.imageUrls.get(0);
+        }
     }
 
-    public synchronized void update(Log addLog) {
-        if (addLog == null) {
+    public void updateThumbnail(ThumbnailRequest thumbnailRequest) {
+        this.thumbnailUrl = thumbnailRequest.getThumbnailUrl();
+    }
+
+    public synchronized void addLog(Log addedLog) {
+        if (addedLog == null) {
             throw new IllegalArgumentException("Log cannot be null");
         }
         if (logs == null) {
@@ -70,16 +83,16 @@ public class Logbook {
             logs = new ArrayList<>();
         }
         System.out.println("Adding log: " + logs);
-        this.logs.add(addLog);
+        this.logs.add(addedLog);
     }
 
 
     @Builder
-    public Logbook(User user, Boolean isPublic,LocalDateTime date, String thumbnailUrl, String title, String contents, List<Log> logs, UserCondition userCondition) {
+    public Logbook(User user, Boolean isPublic, String date, List<String> imageUrls, String title, String contents, List<Log> logs, UserCondition userCondition) {
         this.user = user;
         this.isPublic = isPublic;
         this.date = date;
-        this.thumbnailUrl = thumbnailUrl;
+        this.imageUrls = imageUrls;
         this.title = title;
         this.contents = contents;
         this.logs = logs;
