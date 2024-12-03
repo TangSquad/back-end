@@ -65,7 +65,7 @@ public final class ConvertTo {
                 .title(logbook.getTitle())
                 .contents(logbook.getContents())
                 .userCondition(logbook.getUserCondition())
-                .equipment(userProfile.getEquipment())
+                .logbookEquipment(logbook.getLogbookEquipment())
                 .build();
     }
 

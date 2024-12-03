@@ -40,6 +40,7 @@ public class LogbookService {
                     .contents(logbookCreateRequest.getContents())
                     .imageUrls(logbookCreateRequest.getImageUrls())
                     .userCondition(logbookCreateRequest.getUserCondition())
+                    .logbookEquipment(logbookCreateRequest.getLogbookEquipment())
                     .title(logbookCreateRequest.getTitle())
                     .build();
 

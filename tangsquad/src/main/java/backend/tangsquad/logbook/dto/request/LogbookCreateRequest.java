@@ -1,6 +1,7 @@
 package backend.tangsquad.logbook.dto.request;
 
 import backend.tangsquad.diving.entity.Location;
+import backend.tangsquad.logbook.dto.response.LogbookEquipment;
 import backend.tangsquad.logbook.entity.UserCondition;
 import lombok.Builder;
 import lombok.Data;
@@ -18,9 +19,10 @@ public class LogbookCreateRequest {
     private String title;
     private String contents;
     private UserCondition userCondition;
+    private LogbookEquipment logbookEquipment;
 
     @Builder
-    public LogbookCreateRequest(String date, Boolean isPublic, Location location, List<String> imageUrls,String title, String contents, UserCondition userCondition) {
+    public LogbookCreateRequest(String date, Boolean isPublic, Location location, List<String> imageUrls,String title, String contents, UserCondition userCondition, LogbookEquipment logbookEquipment) {
         this.date = date;
         this.isPublic = isPublic;
         this.location = location;
@@ -28,6 +30,7 @@ public class LogbookCreateRequest {
         this.title = title;
         this.contents = contents;
         this.userCondition = userCondition;
+        this.logbookEquipment = logbookEquipment;
     }
 
 }
