@@ -16,15 +16,15 @@ public class LogbookResponse {
     private String title;
     private String contents;
     private UserCondition userCondition;
-    private LogbookEquipment logbookEquipment;
+    private LogbookEquipment equipment;
 
     @Builder
-    public LogbookResponse(List<String> imageUrls, String title, String contents, String date, UserCondition userCondition, LogbookEquipment logbookEquipment) {
+    public LogbookResponse(List<String> imageUrls, String title, String contents, String date, UserCondition userCondition, LogbookEquipment equipment) {
         this.imageUrls = imageUrls;
         this.title = title;
         this.contents = contents;
         this.date = date;
         this.userCondition = userCondition;
-        this.logbookEquipment = logbookEquipment;
+        this.equipment = equipment;
     }
 }
