@@ -19,10 +19,10 @@ public class LogbookCreateRequest {
     private String title;
     private String contents;
     private UserCondition userCondition;
-    private LogbookEquipment logbookEquipment;
+    private LogbookEquipment equipment;
 
     @Builder
-    public LogbookCreateRequest(String date, Boolean isPublic, Location location, List<String> imageUrls,String title, String contents, UserCondition userCondition, LogbookEquipment logbookEquipment) {
+    public LogbookCreateRequest(String date, Boolean isPublic, Location location, List<String> imageUrls,String title, String contents, UserCondition userCondition, LogbookEquipment equipment) {
         this.date = date;
         this.isPublic = isPublic;
         this.location = location;
@@ -30,7 +30,7 @@ public class LogbookCreateRequest {
         this.title = title;
         this.contents = contents;
         this.userCondition = userCondition;
-        this.logbookEquipment = logbookEquipment;
+        this.equipment = equipment;
     }
 
 }

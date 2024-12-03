@@ -19,9 +19,9 @@ public class LogbookRequest {
     private String title;
     private String contents;
     private UserCondition userCondition;
-    private LogbookEquipment logbookEquipment;
+    private LogbookEquipment equipment;
     @Builder
-    public LogbookRequest(Long id, Boolean isPublic, List<String> imageUrls, String date, String title, String contents, UserCondition userCondition, LogbookEquipment logbookEquipment) {
+    public LogbookRequest(Long id, Boolean isPublic, List<String> imageUrls, String date, String title, String contents, UserCondition userCondition, LogbookEquipment equipment) {
         this.id = id;
         this.isPublic = isPublic;
         this.imageUrls = imageUrls;
@@ -29,6 +29,6 @@ public class LogbookRequest {
         this.title = title;
         this.contents = contents;
         this.userCondition = userCondition;
-        this.logbookEquipment = logbookEquipment;
+        this.equipment = equipment;
     }
 }

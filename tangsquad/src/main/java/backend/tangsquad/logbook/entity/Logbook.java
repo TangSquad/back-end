@@ -52,7 +52,7 @@ public class Logbook {
 
     @Embedded
     @Enumerated(EnumType.STRING) // or EnumType.ORDINAL
-    private LogbookEquipment logbookEquipment;
+    private LogbookEquipment equipment;
 
     @OneToMany(mappedBy = "logbook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Log> logs = new ArrayList<>();
@@ -69,7 +69,7 @@ public class Logbook {
         if (logbookRequest.getTitle() != null) this.title = logbookRequest.getTitle();
         if (logbookRequest.getContents() != null) this.contents = logbookRequest.getContents();
         if (logbookRequest.getUserCondition() != null) this.userCondition = logbookRequest.getUserCondition();
-        if (logbookRequest.getLogbookEquipment() != null) this.logbookEquipment = logbookRequest.getLogbookEquipment();
+        if (logbookRequest.getEquipment() != null) this.equipment = logbookRequest.getEquipment();
 
         if (logbookRequest.getImageUrls().size() != 0) {
             this.thumbnailUrl = this.imageUrls.get(0);
@@ -94,7 +94,7 @@ public class Logbook {
 
 
     @Builder
-    public Logbook(User user, Boolean isPublic, String date, List<String> imageUrls, String title, String contents, List<Log> logs, UserCondition userCondition, LogbookEquipment logbookEquipment) {
+    public Logbook(User user, Boolean isPublic, String date, List<String> imageUrls, String title, String contents, List<Log> logs, UserCondition userCondition, LogbookEquipment equipment) {
         this.user = user;
         this.isPublic = isPublic;
         this.date = date;
@@ -103,7 +103,7 @@ public class Logbook {
         this.contents = contents;
         this.logs = logs;
         this.userCondition = userCondition;
-        this.logbookEquipment = logbookEquipment;
+        this.equipment = equipment;
     }
 
 
