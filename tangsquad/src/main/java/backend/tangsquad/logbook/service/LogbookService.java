@@ -43,7 +43,7 @@ public class LogbookService {
                     .title(logbookCreateRequest.getTitle())
                     .build();
 
-            if (logbookCreateRequest.getImageUrls().size() != 0) {
+            if (logbookCreateRequest.getImageUrls() != null && logbookCreateRequest.getImageUrls().size() != 0) {
                 String thumbnailUrl = logbookCreateRequest.getImageUrls().get(0);
                 ThumbnailRequest thumbnailRequest = new ThumbnailRequest();
                 thumbnailRequest.setThumbnailUrl(thumbnailUrl);
