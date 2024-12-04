@@ -18,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import retrofit2.http.Path;
+
 import java.util.List;
 
 import static backend.tangsquad.converter.ConvertTo.convertToLogbookResponse;
@@ -118,7 +120,7 @@ public class LogbookController {
     @DeleteMapping("{logbookId}")
     @Operation(summary = "로그북 삭제하기", description = "나의 로그북을 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<CommonResponse> deleteLogbook(
-            @PathVariable("logId") Long logbookId,
+            @PathVariable("logbookId") Long logbookId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return logbookService.deleteLog(logbookId, userDetails);

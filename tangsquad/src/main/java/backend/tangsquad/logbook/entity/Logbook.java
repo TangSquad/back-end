@@ -2,6 +2,7 @@ package backend.tangsquad.logbook.entity;
 
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.diving.entity.Location;
+import backend.tangsquad.like.entity.LikeLogbook;
 import backend.tangsquad.logbook.dto.request.LogbookRequest;
 import backend.tangsquad.logbook.dto.request.ThumbnailRequest;
 import backend.tangsquad.logbook.dto.response.LogbookEquipment;
@@ -66,6 +67,9 @@ public class Logbook {
     @Column
     private List<Location> locations;
 
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private Long likes = 0L; // Initialize to avoid null issues
+
     public void update(LogbookRequest logbookRequest) {
         if (logbookRequest.getDate() != null) this.date = logbookRequest.getDate();
         if (logbookRequest.getIsPublic() != null) this.isPublic = logbookRequest.getIsPublic();
@@ -83,6 +87,11 @@ public class Logbook {
     public void updateThumbnail(ThumbnailRequest thumbnailRequest) {
         this.thumbnailUrl = thumbnailRequest.getThumbnailUrl();
     }
+
+    public void updateLike(Long likeCount) {
+        this.likes = (likeCount != null) ? likeCount : 0L; // Fallback to 0 if null
+    }
+
 
     public synchronized void addLog(Log addedLog) {
         if (addedLog == null) {
@@ -113,7 +122,7 @@ public class Logbook {
     }
 
     @Builder
-    public Logbook(User user, Boolean isPublic, String date, List<String> imageUrls, String title, String contents, List<Log> logs, UserCondition userCondition, LogbookEquipment equipment) {
+    public Logbook(User user, Boolean isPublic, String date, List<String> imageUrls, String title, String contents, List<Log> logs, UserCondition userCondition, LogbookEquipment equipment, Long likes) {
         this.user = user;
         this.isPublic = isPublic;
         this.date = date;
@@ -123,5 +132,6 @@ public class Logbook {
         this.logs = logs;
         this.userCondition = userCondition;
         this.equipment = equipment;
+        this.likes = likes;
     }
 }

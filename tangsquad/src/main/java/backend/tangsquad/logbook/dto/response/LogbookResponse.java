@@ -20,9 +20,10 @@ public class LogbookResponse {
     private UserCondition userCondition;
     private LogbookEquipment equipment;
     private List<Location> locations;
+    private Long likes;
 
     @Builder
-    public LogbookResponse(Long id, List<String> imageUrls, String title, String contents, String date, UserCondition userCondition, LogbookEquipment equipment, List<Location> locations) {
+    public LogbookResponse(Long id, List<String> imageUrls, String title, String contents, String date, UserCondition userCondition, LogbookEquipment equipment, List<Location> locations, Long likes) {
         this.id = id;
         this.imageUrls = imageUrls;
         this.title = title;
@@ -31,5 +32,6 @@ public class LogbookResponse {
         this.userCondition = userCondition;
         this.equipment = equipment;
         this.locations = locations;
+        this.likes = likes;
     }
 }

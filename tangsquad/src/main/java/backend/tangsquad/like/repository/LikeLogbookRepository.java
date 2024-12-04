@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LikeLogbookRepository extends JpaRepository<LikeLogbook, Long> {
-    List<LikeLogbook> findAllByUserId(Long userId);
+    Optional<List<LikeLogbook>> findAllByUserId(Long userId);
+
+    Optional<LikeLogbook> findByLogbookId(Long logbookId);
+    List<LikeLogbook> findAllByLogbookId(Long logbookId);
     Optional<LikeLogbook> findByUserIdAndLogbookId(Long userId, Long logbookId);
 }

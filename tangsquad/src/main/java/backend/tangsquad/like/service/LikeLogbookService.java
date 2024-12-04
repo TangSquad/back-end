@@ -29,29 +29,33 @@ public class LikeLogbookService {
     private final LogbookRepository logbookRepository;
 
     public LogbookResponse createLike(Long logbookId, UserDetailsImpl userDetails) {
-        Long userId = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."))
-                .getId();
 
-        Long savedLogbookId = logbookRepository.findById(logbookId)
-                .orElseThrow(() -> new RuntimeException("로그북을 찾을 수 없습니다."))
-                .getId();
+        Optional<LikeLogbook> likeLogbookOptional = likeLogbookRepository.findByLogbookId(logbookId);
+        if (likeLogbookOptional.isPresent()) throw new RuntimeException("이미 좋아요를 누른 Logbook 입니다.");
 
-        Optional<LikeLogbook> likeLogbookOptional = likeLogbookRepository.findByUserIdAndLogbookId(userId, savedLogbookId);
-        Optional<Logbook> logbookOptional = logbookRepository.findById(likeLogbookOptional.get().getLogbookId());
+        Logbook logbook = logbookRepository.findById(logbookId)
+                .orElseThrow(() -> new IllegalArgumentException("Logbook 을 찾을 수 없습니다."));
 
-        if (likeLogbookOptional.isPresent()) throw new RuntimeException("이미 좋아요를 누른 로그북입니다.");
+        LikeLogbook likeLogbook = LikeLogbook.builder()
+                        .logbookId(logbook.getId())
+                                .userId(logbook.getUser().getId())
+                                        .build();
 
-        LikeLogbook like = new LikeLogbook(userId, savedLogbookId);
-        LikeLogbook savedLike = likeLogbookRepository.save(like);
+        likeLogbookRepository.save(likeLogbook);
 
-        return convertToLogbookResponse(logbookOptional.get(), userDetails.getUser().getUserProfile());
+        List<LikeLogbook> logbookLikes = likeLogbookRepository.findAllByLogbookId(logbook.getId());
+
+        logbook.updateLike(logbookLikes.stream().count());
+        logbookRepository.save(logbook);
+
+        return convertToLogbookResponse(logbook, userDetails.getUser().getUserProfile());
     }
 
     public List<LogbookResponse> getLikeLogbooks(UserDetailsImpl userDetails) {
 
         try {
-            List<LikeLogbook> likedLogbooks = likeLogbookRepository.findAllByUserId(userDetails.getId());
+            Optional<List<LikeLogbook>> likedLogbooksOptional = likeLogbookRepository.findAllByUserId(userDetails.getId());
+            List<LikeLogbook> likedLogbooks = likedLogbooksOptional.get();
 
             List<Long> likeLogbookIds = likedLogbooks.stream()
                     .map(LikeLogbook::getLogbookId)
