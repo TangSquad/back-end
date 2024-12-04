@@ -87,6 +87,7 @@ public class LogbookService {
         } catch (Exception e) {
             return null;
         }
+
     }
 
     public LogbookResponse updateLogbook(LogbookRequest logbookRequest, UserDetailsImpl userDetails) {

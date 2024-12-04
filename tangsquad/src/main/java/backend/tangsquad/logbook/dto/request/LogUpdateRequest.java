@@ -1,15 +1,18 @@
 package backend.tangsquad.logbook.dto.request;
 
+import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.logbook.entity.*;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class LogUpdateRequest {
 
     private Long logbookId;
     private Long logId;
-    private String location;
+    private List<Location> locations;
     private Whether whether;
     private Double airTemp;
     private Double surfTemp;
@@ -26,10 +29,10 @@ public class LogUpdateRequest {
     private Long endBar;
 
     @Builder
-    public LogUpdateRequest(Long logbookId, Long logId, String location, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar) {
+    public LogUpdateRequest(Long logbookId, Long logId, List<Location> locations, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar) {
         this.logbookId = logbookId;
         this.logId = logId;
-        this.location = location;
+        this.locations = locations;
         this.whether = whether;
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;

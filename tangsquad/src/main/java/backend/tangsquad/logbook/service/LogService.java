@@ -50,7 +50,7 @@ public class LogService {
 
             Log log = Log.builder()
                     .user(userDetails.getUser())
-                    .location(logCreateRequest.getLocation())
+                    .locations(logCreateRequest.getLocations())
                     .whether(logCreateRequest.getWhether())
                     .airTemp(logCreateRequest.getAirTemp())
                     .surfTemp(logCreateRequest.getSurfTemp())
@@ -73,6 +73,7 @@ public class LogService {
             logbook.addLog(log);
             logbookRepository.save(logbook);
             System.out.println("logbook.getLogs().size(): " + logbook.getLogs().size());
+
 
             return convertToLogResponse(log);
 

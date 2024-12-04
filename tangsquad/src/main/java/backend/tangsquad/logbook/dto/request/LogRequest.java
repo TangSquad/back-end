@@ -1,12 +1,13 @@
 package backend.tangsquad.logbook.dto.request;
 
+import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.logbook.entity.*;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 public class LogRequest {
-    private String location;
+    private Location location;
     private Whether whether;
     private Double airTemp;
     private Double surfTemp;
@@ -25,7 +26,7 @@ public class LogRequest {
 
 
     @Builder
-    public LogRequest(String location, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook, Whether whether) {
+    public LogRequest(Location location, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook, Whether whether) {
         this.location = location;
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;

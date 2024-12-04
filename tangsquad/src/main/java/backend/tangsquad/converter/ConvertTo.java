@@ -60,12 +60,14 @@ public final class ConvertTo {
 
     public static LogbookResponse convertToLogbookResponse(Logbook logbook, UserProfile userProfile) {
         return LogbookResponse.builder()
+                .id(logbook.getId())
                 .date(logbook.getDate())
                 .imageUrls(logbook.getImageUrls())
                 .title(logbook.getTitle())
                 .contents(logbook.getContents())
                 .userCondition(logbook.getUserCondition())
                 .equipment(logbook.getEquipment())
+                .locations(logbook.getLocations())
                 .build();
     }
 
@@ -73,7 +75,7 @@ public final class ConvertTo {
         return LogResponse.builder()
                 .id(log.getId())
                 .userId(log.getUser().getId())
-                .location(log.getLocation())
+                .locations(log.getLocations())
                 .whether(log.getWhether())
                 .airTemp(log.getAirTemp())
                 .surfTemp(log.getSurfTemp())
