@@ -68,6 +68,7 @@ public final class ConvertTo {
                 .userCondition(logbook.getUserCondition())
                 .equipment(logbook.getEquipment())
                 .locations(logbook.getLocations())
+                .likes(logbook.getLikes())
                 .build();
     }
 
