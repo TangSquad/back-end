@@ -1,6 +1,7 @@
 package backend.tangsquad.logbook.entity;
 
 import backend.tangsquad.common.entity.User;
+import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.logbook.dto.request.LogbookRequest;
 import backend.tangsquad.logbook.dto.request.ThumbnailRequest;
 import backend.tangsquad.logbook.dto.response.LogbookEquipment;
@@ -62,6 +63,9 @@ public class Logbook {
     @Enumerated(EnumType.STRING)
     private UserCondition userCondition;
 
+    @Column
+    private List<Location> locations;
+
     public void update(LogbookRequest logbookRequest) {
         if (logbookRequest.getDate() != null) this.date = logbookRequest.getDate();
         if (logbookRequest.getIsPublic() != null) this.isPublic = logbookRequest.getIsPublic();
@@ -88,10 +92,25 @@ public class Logbook {
             System.out.println("logs are null");
             logs = new ArrayList<>();
         }
-        System.out.println("Adding log: " + logs);
-        this.logs.add(addedLog);
-    }
 
+        this.logs.add(addedLog);
+
+        System.out.println("addedLog.getLocations(): " + addedLog.getLocations());
+
+        if (this.locations == null) {
+            this.locations = new ArrayList<>();
+        }
+
+        if (addedLog.getLocations() != null) {
+            addedLog.getLocations().forEach(location -> {
+                    if (!this.locations.contains(location)) {
+                        this.locations.add(location);
+                    }
+            });
+        }
+
+        System.out.println("locations: " + this.locations);
+    }
 
     @Builder
     public Logbook(User user, Boolean isPublic, String date, List<String> imageUrls, String title, String contents, List<Log> logs, UserCondition userCondition, LogbookEquipment equipment) {
@@ -105,8 +124,4 @@ public class Logbook {
         this.userCondition = userCondition;
         this.equipment = equipment;
     }
-
-
-
-
 }

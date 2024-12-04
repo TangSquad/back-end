@@ -1,8 +1,11 @@
 package backend.tangsquad.logbook.dto.response;
 
+import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.logbook.entity.*;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class LogResponse {
@@ -10,7 +13,7 @@ public class LogResponse {
 
     private Long userId;
 
-    private String location;
+    private List<Location> locations;
 
     private Long logbookId;
 
@@ -44,10 +47,10 @@ public class LogResponse {
 
 
     @Builder
-    public LogResponse(Long id, Long userId, String location, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Long logbookId) {
+    public LogResponse(Long id, Long userId, List<Location> locations, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepDepth, Long maxDepth, Long startBar, Long endBar, Long logbookId) {
         this.id = id;
         this.userId = userId;
-        this.location = location;
+        this.locations = locations;
         this.whether = whether;
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;

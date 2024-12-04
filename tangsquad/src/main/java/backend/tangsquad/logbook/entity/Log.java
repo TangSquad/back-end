@@ -1,6 +1,7 @@
 package backend.tangsquad.logbook.entity;
 
 import backend.tangsquad.common.entity.User;
+import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.logbook.dto.request.LogUpdateRequest;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -8,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,7 +30,7 @@ public class Log {
 
     // 장소
     @Column
-    private String location;
+    private List<Location> locations;
 
     // ---- 날씨
     // 날씨 - SUNNY, CLOUDY, ...
@@ -94,10 +97,10 @@ public class Log {
 
 
     @Builder
-    public Log(Long id, User user, String location, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
+    public Log(Long id, User user, List<Location> locations, Whether whether, Double airTemp, Double surfTemp, Double bottTemp, String viewSight, Level tide, Level wave, Level surge, String diveTime, Subject subject, Long avgDepth, Long maxDepth, Long startBar, Long endBar, Logbook logbook) {
         this.id = id;
         this.user = user;
-        this.location = location;
+        this.locations = locations;
         this.whether = whether;
         this.airTemp = airTemp;
         this.surfTemp = surfTemp;
@@ -116,7 +119,7 @@ public class Log {
     }
 
     public void update(LogUpdateRequest logUpdateRequest) {
-        if (logUpdateRequest.getLocation() != null) this.location = logUpdateRequest.getLocation();
+        if (logUpdateRequest.getLocations() != null) this.locations = logUpdateRequest.getLocations();
         if (logUpdateRequest.getWhether() != null) this.whether = logUpdateRequest.getWhether();
         if (logUpdateRequest.getAirTemp() != null) this.airTemp = logUpdateRequest.getAirTemp();
         if (logUpdateRequest.getSurfTemp() != null) this.surfTemp = logUpdateRequest.getSurfTemp();
