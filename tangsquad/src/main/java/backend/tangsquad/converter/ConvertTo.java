@@ -12,6 +12,7 @@ import backend.tangsquad.moim.dto.response.MoimResponse;
 import backend.tangsquad.moim.entity.Moim;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public final class ConvertTo {
@@ -31,6 +32,9 @@ public final class ConvertTo {
                 .licenseLimit(diving.getLicenseLimit())
                 .currentPeople(diving.getCurrentPeople())
                 .limitPeople(diving.getLimitPeople())
+                .registeredUserIds(diving.getRegisteredUsers() != null
+                        ? diving.getRegisteredUsers().stream().map(User::getId).collect(Collectors.toList())
+                        : Collections.emptyList())
                 .chatRoomId(diving.getChatRoomId())
                 .build();
     }

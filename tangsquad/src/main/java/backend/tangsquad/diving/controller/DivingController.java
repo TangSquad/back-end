@@ -33,7 +33,7 @@ public class DivingController {
     private final LikeDivingService likeDivingService;
 
     // Create a new diving
-    @PostMapping
+    @PostMapping("")
     @Operation(
             summary = "다이빙 생성",
             description = "새로운 다이빙을 생성합니다.",

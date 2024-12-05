@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,7 +81,7 @@ public class Diving {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @JsonManagedReference
-    private List<User> registeredUsers; // List of registered users
+    private List<User> registeredUsers = new ArrayList<>();
 
 
     public void update(DivingRequest divingRequest) {
@@ -99,6 +100,9 @@ public class Diving {
     }
 
     public void join(UserDetailsImpl userDetails) {
+        if (registeredUsers == null) {
+            registeredUsers = new ArrayList<>();
+        }
         this.registeredUsers.add(userDetails.getUser());
     }
 
