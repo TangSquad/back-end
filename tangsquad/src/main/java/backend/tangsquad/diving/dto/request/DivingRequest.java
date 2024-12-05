@@ -12,7 +12,6 @@ import java.util.UUID;
 @Data
 public class DivingRequest {
     private String divingName;
-    private Long userId;
     private String divingIntro;
     private String thumbnailUrl;
     private Long currentPeople;
@@ -26,9 +25,8 @@ public class DivingRequest {
     private Location location;
 
     @Builder
-    public DivingRequest(String divingName, Long userId, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic,String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, Location location) {
+    public DivingRequest(String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, Boolean isPublic,String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, Location location) {
         this.divingName = divingName;
-        this.userId = userId;
         this.divingIntro = divingIntro;
         this.thumbnailUrl = thumbnailUrl;
         this.currentPeople = currentPeople;

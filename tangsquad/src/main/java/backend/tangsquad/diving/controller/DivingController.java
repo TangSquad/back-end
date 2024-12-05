@@ -207,10 +207,10 @@ public class DivingController {
         }
     }
 
-    @PutMapping("")
+    @PutMapping("{divingId}")
     @Operation(summary = "다이빙 수정하기", description = "나의 다이빙 수정합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<DivingResponse> updateDiving(
-            @PathVariable Long divingId,
+            @PathVariable("divingId") Long divingId,
             @RequestBody DivingRequest divingRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         DivingResponse divingResponse = divingService.updateDiving(divingId, divingRequest, userDetails);
