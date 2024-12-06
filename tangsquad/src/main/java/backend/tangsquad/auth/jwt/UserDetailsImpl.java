@@ -1,6 +1,9 @@
 package backend.tangsquad.auth.jwt;
 
 import backend.tangsquad.common.entity.User;
+import backend.tangsquad.logbook.dto.response.LogbookResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,4 +39,5 @@ public class UserDetailsImpl implements UserDetails {
     public String getUsername() {
         return user.getNickname();
     }
+
 }

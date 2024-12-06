@@ -5,6 +5,7 @@ import backend.tangsquad.logbook.dto.request.LogCreateRequest;
 import backend.tangsquad.logbook.dto.request.LogRequest;
 import backend.tangsquad.logbook.dto.request.LogUpdateRequest;
 import backend.tangsquad.logbook.dto.response.LogResponse;
+import backend.tangsquad.logbook.dto.response.LogbookResponse;
 import backend.tangsquad.logbook.service.LogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,6 +25,14 @@ import java.util.List;
 public class LogController {
 
     private final LogService logService;
+
+    private ResponseEntity<LogResponse> checkUserDetailsAndRespond(UserDetailsImpl userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
+        return null;
+    }
     @PostMapping("")
     @Operation(
             summary = "로그 생성",
@@ -33,6 +42,10 @@ public class LogController {
     public ResponseEntity<LogResponse> createLog(
             @RequestBody LogCreateRequest logCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<LogResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return response;
+
         LogResponse logResponse = logService.save(logCreateRequest, userDetails);
 
         if (logResponse != null) {
@@ -103,6 +116,9 @@ public class LogController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     )
     {
+        ResponseEntity<LogResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return response;
+
         LogResponse logResponse = logService.updateLog(logUpdateRequest, userDetails);
 
         if (logResponse != null) {
@@ -123,6 +139,9 @@ public class LogController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     )
     {
+        ResponseEntity<LogResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return response;
+
         LogResponse logResponse = logService.delete(logId, userDetails);
         if (logResponse != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body(logResponse);

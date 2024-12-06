@@ -21,6 +21,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static backend.tangsquad.converter.ConvertTo.convertToDivingResponse;
+
 @Service
 @RequiredArgsConstructor
 public class DivingService {
@@ -84,14 +86,19 @@ public class DivingService {
                     .limitPeople(divingRequest.getLimitPeople())
                     .build();
 
+
             // 다이빙을 위한 채팅방 생성
             ChatRoom chatRoom = chatRoomService.createChatRoom(divingRequest.getDivingName(), ChatRoom.RoomType.DIVING, diving.getDivingId(), userDetails, true);
 
             // 다이빙에 채팅방 id 설정
             diving.setChatRoomId(chatRoom.getId());
 
+            // RegisteredUser 에 다이빙 생성 유저 입력
+            diving.join(userDetails);
+
             divingRepository.save(diving);
-            return ConvertTo.convertToDivingResponse(diving);
+
+            return convertToDivingResponse(diving);
         } catch (Exception e) {
             return null;
         }
@@ -163,7 +170,7 @@ public class DivingService {
             if (divingOptional.isPresent()) {
                 Diving diving = divingOptional.get();
 
-                return ConvertTo.convertToDivingResponse(diving);
+                return convertToDivingResponse(diving);
             } else {
                 return null;
             }
@@ -196,7 +203,7 @@ public class DivingService {
             diving.update(divingRequest);
 
             divingRepository.save(diving);
-            return ConvertTo.convertToDivingResponse(diving);
+            return convertToDivingResponse(diving);
         } catch (Exception e) {
             return null;
         }
