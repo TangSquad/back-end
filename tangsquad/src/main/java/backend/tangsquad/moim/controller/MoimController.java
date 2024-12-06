@@ -3,6 +3,8 @@ import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.like.dto.request.LikeMoimRequest;
 import backend.tangsquad.like.entity.LikeMoim;
 import backend.tangsquad.like.service.LikeMoimService;
+import backend.tangsquad.logbook.dto.response.LogResponse;
+import backend.tangsquad.logbook.dto.response.LogbookResponse;
 import backend.tangsquad.moim.dto.request.MoimLeaderUsernameRequest;
 import backend.tangsquad.moim.dto.response.*;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
@@ -34,7 +36,14 @@ public class MoimController {
     private final MoimService moimService;
     private final LikeMoimService likeMoimService;
 
-    // Create a new moim
+    private ResponseEntity<MoimResponse> checkUserDetailsAndRespond(UserDetailsImpl userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
+        return null;
+    }
+
     @PostMapping
     @Operation(
             summary = "모임 생성",
@@ -44,6 +53,10 @@ public class MoimController {
     public ResponseEntity<MoimResponse> createMoim(
             @RequestBody MoimCreateRequest moimCreateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return response;
+
 
         MoimResponse moimResponse = moimService.createMoim(moimCreateRequest, userDetails);
 
@@ -90,6 +103,9 @@ public class MoimController {
             @RequestParam Long moimId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         MoimJoinResponse moimJoinResponse = moimService.joinMoim(moimId, userDetails);
 
         if (moimJoinResponse != null) {
@@ -135,6 +151,10 @@ public class MoimController {
     public ResponseEntity<List<MoimResponse>> getRegisteredMoims(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+
         List<MoimResponse> moimReadResponses = moimService.getRegisteredMoims(userDetails);
 
         if (moimReadResponses != null) {
@@ -151,6 +171,7 @@ public class MoimController {
             security = @SecurityRequirement(name = "AccessToken")
     )
     public ResponseEntity<MoimJoinResponse> getRegisteredUsers(@PathVariable("moimId") Long moimId) {
+
         MoimJoinResponse moimJoinResponse = moimService.getRegisteredUsers(moimId);
 
         if (moimJoinResponse != null) {
@@ -166,6 +187,9 @@ public class MoimController {
     @Operation(summary = "사용자가 생성한 모임 불러오기", description = "사용자가 생성한 모임들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<MoimResponse>> getMyMoims(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         List<MoimResponse> moimReadResponses = moimService.getMoims(userDetails);
 
         if (moimReadResponses != null) {
@@ -177,7 +201,7 @@ public class MoimController {
 
     @GetMapping("/{moimId}")
     @Operation(summary = "모임 아이디로 모임 불러오기", description = "모임 아이디로 모임을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<MoimResponse> getMyMoim(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<MoimResponse> getMyMoim(@PathVariable("moimId") Long moimId) {
 
         MoimResponse moimResponse = moimService.getMoim(moimId);
 
@@ -196,6 +220,9 @@ public class MoimController {
             @RequestBody MoimUpdateRequest moimUpdateRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return response;
+
         MoimResponse moimResponse = moimService.updateMoim(moimUpdateRequest, userDetails);
 
         if (moimResponse != null) {
@@ -211,6 +238,9 @@ public class MoimController {
             @RequestBody MoimLeaderRequest moimLeaderRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         MoimLeaderResponse moimLeaderResponse = moimService.updateMoimLeader(userDetails, moimLeaderRequest);
 
         if (moimLeaderResponse != null) {
@@ -225,6 +255,9 @@ public class MoimController {
     public ResponseEntity<MoimLeaderUsernameResponse> updateMoimLeaderByUsername(
             @RequestBody MoimLeaderUsernameRequest moimLeaderUsernameRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         MoimLeaderUsernameResponse moimLeaderUsernameResponse = moimService.updateMoimLeaderByUsername(userDetails, moimLeaderUsernameRequest);
 
@@ -243,6 +276,9 @@ public class MoimController {
     public ResponseEntity<?> deleteMoim(
             @PathVariable("moimId") Long moimId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         boolean deletedWell = moimService.deleteMoim(moimId, userDetails);
 
@@ -264,6 +300,9 @@ public class MoimController {
     @Operation(summary = "좋아요 모임 추가", description = "로그북에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<MoimResponse> likeMoim(@PathVariable Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return response;
+
         MoimResponse moimResponse = likeMoimService.createLike(moimId, userDetails);
 
         if (moimResponse != null) {
@@ -277,6 +316,9 @@ public class MoimController {
     @Operation(summary = "좋아요한 모임 가져오기", description = "좋아요한 모임을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<MoimResponse>> getLikeMoims(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         List<MoimResponse> moimResponses = likeMoimService.getLikeMoims(userDetails);
 
         if (moimResponses != null) {
@@ -289,6 +331,9 @@ public class MoimController {
     @DeleteMapping("like/{moimId}")
     @Operation(summary = "좋아요한 모임 취소하기", description = "좋아요한 모임을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<String> cancelLikeMoim(@PathVariable("moimId") Long moimId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         try{
             likeMoimService.cancelLike(moimId, userDetails);
         } catch (Exception e) {
@@ -299,7 +344,7 @@ public class MoimController {
 
     @GetMapping("likeMoims")
     @Operation(summary = "모든 likeMoims 가져오기", description = "모든 likeMoim 을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
-    public ResponseEntity<List<LikeMoim>> getAllLikeMoims(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<List<LikeMoim>> getAllLikeMoims() {
         List<LikeMoim> likeMoims = likeMoimService.gellAllLikeMoims();
         try{
             return ResponseEntity.ok(likeMoims);
