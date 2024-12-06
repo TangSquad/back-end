@@ -7,6 +7,7 @@ import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.diving.service.DivingService;
 import backend.tangsquad.like.service.LikeDivingService;
+import backend.tangsquad.logbook.dto.response.LogbookResponse;
 import backend.tangsquad.moim.dto.response.MoimResponse;
 import backend.tangsquad.swagger.global.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +33,14 @@ public class DivingController {
     private final DivingService divingService;
     private final LikeDivingService likeDivingService;
 
+    private ResponseEntity<DivingResponse> checkUserDetailsAndRespond(UserDetailsImpl userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
+        return null;
+    }
+
     // Create a new diving
     @PostMapping("")
     @Operation(
@@ -46,6 +55,9 @@ public class DivingController {
     public ResponseEntity<DivingResponse> createDiving(
             @RequestBody DivingRequest divingRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<DivingResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return response;
 
         DivingResponse divingResponse = divingService.createDiving(divingRequest, userDetails);
 
@@ -130,6 +142,10 @@ public class DivingController {
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
     public ResponseEntity<DivingJoinResponse> joinDiving(@PathVariable("divingId") Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<DivingResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         DivingJoinResponse divingjoinResponse = divingService.joinDiving(divingId, userDetails);
 
         if (divingjoinResponse != null) {
@@ -153,6 +169,9 @@ public class DivingController {
     public ResponseEntity<List<DivingResponse>> getRegisteredDivings(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+        ResponseEntity<DivingResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();;
+
         List<DivingResponse> divingResponses = divingService.getRegisteredDivings(userDetails);
 
         if (divingResponses != null) {
@@ -174,6 +193,7 @@ public class DivingController {
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
     public ResponseEntity<DivingJoinResponse> getRegisteredUsers(@PathVariable("divingId") Long divingId) {
+
         DivingJoinResponse divingJoinResponse = divingService.getMemberList(divingId);
 
         if (divingJoinResponse != null) {
@@ -186,6 +206,11 @@ public class DivingController {
     @GetMapping("")
     @Operation(summary = "내 다이빙 불러오기", description = "나의 다이빙들을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<DivingResponse>> getMyDivings(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<DivingResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();;
+
+
         List<DivingResponse> divingResponses = divingService.getMyDivings(userDetails.getId());
 
         if (divingResponses != null) {
@@ -198,6 +223,7 @@ public class DivingController {
     @GetMapping("/{divingId}")
     @Operation(summary = "다이빙 불러오기", description = "특정 다이빙을 불러옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<DivingResponse> getDiving(@PathVariable("divingId") Long divingId) {
+
         DivingResponse divingResponse = divingService.getDiving(divingId);
 
         if (divingResponse != null) {
@@ -213,6 +239,11 @@ public class DivingController {
             @PathVariable("divingId") Long divingId,
             @RequestBody DivingRequest divingRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<DivingResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return response;;
+
+
         DivingResponse divingResponse = divingService.updateDiving(divingId, divingRequest, userDetails);
 
         if (divingResponse != null ) {
@@ -227,8 +258,12 @@ public class DivingController {
     @Operation(summary = "다이빙 삭제하기", description = "나의 다이빙을 삭제합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<CommonResponse> deleteLog(
             @PathVariable("divingId") Long divingId,
-            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
-        boolean deletedWell = divingService.deleteDiving(divingId, userDetailsImpl);
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<DivingResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();;
+
+        boolean deletedWell = divingService.deleteDiving(divingId, userDetails);
 
         if (deletedWell) {
             return ResponseEntity.ok(CommonResponse.success());
@@ -246,6 +281,10 @@ public class DivingController {
     @PostMapping("like/{divingId}")
     @Operation(summary = "좋아요 다이빙 추가", description = "다이빙에 좋아요를 추가합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<DivingResponse> likeDiving(@PathVariable Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<DivingResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return response;
+
         DivingResponse likeDivingResponse = likeDivingService.createLike(divingId, userDetails);
         return ResponseEntity.ok(likeDivingResponse);
     }
@@ -253,6 +292,10 @@ public class DivingController {
     @GetMapping("like")
     @Operation(summary = "좋아요한 다이빙 가져오기", description = "좋아요한 로그북을 가져옵니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<List<DivingResponse>> getLikeDivings(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<DivingResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();;
+
         List<DivingResponse> divingResponses = likeDivingService.getLikeDivings(userDetails);
 
         if (divingResponses != null) {
@@ -265,6 +308,10 @@ public class DivingController {
     @DeleteMapping("like/{divingId}")
     @Operation(summary = "좋아요한 다이빙 취소하기", description = "좋아요한 다이빙을 취소합니다.", security = @SecurityRequirement(name = "AccessToken"))
     public ResponseEntity<String> cancelLikeDivings(@PathVariable("divingId") Long divingId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<DivingResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();;
+
         try {
             likeDivingService.cancelLike(divingId, userDetails);
         } catch (Exception e) {
