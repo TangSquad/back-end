@@ -40,7 +40,7 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:8080", "https://api.tangsquad.com")); // Add both origins
+        config.setAllowedOrigins(List.of("http://localhost:8080", "https://api.tangsquad.com", "https://jiangxy.github.io")); // Add both origins
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         config.setAllowCredentials(true);
