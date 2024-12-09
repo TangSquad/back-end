@@ -4,6 +4,8 @@ public enum Location {
     SEOUL,
     GANGWON,
     GYEONGGI,
+    Ulleungdo,
+    SouthSea,
     JEJU,
     BALI,
     CEBU
