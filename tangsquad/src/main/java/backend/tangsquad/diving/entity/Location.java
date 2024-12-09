@@ -1,12 +1,11 @@
 package backend.tangsquad.diving.entity;
 
 public enum Location {
-    SEOUL,
-    GANGWON,
-    GYEONGGI,
-    ULLEUNGDO,
-    SOUTHSEA,
     JEJU,
-    BALI,
-    CEBU
+    OKINAWA,
+    SOUTHSEA,
+    GANGWON,
+    PHILIPPINES,
+    ULLEUNG,
+    SEOUL
 }
