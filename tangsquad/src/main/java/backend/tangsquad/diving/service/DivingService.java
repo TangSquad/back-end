@@ -94,7 +94,7 @@ public class DivingService {
             diving.setChatRoomId(chatRoom.getId());
 
             // RegisteredUser 에 다이빙 생성 유저 입력
-            diving.join(userDetails);
+            diving.joinDiving(userDetails);
 
             divingRepository.save(diving);
 
@@ -111,7 +111,7 @@ public class DivingService {
             if (optionalDiving.isEmpty()) return null;
             Diving diving = optionalDiving.get();
 
-            diving.join(userDetails);
+            diving.joinDiving(userDetails);
 
             if(diving.getChatRoomId() != null) {
                 Optional<ChatRoom> chatRoom = chatRoomRepository.findById(diving.getChatRoomId());

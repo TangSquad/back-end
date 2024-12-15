@@ -70,7 +70,7 @@ public class MoimService  {
                     .moods(moimCreateRequest.getMoods())
                     .build();
 
-            moim.update(userDetails.getUser());
+            moim.joinMoim(userDetails);
 
             ChatRoom chatRoom = chatRoomService.createChatRoom(moim.getMoimName(), ChatRoom.RoomType.MOIM, moim.getId(), userDetails, true);
             moim.setChatRoomId(chatRoom.getId());
@@ -94,7 +94,7 @@ public class MoimService  {
                 return null;
             }
 
-            moim.update(userDetails.getUser());
+            moim.joinMoim(userDetails);
 
             if(moim.getChatRoomId() != null) {
                 Optional<ChatRoom> chatRoom = chatRoomRepository.findById(moim.getChatRoomId());

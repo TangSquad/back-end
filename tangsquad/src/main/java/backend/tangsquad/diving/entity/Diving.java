@@ -99,7 +99,7 @@ public class Diving {
         if (divingRequest.getLocation() != null) this.location = divingRequest.getLocation();
     }
 
-    public void join(UserDetailsImpl userDetails) {
+    public void joinDiving(UserDetailsImpl userDetails) {
         if (registeredUsers == null) {
             registeredUsers = new ArrayList<>();
         }

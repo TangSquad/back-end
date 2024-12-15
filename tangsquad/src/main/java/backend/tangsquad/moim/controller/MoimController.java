@@ -89,7 +89,7 @@ public class MoimController {
     }
 
 
-    @PostMapping("/join")
+    @PutMapping("/join/{moimId}")
     @Operation(
             summary = "모임 가입",
             description = "사용자가 기존 모임에 가입합니다.",
@@ -100,7 +100,7 @@ public class MoimController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
     })
     public ResponseEntity<MoimJoinResponse> joinMoim(
-            @RequestParam Long moimId,
+            @PathVariable("moimId") Long moimId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
