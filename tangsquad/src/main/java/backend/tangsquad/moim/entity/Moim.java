@@ -120,22 +120,6 @@ public class Moim {
         this.registeredUsers.add(userDetails.getUser());
     }
 
-    public void deleteJoin(UserDetailsImpl userDetails) {
-
-        System.out.println("Current registered users: " + this.registeredUsers);  // Debugging step
-
-        if (this.registeredUsers == null || !this.registeredUsers.contains(userDetails.getUser())) {
-            throw new IllegalStateException("User not registered in this Moim.");
-        }
-
-        this.registeredUsers.remove(userDetails.getUser());
-
-        System.out.println("Updated registered users: " + this.registeredUsers);  // Debugging step
-    }
-
-
-
-
     @Builder
     public Moim(User user, Boolean isPublic, String thumbnailUrl, Long currentPeople, String moimName, String moimIntro, String moimDetails, Long limitPeople, Long expense, String licenseLimit, List<String> locations, String age, List<String> moods, List<User> registeredUsers) {
         this.user = user;

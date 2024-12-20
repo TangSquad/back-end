@@ -4,6 +4,8 @@ import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.chat.entity.ChatRoom;
 import backend.tangsquad.chat.repository.ChatRoomRepository;
 import backend.tangsquad.chat.service.ChatRoomService;
+import backend.tangsquad.common.entity.User;
+import backend.tangsquad.common.repository.UserRepository;
 import backend.tangsquad.converter.ConvertTo;
 import backend.tangsquad.diving.dto.request.DivingRequest;
 import backend.tangsquad.diving.dto.response.DivingJoinResponse;
@@ -12,6 +14,7 @@ import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.diving.repository.DivingRepository;
 import backend.tangsquad.moim.entity.Moim;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,7 @@ public class DivingService {
     private final DivingRepository divingRepository;
     private final ChatRoomService chatRoomService;
     private final ChatRoomRepository chatRoomRepository;
+    private final UserRepository userRepository;
 
     public Diving save(Diving diving) {
         return divingRepository.save(diving);
@@ -130,12 +134,23 @@ public class DivingService {
         }
     }
 
-    public boolean cancelJoinDiving(Long divingId, UserDetailsImpl userDetails) {
-        Diving diving = divingRepository.findById(divingId)
-                .orElseThrow(() -> new NoSuchElementException("Diving with ID " + divingId + " not found"));
+    @Transactional
+    public boolean leaveDiving(Long divingId, UserDetailsImpl userDetails) {
+        try {
+            User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+            Diving diving = divingRepository.findById(divingId).orElseThrow(() -> new EntityNotFoundException("Diving not found"));
 
-        diving.deleteJoin(userDetails);
-        return true;
+            if (!user.getDivings().contains(diving)) {
+                throw new IllegalStateException("User is not part of the Diving");
+            }
+
+            user.getDivings().remove(diving);
+            diving.getRegisteredUsers().remove(user);
+
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to cancel Diving join: " + e.getMessage(), e);
+        }
     }
 
     public DivingJoinResponse getMemberList(Long divingId) {
