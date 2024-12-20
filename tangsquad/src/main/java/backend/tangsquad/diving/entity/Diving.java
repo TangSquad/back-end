@@ -106,6 +106,10 @@ public class Diving {
         this.registeredUsers.add(userDetails.getUser());
     }
 
+    public void deleteJoin(UserDetailsImpl userDetails) {
+        this.registeredUsers.remove(userDetails.getUser());
+    }
+
     public Diving(User user, String divingName, String divingIntro, String thumbnailUrl, Long currentPeople, String age, List<String> moods, Long limitPeople, String licenseLimit, LocalDate startDate, LocalDate endDate, Location location) {
         this.user = user;
         this.divingName = divingName;

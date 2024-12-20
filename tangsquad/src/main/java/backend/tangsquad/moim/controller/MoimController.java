@@ -115,6 +115,34 @@ public class MoimController {
         }
     }
 
+    @PutMapping("/leaveMoim/{moimId}")
+    @Operation(
+            summary = "모임 가입 취소하기",
+            description = "사용자가 기존 모임에 가입을 취소합니다",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "모임 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
+    })
+    public ResponseEntity<?> leaveMoim(
+            @PathVariable("moimId") Long moimId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<MoimResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        boolean deletedWell = moimService.leaveMoim(moimId, userDetails);
+
+        if (deletedWell) {
+            return ResponseEntity.ok(CommonResponse.success());
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to delete Moim.");
+        }
+    }
+
+
+
     @GetMapping("/all")
     @Operation(
             summary = "모임 목록 조회",

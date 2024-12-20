@@ -11,6 +11,7 @@ import backend.tangsquad.diving.dto.response.DivingResponse;
 import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.diving.entity.Location;
 import backend.tangsquad.diving.repository.DivingRepository;
+import backend.tangsquad.moim.entity.Moim;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,6 +128,14 @@ public class DivingService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public boolean cancelJoinDiving(Long divingId, UserDetailsImpl userDetails) {
+        Diving diving = divingRepository.findById(divingId)
+                .orElseThrow(() -> new NoSuchElementException("Diving with ID " + divingId + " not found"));
+
+        diving.deleteJoin(userDetails);
+        return true;
     }
 
     public DivingJoinResponse getMemberList(Long divingId) {

@@ -120,6 +120,20 @@ public class Moim {
         this.registeredUsers.add(userDetails.getUser());
     }
 
+    public void deleteJoin(UserDetailsImpl userDetails) {
+
+        System.out.println("Current registered users: " + this.registeredUsers);  // Debugging step
+
+        if (this.registeredUsers == null || !this.registeredUsers.contains(userDetails.getUser())) {
+            throw new IllegalStateException("User not registered in this Moim.");
+        }
+
+        this.registeredUsers.remove(userDetails.getUser());
+
+        System.out.println("Updated registered users: " + this.registeredUsers);  // Debugging step
+    }
+
+
 
 
     @Builder
