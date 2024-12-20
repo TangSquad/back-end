@@ -1,5 +1,6 @@
 package backend.tangsquad.common.entity;
 
+import backend.tangsquad.diving.entity.Diving;
 import backend.tangsquad.moim.entity.Moim;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -61,8 +62,11 @@ public class User {
     @Column(nullable = false) private String role;
 
     @ManyToMany(mappedBy = "registeredUsers")
-    @JsonBackReference // Add this annotation to break the recursion
+    @JsonBackReference
     private List<Moim> moims = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "registeredUsers")
+    @JsonBackReference
+    private List<Diving> divings = new ArrayList<>();
 
 }

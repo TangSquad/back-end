@@ -12,5 +12,4 @@ import java.util.List;
 public interface MoimRepository extends JpaRepository<Moim, Long> {
     List<Moim> findByUserId(Long userId);
     List<Moim> findByRegisteredUsersContaining(User user);
-
 }

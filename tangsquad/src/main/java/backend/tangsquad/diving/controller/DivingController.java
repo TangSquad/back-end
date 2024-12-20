@@ -155,6 +155,32 @@ public class DivingController {
         }
     }
 
+    @PutMapping("/leaveDiving/{divingId}")
+    @Operation(
+            summary = "다이빙 가입 취소하기",
+            description = "사용자가 기존 다이빙에 가입을 취소합니다",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "모임 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content)
+    })
+    public ResponseEntity<?> leaveDiving(
+            @PathVariable("divingId") Long divingId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ResponseEntity<DivingResponse> response = checkUserDetailsAndRespond(userDetails);
+        if (response != null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        boolean deletedWell = divingService.leaveDiving(divingId, userDetails);
+
+        if (deletedWell) {
+            return ResponseEntity.ok(CommonResponse.success());
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to delete Moim.");
+        }
+    }
+
     @GetMapping("/joined")
     @Operation(
             summary = "가입한 diving 목록 조회",

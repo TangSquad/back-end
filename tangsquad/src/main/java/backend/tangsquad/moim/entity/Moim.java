@@ -1,5 +1,6 @@
 package backend.tangsquad.moim.entity;
 
+import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.common.entity.User;
 import backend.tangsquad.logbook.entity.Log;
 import backend.tangsquad.logbook.entity.Logbook;
@@ -112,19 +113,12 @@ public class Moim {
         if (moimUserLeaderRequest.getUser() != null) this.user = moimUserLeaderRequest.getUser();
     }
 
-    public synchronized void update(User addUser) {
-        if (addUser == null) {
-            throw new IllegalArgumentException("User cannot be null");
-        }
+    public void joinMoim(UserDetailsImpl userDetails) {
         if (registeredUsers == null) {
-            System.out.println("registeredUsers is null");
             registeredUsers = new ArrayList<>();
         }
-        System.out.println("Adding registeredUser: " + addUser);
-        this.registeredUsers.add(addUser);
+        this.registeredUsers.add(userDetails.getUser());
     }
-
-
 
     @Builder
     public Moim(User user, Boolean isPublic, String thumbnailUrl, Long currentPeople, String moimName, String moimIntro, String moimDetails, Long limitPeople, Long expense, String licenseLimit, List<String> locations, String age, List<String> moods, List<User> registeredUsers) {

@@ -4,7 +4,10 @@ import backend.tangsquad.auth.jwt.UserDetailsImpl;
 import backend.tangsquad.chat.entity.ChatRoom;
 import backend.tangsquad.chat.repository.ChatRoomRepository;
 import backend.tangsquad.chat.service.ChatRoomService;
+import backend.tangsquad.common.repository.UserRepository;
 import backend.tangsquad.converter.ConvertTo;
+import backend.tangsquad.like.entity.LikeMoim;
+import backend.tangsquad.like.repository.LikeMoimRepository;
 import backend.tangsquad.moim.dto.request.MoimCreateRequest;
 import backend.tangsquad.moim.dto.request.MoimLeaderUsernameRequest;
 import backend.tangsquad.moim.dto.response.*;
@@ -13,6 +16,7 @@ import backend.tangsquad.common.entity.User;
 import backend.tangsquad.moim.dto.request.MoimLeaderRequest;
 import backend.tangsquad.moim.dto.request.MoimUpdateRequest;
 import backend.tangsquad.moim.repository.MoimRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -28,9 +32,10 @@ import static backend.tangsquad.converter.ConvertTo.convertToMoimResponse;
 @RequiredArgsConstructor
 public class MoimService  {
 
-    final private MoimRepository moimRepository;
+    private final MoimRepository moimRepository;
     private final ChatRoomService chatRoomService;
     private final ChatRoomRepository chatRoomRepository;
+    private final UserRepository userRepository;
 
     private List<MoimResponse> returnMoimResponses(List<Moim> moims) {
         return moims.stream()
@@ -70,7 +75,7 @@ public class MoimService  {
                     .moods(moimCreateRequest.getMoods())
                     .build();
 
-            moim.update(userDetails.getUser());
+            moim.joinMoim(userDetails);
 
             ChatRoom chatRoom = chatRoomService.createChatRoom(moim.getMoimName(), ChatRoom.RoomType.MOIM, moim.getId(), userDetails, true);
             moim.setChatRoomId(chatRoom.getId());
@@ -94,7 +99,7 @@ public class MoimService  {
                 return null;
             }
 
-            moim.update(userDetails.getUser());
+            moim.joinMoim(userDetails);
 
             if(moim.getChatRoomId() != null) {
                 Optional<ChatRoom> chatRoom = chatRoomRepository.findById(moim.getChatRoomId());
@@ -122,6 +127,29 @@ public class MoimService  {
             return null;
         }
     }
+
+    @Transactional
+    public boolean leaveMoim(Long moimId, UserDetailsImpl userDetails) {
+        try {
+            User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+            Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new EntityNotFoundException("Moim not found"));
+
+            if (!user.getMoims().contains(moim)) {
+                throw new IllegalStateException("User is not part of the Moim");
+            }
+
+            user.getMoims().remove(moim);
+            moim.getRegisteredUsers().remove(user);
+
+            userRepository.save(user); // Persist changes if necessary
+            moimRepository.save(moim);
+
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to cancel Moim join: " + e.getMessage(), e);
+        }
+    }
+
 
 
     public MoimResponse updateMoim(MoimUpdateRequest moimUpdateRequest, UserDetailsImpl userDetails) {
